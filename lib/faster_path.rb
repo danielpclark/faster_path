@@ -1,4 +1,5 @@
 require "faster_path/version"
+require 'pathname'
 require "ffi"
 
 module FasterPath

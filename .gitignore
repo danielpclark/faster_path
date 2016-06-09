@@ -1,8 +1,9 @@
 /.bundle/
-/target/debug
-/target/release/.fingerprint
-/target/release/.cargo-lock
-/target/release/deps
+#/target/debug
+#/target/release/.fingerprint
+#/target/release/.cargo-lock
+#/target/release/deps
+/target/
 /.yardoc
 /Gemfile.lock
 /_yardoc/
@@ -11,3 +12,4 @@
 /pkg/
 /spec/reports/
 /tmp/
+priority-methods.txt

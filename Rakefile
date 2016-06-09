@@ -1,6 +1,32 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
 
+desc "Building extension..."
+task :build_src do
+  puts "Building extension..."
+  system("cargo build --release")
+end
+
+desc "Cleaning up build..."
+task :clean_src do
+  puts "Cleaning up build..."
+  # Remove all but library file
+  FileUtils.
+    rm_rf(
+      Dir.
+      glob('target/release/*').
+      keep_if {|f|
+        # TODO: change regex to include other library extensions for other OS builds
+        !f[/\.so\z/]
+      }
+  )
+end
+
+desc "Compiling Rust extension..."
+task :build_lib => [:build_src, :clean_src] do
+  puts "Completed build!"
+end
+
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
   t.libs << "lib"
