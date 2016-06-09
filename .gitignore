@@ -1,8 +1,4 @@
 /.bundle/
-#/target/debug
-#/target/release/.fingerprint
-#/target/release/.cargo-lock
-#/target/release/deps
 /target/
 /.yardoc
 /Gemfile.lock
@@ -13,3 +9,4 @@
 /spec/reports/
 /tmp/
 priority-methods.txt
+mkmf.log

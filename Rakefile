@@ -1,5 +1,6 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
+require 'fileutils'
 
 desc "Building extension..."
 task :build_src do

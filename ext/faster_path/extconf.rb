@@ -1,4 +1,3 @@
-require 'fileutils'
 require 'mkmf'
 
 have_header('Dummy Makefile')
@@ -12,15 +11,9 @@ unless find_executable('cargo')
   END { puts "Exiting..."}
 end
 
-#File.touch(File.join(Dir.pwd, 'faster_path.' + RbConfig::CONFIG['DLEXT']))
-
 Dir.chdir('../../') do
-  #puts "PWD: #{`pwd`}"
-  #puts "ENV: #{}"
   system("rake build_src")
   system("rake clean_src")
 end
 
-#$extmk=false
-#$makefile_created = true
 create_makefile('faster_path/dummy')
