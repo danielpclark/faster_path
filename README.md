@@ -18,6 +18,14 @@ be a sledge hammer ;-)
 
 ## Installation
 
+Ensure Rust is installed:
+
+[Rust Downloads](https://www.rust-lang.org/downloads.html)
+
+```
+curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
+```
+
 Add this line to your application's Gemfile:
 
 ```ruby
