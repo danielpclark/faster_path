@@ -11,7 +11,7 @@ use std::ffi::CStr;
 use std::str;
 
 #[no_mangle]
-pub extern fn absolute(string: *const c_char) -> bool {
+pub extern fn is_absolute(string: *const c_char) -> bool {
   let c_str = unsafe {
     assert!(!string.is_null());
 
