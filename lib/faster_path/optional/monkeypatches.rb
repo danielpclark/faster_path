@@ -1,5 +1,5 @@
 module FasterPath
-  def self.monkeypatch_pathname
+  def self.sledgehammer_everything!
     class << ::Pathname
       def absolute?
         FasterPath.absolute?(@path)

@@ -23,7 +23,7 @@ class FasterPathTest < Minitest::Test
   end if ENV["TEST_REFINEMENTS"]
 
   def test_monkeypatches_pathname_absolute?
-    FasterPath.monkeypatch_pathname
+    FasterPath.sledgehammer_everything!
     assert Pathname.new("/").absolute?
   end if ENV["TEST_REFINEMENTS"]
 end
