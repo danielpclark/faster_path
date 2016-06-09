@@ -7,22 +7,6 @@ module FasterPath
     Rust.absolute(pth)
   end
 
-  def self.monkeypatch_pathname
-    class << ::Pathname
-      def absolute?
-        FasterPath.absolute?(@path)
-      end
-    end
-  end
-
-  module RefinePathname
-    refine Pathname do
-      def absolute?
-        FasterPath.absolute?(@path)
-      end
-    end
-  end
-
   private
   module Rust
     extend FFI::Library

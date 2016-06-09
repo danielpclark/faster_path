@@ -1,5 +1,10 @@
 require 'test_helper'
 
+if ENV['TEST_REFINEMENTS']
+  require "faster_path/optional/refinements"
+  require "faster_path/optional/monkeypatches"
+end
+
 class RefinedPathname
   using FasterPath::RefinePathname
   def a?(v)
