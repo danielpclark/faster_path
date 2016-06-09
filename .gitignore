@@ -1,0 +1,13 @@
+/.bundle/
+/target/debug
+/target/release/.fingerprint
+/target/release/.cargo-lock
+/target/release/deps
+/.yardoc
+/Gemfile.lock
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/

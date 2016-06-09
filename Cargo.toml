@@ -1,0 +1,16 @@
+[package]
+name = "faster_path"
+version = "0.0.1"
+authors = ["Daniel P. Clark <6ftdan@gmail.com>"]
+description = "Alternative to Pathname"
+homepage = "https://github.com/danielpclark/faster_path"
+repository = "https://github.com/danielpclark/faster_path"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+
+[lib]
+name = "faster_path"
+crate-type = ["dylib"]
+
+[dependencies]
+libc = "0.2.11"
