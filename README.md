@@ -1,8 +1,20 @@
 # FasterPath
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/faster_path`. To experiment with that code, run `bin/console` for an interactive prompt.
+This project "WILL BE" a rewrite of Ruby's STDLIB **Pathname** optimized for speed and performance.
+I am considering making it a \*nix OS gem, but that may likely just be an early phase.  Windows support
+can be added much later.
 
-TODO: Delete this and the text above, and describe your gem
+The primary **GOAL** of this project is to improve performance in the Rails environment as path relation
+and file lookup is a huge bottleneck in performance.  As this is the case the path performance updates
+will likely not be limited to just changing Pathname but also will be offering changes in related methods
+and classes.
+
+Users will have the option to write their apps directly for this library, or they can choose to either
+refine or monkeypatch the existing library.  Refinements are narrowed to scope and monkeypatching will
+be a sledge hammer ;-)
+
+**NOTE**: Refinements and monkeypatch methods are highly likely to be changed and renamed pre version
+0.1.0 so keep that in mind!
 
 ## Installation
 
@@ -22,7 +34,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+TODO: _(project is too young for usage details)_
 
 ## Development
 
@@ -32,10 +44,10 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/faster_path.
+Bug reports and pull requests are welcome on GitHub at https://github.com/danielpclark/faster_path.
 
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+[MIT License](http://opensource.org/licenses/MIT) or APACHE 2.0 at your pleasure.
 
