@@ -42,7 +42,34 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: _(project is too young for usage details)_
+Current methods implemented:
+
+|Rust Implementation|Ruby Implementation|Performance Improvemant|
+|---|---|---|
+| `FasterPath.absolute?` | `Pathname#absolute?` | 545% to 1450% |
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 6.7% to 54.6% |
+| FasterPath.blank? | | |
+
+You may choose to use the methods directly, or scope change to rewrite behavior on the
+standard library with the included refinements, or even call a method to monkeypatch 
+everything everywhere.
+
+**Note:** `Pathname#chop_basename` in Ruby STDLIB has a bug with blank strings, that is the
+only difference in behavior against FasterPath's implementation.
+
+For the scoped **refinements** you will need to
+
+```
+require "faster_path/optional/refinements"
+using FasterPath::RefinePathname
+```
+
+And for the sldeghammer of monkey patching you can do
+
+```
+require "faster_path/optional/monkeypatching"
+FasterPath.sledgehammer_everything!
+```
 
 ## Development
 

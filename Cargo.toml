@@ -14,3 +14,4 @@ crate-type = ["dylib"]
 
 [dependencies]
 libc = "0.2.11"
+#regex = "0.1.71"
