@@ -105,7 +105,7 @@ using FasterPath::RefinePathname
 And for the sledgehammer of monkey patching you can do
 
 ```
-require "faster_path/optional/monkeypatching"
+require "faster_path/optional/monkeypatches"
 FasterPath.sledgehammer_everything!
 ```
 
