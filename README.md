@@ -82,7 +82,7 @@ Or install it yourself as:
 
 Current methods implemented:
 
-|Rust Implementation|Ruby Implementation|Performance Improvemant|
+|FasterPath Rust Implementation|Ruby 2.3.1 Implementation|Performance Improvement|
 |---|---|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 1234.6% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 27.5% |
