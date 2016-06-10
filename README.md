@@ -23,7 +23,7 @@ most of its time.  It turns out roughly 80% of the time spent and calls made are
 This is shocking, but it only gets worse when handling assets.  **That is why we need to deal with
 these load heavy methods in the most efficient manner!**
 
-Here's a snippet of a Rails stack profile with the most used and time expensive methods.
+Here's a snippet of a Rails stack profile with some of the most used and time expensive methods.
 
 ```
 Booting: development
