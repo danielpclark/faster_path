@@ -8,7 +8,7 @@ path performance updates will likely not be limited to just changing the Pathnam
 be offering changes in related methods and classes.
 
 Users will have the option to write their apps directly for this library, or they can choose to either
-refine or monkeypatch the existing library.  Refinements are narrowed to scope and monkeypatching will
+refine or monkeypatch the existing standard library.  Refinements are narrowed to scope and monkeypatching will
 be a sledge hammer ;-)
 
 **NOTE**: Refinements and monkeypatch methods are highly likely to be changed and renamed pre version
@@ -102,7 +102,7 @@ require "faster_path/optional/refinements"
 using FasterPath::RefinePathname
 ```
 
-And for the sldeghammer of monkey patching you can do
+And for the sledgehammer of monkey patching you can do
 
 ```
 require "faster_path/optional/monkeypatching"
