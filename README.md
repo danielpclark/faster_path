@@ -1,13 +1,9 @@
 # FasterPath
 
-This project "WILL BE" a rewrite of Ruby's STDLIB **Pathname** optimized for speed and performance.
-I am considering making it a \*nix OS gem, but that may likely just be an early phase.  Windows support
-can be added much later.
-
-The primary **GOAL** of this project is to improve performance in the Rails environment as path relation
-and file lookup is a huge bottleneck in performance.  As this is the case the path performance updates
-will likely not be limited to just changing Pathname but also will be offering changes in related methods
-and classes.
+The primary **GOAL** of this project is to improve performance in the most heavily used areas of Ruby as
+path relation and file lookup is currently a huge bottleneck in performance.  As this is the case the
+path performance updates will likely not be limited to just changing the Pathname class but also will
+be offering changes in related methods and classes.
 
 Users will have the option to write their apps directly for this library, or they can choose to either
 refine or monkeypatch the existing library.  Refinements are narrowed to scope and monkeypatching will
@@ -19,9 +15,9 @@ be a sledge hammer ;-)
 ## Why
 
 I did a check on Rails on what methods were being called the most and where the application spend
-most of its time.  It turns out roughly 80% of the time spent and calls made are file Path handling.
-This is shocking, but it only gets worse when handling assets.  **That is why we need to deal with
-these load heavy methods in the most efficient manner!**
+most of its time.  It turns out roughly 80% _(as far as I can tell)_ of the time spent and calls made
+are file Path handling.  This is shocking, but it only gets worse when handling assets.  **That is
+why we need to deal with these load heavy methods in the most efficient manner!**
 
 Here's a snippet of a Rails stack profile with some of the most used and time expensive methods.
 
@@ -49,6 +45,12 @@ Running `stackprof tmp/2016-06-09T00:42:10-04:00-stackprof-cpu-myapp.dump`. Exec
         18   (0.3%)          18   (0.3%)     ActionView::Helpers::AssetUrlHelper#compute_asset_extname
        108   (1.5%)          14   (0.2%)     ActionView::Helpers::AssetUrlHelper#asset_path
 ```
+
+## Status
+
+* Rust compilation is working
+* Methods are _most likely_ stable
+* Testers and developers are most welcome!
 
 ## Installation
 
