@@ -16,6 +16,13 @@ be a sledge hammer ;-)
 **NOTE**: Refinements and monkeypatch methods are highly likely to be changed and renamed pre version
 0.1.0 so keep that in mind!
 
+## Why
+
+I did a check on Rails on what methods were being called the most and where the application spend
+most of its time.  It turns out roughly 80% of the time spent and calls made are file Path handling.
+This is shocking, but it only gets worse when handling assets.  **That is why we need to deal with
+these load heavy methods in the most efficient manner!**
+
 ## Installation
 
 Ensure Rust is installed:
@@ -48,7 +55,7 @@ Current methods implemented:
 |---|---|---|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 545% to 1450% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 6.7% to 54.6% |
-| FasterPath.blank? | | |
+| `FasterPath.blank?` | | |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch 
