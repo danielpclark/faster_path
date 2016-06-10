@@ -1,6 +1,6 @@
 require 'test_helper'
 
-if ENV['TEST_REFINEMENTS']
+if ENV['TEST_REFINEMENTS'].to_s["true"]
   require "faster_path/optional/refinements"
   require "faster_path/optional/monkeypatches"
 end
@@ -10,7 +10,7 @@ class RefinedPathname
   def a?(v)
     Pathname.new(v).absolute?
   end
-end if ENV["TEST_REFINEMENTS"]
+end if ENV["TEST_REFINEMENTS"].to_s["true"]
 
 class FasterPathTest < Minitest::Test
   def test_it_determins_absolute_path
@@ -95,10 +95,10 @@ class FasterPathTest < Minitest::Test
 
   def test_refines_pathname_absolute?
     assert RefinedPathname.new.a?("/")
-  end if ENV["TEST_REFINEMENTS"]
+  end if ENV["TEST_REFINEMENTS"].to_s["true"]
 
   def test_monkeypatches_pathname_absolute?
     FasterPath.sledgehammer_everything!
     assert Pathname.new("/").absolute?
-  end if ENV["TEST_REFINEMENTS"]
+  end if ENV["TEST_REFINEMENTS"].to_s["true"]
 end
