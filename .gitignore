@@ -9,3 +9,4 @@
 /spec/reports/
 /tmp/
 mkmf.log
+**/*.swp

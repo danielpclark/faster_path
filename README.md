@@ -84,8 +84,8 @@ Current methods implemented:
 
 |Rust Implementation|Ruby Implementation|Performance Improvemant|
 |---|---|---|
-| `FasterPath.absolute?` | `Pathname#absolute?` | 545% to 1450% |
-| `FasterPath.chop_basename` | `Pathname#chop_basename` | 6.7% to 54.6% |
+| `FasterPath.absolute?` | `Pathname#absolute?` | 1234.6% |
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 27.5% |
 | `FasterPath.blank?` | | |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the

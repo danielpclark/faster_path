@@ -5,7 +5,7 @@ require "pathname"
 class FasterPathBenchmark < Minitest::Benchmark
   def bench_rust_absolute?
     assert_performance_constant do |n|
-      100.times do
+      10000.times do
         FasterPath.absolute?("/hello")
         FasterPath.absolute?("goodbye")
       end
@@ -14,7 +14,7 @@ class FasterPathBenchmark < Minitest::Benchmark
 
   def bench_ruby_absolute?
     assert_performance_constant do |n|
-      100.times do
+      10000.times do
         Pathname.new("/hello").absolute?
         Pathname.new("goodbye").absolute?
       end
