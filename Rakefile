@@ -17,8 +17,7 @@ task :clean_src do
       Dir.
       glob('target/release/*').
       keep_if {|f|
-        # TODO: change regex to include other library extensions for other OS builds
-        !f[/\.so\z/]
+        !f[/\.(?:so|dll)\z/]
       }
   )
 end

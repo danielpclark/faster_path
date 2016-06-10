@@ -29,7 +29,8 @@ module FasterPath
   module Rust
     extend FFI::Library
     ffi_lib begin
-      "#{File.expand_path("../target/release/", File.dirname(__FILE__))}/libfaster_path.#{FFI::Platform::LIBSUFFIX}"
+      prefix = Gem.win_platform? ? "" : "lib"
+      "#{File.expand_path("../target/release/", File.dirname(__FILE__))}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
     end
     attach_function :is_absolute, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
