@@ -1,7 +1,7 @@
 # FasterPath
-[![Code Triagers Badge](https://www.codetriage.com/danielpclark/faster_path/badges/users.svg)](https://www.codetriage.com/danielpclark/faster_path)
 [![Gem Version](https://badge.fury.io/rb/faster_path.svg)](https://badge.fury.io/rb/faster_path)
-
+[![Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
+[![Code Triagers Badge](https://www.codetriage.com/danielpclark/faster_path/badges/users.svg)](https://www.codetriage.com/danielpclark/faster_path)
 
 The primary **GOAL** of this project is to improve performance in the most heavily used areas of Ruby as
 path relation and file lookup is currently a huge bottleneck in performance.  As this is the case the
