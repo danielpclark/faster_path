@@ -28,7 +28,10 @@ module FasterPath
   private
   module Rust
     extend FFI::Library
-    ffi_lib 'target/release/libfaster_path.so'
+    #ffi_lib 'target/release/libfaster_path.so'
+    ffi_lib begin
+      "#{File.expand_path("../target/release/", File.dirname(__FILE__))}/libfaster_path.#{FFI::Platform::LIBSUFFIX}"
+    end
     attach_function :is_absolute, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
     attach_function :basename, [ :string ], :string
