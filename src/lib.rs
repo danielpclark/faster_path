@@ -5,7 +5,6 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 extern crate libc;
-//extern crate regex;
 
 use std::path::{Path,MAIN_SEPARATOR};
 use libc::c_char;
@@ -77,37 +76,3 @@ pub extern fn dirname(string: *const c_char) -> *const c_char {
   let output = CString::new(out_str).unwrap();
   output.into_raw()
 }
-
-//#[no_mangle]
-//pub extern fn chop_basename(string: *const c_char) -> Vec<*const c_char> {
-//  let c_str = unsafe {
-//    assert!(!string.is_null());
-//
-//    CStr::from_ptr(string)
-//  };
-//
-//  let r_str = str::from_utf8(c_str.to_bytes()).unwrap();
-//  let mut parts: Vec<*const libc::c_char> = vec![];
-//
-//  {
-//    use regex::Regex;
-//    let re = Regex::new(format!(r"\A{}?\z", MAIN_SEPARATOR).as_str()).unwrap();
-//    if re.is_match(r_str){
-//      return parts;
-//    }
-//  }
-//  
-//  let mut pieces = r_str.rsplitn(1, MAIN_SEPARATOR);
-//  loop {
-//    match pieces.next() {
-//      Some(val) => { parts.push(CString::new(val.to_string()).unwrap().into_raw()) },
-//      None => { break },
-//    }
-//  }
-//  parts
-//}
-
-//#[test]
-//fn it_chops_basename() {
-//  let result = chop_basename(CString::new("/hello/world.txt").unwrap().as_ptr());
-//}
