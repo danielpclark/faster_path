@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class RelativeTest < Minitest::Test
-  def it_knows_its_relativeness
+  def test_it_knows_its_relativeness
     refute FasterPath.relative? '/'
     refute FasterPath.relative? '/a'
     refute FasterPath.relative? '/..'
@@ -18,7 +18,7 @@ class RelativeTest < Minitest::Test
     end
   end
   
-  def it_knows_its_relativeness_in_dos_like_drive_letters
+  def test_it_knows_its_relativeness_in_dos_like_drive_letters
     refute FasterPath.relative? 'A:'
     refute FasterPath.relative? 'A:/'
     refute FasterPath.relative? 'A:/a'
