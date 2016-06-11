@@ -115,8 +115,9 @@ FasterPath.sledgehammer_everything!
 
 The primary methods to target are mostly listed in the **Why** section above.  You may find the Ruby
 source code useful for Pathname's [Ruby source](https://github.com/ruby/ruby/blob/32674b167bddc0d737c38f84722986b0f228b44b/ext/pathname/lib/pathname.rb),
-[C source](https://github.com/ruby/ruby/blob/32674b167bddc0d737c38f84722986b0f228b44b/ext/pathname/pathname.c), and
-[tests](https://github.com/ruby/ruby/blob/32674b167bddc0d737c38f84722986b0f228b44b/test/pathname/test_pathname.rb).
+[C source](https://github.com/ruby/ruby/blob/32674b167bddc0d737c38f84722986b0f228b44b/ext/pathname/pathname.c),
+[tests](https://github.com/ruby/ruby/blob/32674b167bddc0d737c38f84722986b0f228b44b/test/pathname/test_pathname.rb),
+and checkout the [documentation](http://ruby-doc.org/stdlib-2.3.1/libdoc/pathname/rdoc/Pathname.html).
 
 Methods will be written as exclusively in Rust as possible.  Even just writing a **not** in Ruby with a
 Rust method like `!absolute?` _(not absolute)_ drops 39% of the performance already gained in Rust.
