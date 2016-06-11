@@ -111,15 +111,19 @@ require "faster_path/optional/monkeypatches"
 FasterPath.sledgehammer_everything!
 ```
 
-## Development
+## Getting Started with Development
+
+The primary methods to target are mostly listed in the **Why** section above.  You may find the Ruby
+source code useful for Pathname's [Ruby source](https://github.com/ruby/ruby/blob/32674b167bddc0d737c38f84722986b0f228b44b/ext/pathname/lib/pathname.rb),
+[C source](https://github.com/ruby/ruby/blob/32674b167bddc0d737c38f84722986b0f228b44b/ext/pathname/pathname.c), and
+[tests](https://github.com/ruby/ruby/blob/32674b167bddc0d737c38f84722986b0f228b44b/test/pathname/test_pathname.rb).
 
 Methods will be written as exclusively in Rust as possible.  Even just writing a **not** in Ruby with a
 Rust method like `!absolute?` _(not absolute)_ drops 39% of the performance already gained in Rust.
 Whenever feasible implement it in Rust.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+After checking out the repo, make sure you have Rust installed.  Then run `bundle && rake build_lib` .
+Then, run `rake test` to run the tests, and `rake bench` for benchmarks.
 
 ## Contributing
 
