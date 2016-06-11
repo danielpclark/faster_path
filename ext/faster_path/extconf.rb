@@ -1,8 +1,4 @@
-#require 'mkmf'
-
-#have_header('Dummy Makefile')
-
-unless (`cargo --version` rescue nil) #find_executable('cargo')
+unless (`cargo --version` rescue nil) 
   puts "You need to have Rust installed for this gem to build natively."
   puts "Please install the latest nightly build:"
   puts
@@ -15,5 +11,3 @@ Dir.chdir('../../') do
   system("rake build_src")
   system("rake clean_src")
 end
-
-#create_makefile('faster_path/dummy')

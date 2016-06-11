@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'ffi'
 
 class FasterPathTest < Minitest::Test
   def test_it_build_linked_library
