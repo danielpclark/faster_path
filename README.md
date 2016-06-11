@@ -87,6 +87,7 @@ Current methods implemented:
 |---|---|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 1234.6% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 27.5% |
+| `FasterPath.relative?` | `Pathname#relative?` | 1262.3% |
 | `FasterPath.blank?` | | |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
@@ -111,6 +112,10 @@ FasterPath.sledgehammer_everything!
 ```
 
 ## Development
+
+Methods will be written as exclusively in Rust as possible.  Even just writing a **not** in Ruby with a
+Rust method like `!absolute?` _(not absolute)_ drops 39% of the performance already gained in Rust.
+Whenever feasible implement it in Rust.
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
