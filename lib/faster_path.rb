@@ -9,7 +9,7 @@ module FasterPath
   end
 
   def self.relative?(pth)
-    !absolute?(pth)
+    Rust.is_relative(pth)
   end
 
   # Spec to Pathname#chop_basename
@@ -37,6 +37,7 @@ module FasterPath
       "#{File.expand_path("../target/release/", File.dirname(__FILE__))}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
     end
     attach_function :is_absolute, [ :string ], :bool
+    attach_function :is_relative, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
     attach_function :basename, [ :string ], :string
     attach_function :dirname, [ :string ], :string
