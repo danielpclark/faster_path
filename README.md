@@ -87,6 +87,7 @@ Current methods implemented:
 |---|---|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 1234.6% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 27.5% |
+| `FasterPath.relative?` | `Pathname#relative?` | 908.6% |
 | `FasterPath.blank?` | | |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
