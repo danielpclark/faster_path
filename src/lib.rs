@@ -11,81 +11,8 @@ use libc::c_char;
 use std::ffi::{CStr,CString,OsStr};
 use std::str;
 
-#[no_mangle]
-pub extern fn is_absolute(string: *const c_char) -> bool {
-  let c_str = unsafe {
-    assert!(!string.is_null());
-
-    CStr::from_ptr(string)
-  };
-
-  let r_str = str::from_utf8(c_str.to_bytes()).unwrap_or("");
-
-  r_str.chars().next().unwrap_or("muffins".chars().next().unwrap()) == MAIN_SEPARATOR
-}
-
-#[no_mangle]
-pub extern fn is_relative(string: *const c_char) -> bool {
-  let c_str = unsafe {
-    assert!(!string.is_null());
-
-    CStr::from_ptr(string)
-  };
-
-  let r_str = str::from_utf8(c_str.to_bytes()).unwrap_or("");
-
-  r_str.chars().next().unwrap_or("muffins".chars().next().unwrap()) != MAIN_SEPARATOR
-}
-
-#[no_mangle]
-pub extern fn is_blank(string: *const c_char) -> bool {
-  let c_str = unsafe {
-    assert!(!string.is_null());
-
-    CStr::from_ptr(string)
-  };
-
-  str::from_utf8(c_str.to_bytes()).unwrap().trim().is_empty()
-}
-
-#[no_mangle]
-pub extern fn basename(string: *const c_char) -> *const c_char {
-  let c_str = unsafe {
-    assert!(!string.is_null());
-
-    CStr::from_ptr(string)
-  };
-
-  let r_str = str::from_utf8(c_str.to_bytes()).unwrap();
-
-  let part = Path::new(r_str).file_name().unwrap_or(OsStr::new("")).to_str();
-  
-  let output = CString::new(format!("{}", part.unwrap())).unwrap();
-  output.into_raw()
-}
-
-#[no_mangle]
-pub extern fn dirname(string: *const c_char) -> *const c_char {
-  let c_str = unsafe {
-    assert!(!string.is_null());
-
-    CStr::from_ptr(string)
-  };
-
-  let r_str = str::from_utf8(c_str.to_bytes()).unwrap();
-
-  if r_str.is_empty() {
-    return string
-  }
-
-  let path = Path::new(r_str).parent().unwrap_or(Path::new(""));
-
-  let out_str = if !path.to_str().unwrap().is_empty() {
-    format!("{}{}", path.to_str().unwrap(), MAIN_SEPARATOR)
-  } else {
-    format!("{}", path.to_str().unwrap())
-  };
-
-  let output = CString::new(out_str).unwrap();
-  output.into_raw()
-}
+include!("is_absolute.rs");
+include!("is_relative.rs");
+include!("is_blank.rs");
+include!("basename.rs");
+include!("dirname.rs");
