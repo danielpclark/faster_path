@@ -1,5 +1,12 @@
 pub struct RubyString;
 
+// Coercing strs into Strings has some loss of performance
+// You may use these methods temporarily but it would be much better
+// to write all of this code out in each method using just str.
+//
+// Using these methods you will still get you 10X (= 900%) performance
+// gain regardless.  But really consider not using String.  If you do,
+// the performance will go from 900% to 1250% gains.
 impl RubyString {
   fn from_ruby(s: *const c_char) -> String {
     let c_str = unsafe {
