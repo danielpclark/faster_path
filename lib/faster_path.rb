@@ -26,6 +26,10 @@ module FasterPath
     Rust.is_relative(pth)
   end
 
+  def self.dirname(pth)
+    Rust.dirname(pth)
+  end
+
   # Spec to Pathname#chop_basename
   # WARNING! Pathname#chop_basename in STDLIB doesn't handle blank strings correctly!
   # This implementation correctly handles blank strings just as Pathname had intended

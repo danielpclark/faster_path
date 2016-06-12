@@ -8,6 +8,10 @@ module FasterPath
       def self.extname(pth)
         FasterPath.extname(pth)
       end
+
+      def self.dirname(pth)
+        FasterPath.dirname(pth)
+      end if ENV['WITH_REGRESSION']
     end
   end
 

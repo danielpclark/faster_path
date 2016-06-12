@@ -3,6 +3,7 @@ require 'faster_path/optional/refinements'
 
 class RefinedPathname
   using FasterPath::RefinePathname
+  using FasterPath::RefineFile
   def cleanpath_conservative(pth)
     Pathname.new(pth).send(:cleanpath_conservative).to_s
   end 
