@@ -10,9 +10,22 @@ use std::path::{Path,MAIN_SEPARATOR};
 use libc::c_char;
 use std::ffi::{CStr,CString,OsStr};
 use std::str;
+use std::mem;
 
+include!("ruby_string.rs");
+include!("ruby_array.rs");
 include!("is_absolute.rs");
 include!("is_relative.rs");
 include!("is_blank.rs");
 include!("basename.rs");
 include!("dirname.rs");
+
+// EXAMPLE
+//
+//#[no_mangle]
+//pub extern fn one_and_two() -> RubyArray {
+//  let mut words = vec![];
+//  words.push(RubyString::to_ruby(&"one".to_string()));
+//  words.push(RubyString::to_ruby(&"two".to_string()));
+//  RubyArray::from_vec(words)
+//}

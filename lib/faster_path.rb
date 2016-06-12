@@ -29,6 +29,11 @@ module FasterPath
     Rust.is_blank(str)
   end
 
+  # EXAMPLE
+  #def self.one_and_two
+  #  Rust.one_and_two.to_a
+  #end
+
   private
   module Rust
     extend FFI::Library
@@ -36,11 +41,24 @@ module FasterPath
       prefix = Gem.win_platform? ? "" : "lib"
       "#{File.expand_path("../target/release/", File.dirname(__FILE__))}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
     end
+
+    class FromRustArray < FFI::Struct
+      layout :len,    :size_t, # dynamic array layout
+             :data,   :pointer #
+
+      def to_a
+        self[:data].get_array_of_string(0, self[:len]).compact
+      end
+    end
+
     attach_function :is_absolute, [ :string ], :bool
     attach_function :is_relative, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
     attach_function :basename, [ :string ], :string
     attach_function :dirname, [ :string ], :string
+
+    # EXAMPLE
+    #attach_function :one_and_two, [], FromRustArray.by_value
   end
   private_constant :Rust
 end
