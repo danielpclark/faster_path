@@ -17,6 +17,7 @@ include!("ruby_array.rs");
 include!("is_absolute.rs");
 include!("is_relative.rs");
 include!("is_blank.rs");
+include!("both_are_blank.rs");
 include!("basename.rs");
 include!("dirname.rs");
 

@@ -8,6 +8,7 @@ pub struct RubyString;
 // gain regardless.  But really consider not using String.  If you do
 // as I've intstructed the performance gains will go from 900% to 1250%.
 impl RubyString {
+  #[allow(dead_code)]
   // FOR QUICK IMPLEMENTATION.  NOT FOR PRODUCTION.
   // SEE BENCHMARKS FOR SANCTIONED IMPLEMENTATION.
   fn from_ruby(s: *const c_char) -> String {
@@ -18,6 +19,7 @@ impl RubyString {
     (*str::from_utf8(c_str.to_bytes()).unwrap_or("")).to_string()
   }
 
+  #[allow(dead_code)]
   // FOR QUICK IMPLEMENTATION.  NOT FOR PRODUCTION.
   // SEE BENCHMARKS FOR SANCTIONED IMPLEMENTATION.
   fn to_ruby<S: Into<String>>(s: S) -> *const c_char {
