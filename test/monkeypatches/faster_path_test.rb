@@ -1,9 +1,10 @@
 require 'test_helper'
-require 'pathname'
-require 'method_source'
 
-require 'faster_path/optional/monkeypatches'
-FasterPath.sledgehammer_everything! if ENV['TEST_MONKEYPATCHES'].to_s['true']
+if ENV['TEST_MONKEYPATCHES'].to_s['true']
+  require 'method_source'
+  require 'faster_path/optional/monkeypatches'
+  FasterPath.sledgehammer_everything!
+end
 
 class MonkeyPatchesTest < Minitest::Test
   def setup
