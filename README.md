@@ -14,9 +14,6 @@ Users will have the option to write their apps directly for this library, or the
 refine or monkeypatch the existing standard library.  Refinements are narrowed to scope and monkeypatching will
 be a sledge hammer ;-)
 
-**NOTE**: Refinements and monkeypatch methods are highly likely to be changed and renamed pre version
-0.1.0 so keep that in mind!
-
 ## Why
 
 I did a check on Rails on what methods were being called the most and where the application spend
