@@ -18,11 +18,7 @@ module FasterPath
   # to handle non-path strings.
   def self.chop_basename(pth)
     d,b = [Rust.dirname(pth), Rust.basename(pth)]
-    if blank?(d) && blank?(b)
-      nil
-    else
-      [d,b]
-    end
+    [d,b] unless Rust.both_are_blank(d,b)
   end
 
   def self.blank?(str)
@@ -54,6 +50,7 @@ module FasterPath
     attach_function :is_absolute, [ :string ], :bool
     attach_function :is_relative, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
+    attach_function :both_are_blank, [ :string, :string ], :bool
     attach_function :basename, [ :string ], :string
     attach_function :dirname, [ :string ], :string
 
