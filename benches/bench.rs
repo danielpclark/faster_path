@@ -23,7 +23,7 @@ fn rust_to_ruby_c_char_convenient(b: &mut Bencher){
 
 // SANCTIONED USAGE
 #[bench]
-fn rust_to_ruby_to_c_char(b: &mut Bencher){
+fn rust_to_ruby_c_char(b: &mut Bencher){
   let s: String = "hello".to_string();
   let s = s.as_str();
 
