@@ -17,7 +17,7 @@ task :clean_src do
       Dir.
       glob('target/release/*').
       keep_if {|f|
-        !f[/\.(?:so|dll)\z/]
+        !f[/\.(?:so|dll|dylib)\z/]
       }
   )
 end
