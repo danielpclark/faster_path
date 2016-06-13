@@ -1,6 +1,6 @@
 module FasterPath
   def self.sledgehammer_everything!
-    class << ::Pathname
+    ::Pathname.class_eval do
       def absolute?
         FasterPath.absolute?(@path)
       end
