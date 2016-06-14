@@ -1,4 +1,12 @@
 module FasterPath
+  module RefineFile
+    refine File do
+      def basename(pth)
+        FasterPath.basename(pth)
+      end
+    end
+  end
+
   module RefinePathname
     refine Pathname do
       def absolute?

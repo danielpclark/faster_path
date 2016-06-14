@@ -26,6 +26,12 @@ module FasterPath
     Rust.is_blank(str)
   end
 
+  def self.basename(pth,ext="")
+    v = {"." => "\\.{1}", "*" => "\\w*"}
+    ext = "#{ext.gsub(Regexp.new("[#{v.keys.join}]"), v)}\z"
+    Rust.basename(pth).gsub(Regexp.new(ext),'')
+  end
+
   # EXAMPLE
   #def self.one_and_two
   #  Rust.one_and_two.to_a

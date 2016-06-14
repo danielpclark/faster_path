@@ -1,6 +1,5 @@
 require "test_helper"
 require "minitest/benchmark"
-require "pathname"
 
 class FasterPathBenchmark < Minitest::Benchmark
   def bench_rust_chop_basename
