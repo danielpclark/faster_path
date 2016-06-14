@@ -67,7 +67,7 @@ curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=night
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path'
+gem 'faster_path', '~> 0.1.0'
 ```
 
 And then execute:
@@ -79,24 +79,6 @@ Or install it yourself as:
     $ gem install faster_path
 
 ## Usage
-
-Add it to your Gemfile
-
-```
-gem 'faster_path', '~> 0.1.0'
-```
-
-or install
-
-```
-gem install faster_path
-```
-
-and require it
-
-```
-require 'faster_path'
-```
 
 Current methods implemented:
 
