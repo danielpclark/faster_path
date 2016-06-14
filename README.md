@@ -80,6 +80,24 @@ Or install it yourself as:
 
 ## Usage
 
+Add it to your Gemfile
+
+```
+gem 'faster_path', '~> 0.1.0'
+```
+
+or install
+
+```
+gem install faster_path
+```
+
+and require it
+
+```
+require 'faster_path'
+```
+
 Current methods implemented:
 
 |FasterPath Rust Implementation|Ruby 2.3.1 Implementation|Performance Improvement|
