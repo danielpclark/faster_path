@@ -20,6 +20,8 @@ include!("is_blank.rs");
 include!("both_are_blank.rs");
 include!("basename.rs");
 include!("dirname.rs");
+include!("basename_for_chop.rs");
+include!("dirname_for_chop.rs");
 
 // EXAMPLE
 //
