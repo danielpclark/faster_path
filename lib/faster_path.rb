@@ -8,6 +8,7 @@ module FasterPath
     Rust.is_absolute(pth)
   end
 
+  # Spec to Pathname#relative?
   def self.relative?(pth)
     Rust.is_relative(pth)
   end
@@ -17,7 +18,7 @@ module FasterPath
   # This implementation correctly handles blank strings just as Pathname had intended
   # to handle non-path strings.
   def self.chop_basename(pth)
-    d,b = [Rust.dirname(pth), Rust.basename(pth)]
+    d,b = [Rust.dirname_for_chop(pth), Rust.basename_for_chop(pth)]
     [d,b] unless Rust.both_are_blank(d,b)
   end
 
@@ -53,6 +54,8 @@ module FasterPath
     attach_function :both_are_blank, [ :string, :string ], :bool
     attach_function :basename, [ :string ], :string
     attach_function :dirname, [ :string ], :string
+    attach_function :basename_for_chop, [ :string ], :string # decoupling behavior
+    attach_function :dirname_for_chop, [ :string ], :string # decoupling behavior
 
     # EXAMPLE
     #attach_function :one_and_two, [], FromRustArray.by_value
