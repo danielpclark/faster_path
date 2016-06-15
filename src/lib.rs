@@ -5,7 +5,6 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 extern crate libc;
-//extern crate regex;
 
 use std::path::{Path,MAIN_SEPARATOR};
 use libc::c_char;
@@ -13,18 +12,13 @@ use std::ffi::{CStr,CString,OsStr};
 use std::str;
 use std::mem;
 
-// Not including regex in current build so chomp_pathish_regex
-// and basename will be excluded in build
-//include!("tools/chomp_pathish_regex.rs");
-//include!("basename.rs");
-
-
 include!("ruby_string.rs");
 include!("ruby_array.rs");
 include!("is_absolute.rs");
 include!("is_relative.rs");
 include!("is_blank.rs");
 include!("both_are_blank.rs");
+include!("basename.rs");
 include!("dirname.rs");
 include!("basename_for_chop.rs");
 include!("dirname_for_chop.rs");

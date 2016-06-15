@@ -3,9 +3,9 @@ module FasterPath
     refine File do
       def basename(pth)
         FasterPath.basename(pth)
-      end if FasterPath.respond_to? :basename
+      end
     end
-  end unless true # No need to open class when we're not using it yet
+  end 
 
   module RefinePathname
     refine Pathname do
