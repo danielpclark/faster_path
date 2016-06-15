@@ -1,18 +1,10 @@
 #[allow(dead_code)]
 fn rubyish_basename(string: &str, globish_string: &str) -> String {
-  let result = if globish_string.chars().next().unwrap_or("muffins".chars().next().unwrap()).eq(&".".chars().next().unwrap()) {
-    if globish_string == ".*" {
-      let base = string.rsplit_terminator(MAIN_SEPARATOR).nth(0).unwrap_or("");
-      let index = base.rfind(".");
-      let (first, _) = base.split_at(index.unwrap());
-      first
-    } else {
-      if &string[string.len()-globish_string.len()..] == globish_string {
-        &string[0..string.len()-globish_string.len()]
-      } else {
-        string
-      }.rsplit_terminator(MAIN_SEPARATOR).nth(0).unwrap_or("")
-    }
+  let result = if globish_string == ".*" {
+    let base = string.rsplit_terminator(MAIN_SEPARATOR).nth(0).unwrap_or("");
+    let index = base.rfind(".");
+    let (first, _) = base.split_at(index.unwrap());
+    first
   } else {
     if &string[string.len()-globish_string.len()..] == globish_string {
       &string[0..string.len()-globish_string.len()]
