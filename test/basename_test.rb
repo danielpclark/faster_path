@@ -49,4 +49,4 @@ class BasenameTest < Minitest::Test
     assert_equal File.basename('//'),             '/'
     assert_equal File.basename('//dir///base//'), 'base'
   end
-end if FasterPath.respond_to? :basename
+end

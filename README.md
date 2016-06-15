@@ -85,6 +85,7 @@ Current methods implemented:
 |FasterPath Rust Implementation|Ruby 2.3.1 Implementation|Performance Improvement|
 |---|---|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 1234.6% |
+| `FasterPath.basename` | `File.basename` | 31.3% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 46.7% |
 | `FasterPath.relative?` | `Pathname#relative?` | 1262.3% |
 | `FasterPath.blank?` | | |
