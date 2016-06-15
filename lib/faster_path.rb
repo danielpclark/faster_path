@@ -56,7 +56,7 @@ module FasterPath
     attach_function :is_relative, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
     attach_function :both_are_blank, [ :string, :string ], :bool
-    attach_function :basename, [ :string, :string ], :string
+    #attach_function :basename, [ :string, :string ], :string
     attach_function :dirname, [ :string ], :string
     attach_function :basename_for_chop, [ :string ], :string # decoupling behavior
     attach_function :dirname_for_chop, [ :string ], :string # decoupling behavior
