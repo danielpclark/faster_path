@@ -11,7 +11,7 @@ unless find_executable('cargo')
   END { puts "Exiting..."}
 end
 
-Dir.chdir(File.expand_path("../../", File.dirname(__FILE__))) do
+Dir.chdir('../../') do
   system("rake build_src")
   system("rake clean_src")
 end
