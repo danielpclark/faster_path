@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
 [![Tweet This](https://raw.githubusercontent.com/danielpclark/faster_path/master/assets/tweet.png)](https://twitter.com/share?url=https%3A%2F%2Fgithub.com%2Fdanielpclark%2Ffaster_path&via=6ftdan&hashtags=Ruby&text=You%20could%20save%2015%25%20or%20more%20on%20website%20load%20time%20by%20switching%20to%20the%20FasterPath%20gem.)
 
-_Build is currently failing is for the monkey-patch tests only._
+_Build is currently failing for the monkey-patch tests only._
 
 #### As of gem version 0.0.9 this shaves off 66% of my Rails applications page load time.
 
