@@ -9,7 +9,7 @@ class RefinedPathname
 end
 
 class CleanpathAggressiveTest < Minitest::Test
-  def test_clean_aggresive_defaults
+  def test_clean_aggressive_defaults
     assert_equal RefinedPathname.new.cleanpath_aggressive('/')                     , '/'
     assert_equal RefinedPathname.new.cleanpath_aggressive('')                      , '.'
     assert_equal RefinedPathname.new.cleanpath_aggressive('.')                     , '.'
