@@ -21,4 +21,4 @@ class FasterPathBenchmark < Minitest::Benchmark
       end
     end
   end
-end
+end if FasterPath.respond_to? :basename

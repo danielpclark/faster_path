@@ -26,11 +26,9 @@ module FasterPath
     Rust.is_blank(str)
   end
 
-  def self.basename(pth,ext="")
-    v = {"." => "\\.{1}", "*" => "\\w*"}
-    ext = "#{ext.gsub(Regexp.new("[#{v.keys.join}]"), v)}\z"
-    Rust.basename(pth).gsub(Regexp.new(ext),'')
-  end
+  def self.basename(pth, ext="")
+    Rust.basename(pth, ext)
+  end unless true # WAY_TOO_SLOW! 5600X slower
 
   # EXAMPLE
   #def self.one_and_two
@@ -58,7 +56,7 @@ module FasterPath
     attach_function :is_relative, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
     attach_function :both_are_blank, [ :string, :string ], :bool
-    attach_function :basename, [ :string ], :string
+    attach_function :basename, [ :string, :string ], :string
     attach_function :dirname, [ :string ], :string
     attach_function :basename_for_chop, [ :string ], :string # decoupling behavior
     attach_function :dirname_for_chop, [ :string ], :string # decoupling behavior

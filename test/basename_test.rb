@@ -24,7 +24,7 @@ class BasenameTest < Minitest::Test
     assert_equal FasterPath.basename('/'),              '/'
     assert_equal FasterPath.basename('//'),             '/'
     assert_equal FasterPath.basename('//dir///base//'), 'base'
-  end
+  end 
 
   def test_it_does_the_same_as_file_basename
     assert_equal File.basename('/home/gumby/work/ruby.rb'),        'ruby.rb'
@@ -49,4 +49,4 @@ class BasenameTest < Minitest::Test
     assert_equal File.basename('//'),             '/'
     assert_equal File.basename('//dir///base//'), 'base'
   end
-end
+end if FasterPath.respond_to? :basename

@@ -13,23 +13,7 @@ use std::ffi::{CStr,CString,OsStr};
 use std::str;
 use std::mem;
 
-fn pathish_chomp_regex(string: &str, globish_string: &str) -> String {
-  string.to_string()
-}
-
-#[test]
-fn it_chomps_strings_correctly(){
-  assert_eq!(pathish_chomp_regex("",""), "");
-  assert_eq!(pathish_chomp_regex("ruby",""), "ruby");
-  assert_eq!(pathish_chomp_regex("ruby.rb",".rb"), "ruby");
-  assert_eq!(pathish_chomp_regex("ruby.rb",".*"), "ruby");
-  assert_eq!(pathish_chomp_regex(".ruby/ruby.rb",".rb"), ".ruby/ruby");
-  assert_eq!(pathish_chomp_regex(".ruby/ruby.rb.swp",".rb"), ".ruby/ruby.rb.swp");
-  assert_eq!(pathish_chomp_regex(".ruby/ruby.rb.swp",".swp"), ".ruby/ruby.rb");
-  assert_eq!(pathish_chomp_regex(".ruby/ruby.rb.swp",".*"), ".ruby/ruby.rb");
-}
-
-
+include!("tools/chomp_pathish_regex.rs");
 include!("ruby_string.rs");
 include!("ruby_array.rs");
 include!("is_absolute.rs");

@@ -3,8 +3,8 @@ module FasterPath
     ::File.class_eval do
       def basename(pth)
         FasterPath.basename(pth)
-      end
-    end
+      end if FasterPath.respond_to? :basename
+    end unless true # No need to open class when we're not using it yet
 
     ::Pathname.class_eval do
       def absolute?

@@ -5,7 +5,7 @@ class RefinedFile
   def basename(*args)
     File.basename(*args)
   end 
-end
+end if FasterPath.respond_to? :basename
 
 class BasenameTest < Minitest::Test
   # Tests copied from https://searchcode.com/codesearch/view/12785140/
@@ -33,4 +33,4 @@ class BasenameTest < Minitest::Test
     assert_equal(RefinedFile.new.basename('//'),             '/',    'File.basename regression 3')
     assert_equal(RefinedFile.new.basename('//dir///base//'), 'base', 'File.basename regression 4')
   end
-end
+end if FasterPath.respond_to? :basename
