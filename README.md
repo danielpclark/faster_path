@@ -48,6 +48,33 @@ Running `stackprof tmp/2016-06-09T00:42:10-04:00-stackprof-cpu-myapp.dump`. Exec
        108   (1.5%)          14   (0.2%)     ActionView::Helpers::AssetUrlHelper#asset_path
 ```
 
+Here are some addtional stats.  From Rails loading to my home page, these methods are called _(not directly, Rails & gems call them)_ this many times.  And the home page has minimal content.
+```ruby
+Pathname#to_s called 29172 times.
+Pathname#<=> called 24963 times.
+Pathname#chop_basename called 24456 times
+Pathname#initialize called 23103 times.
+File#initialize called 23102 times.
+Pathname#absolute? called 4840 times.
+Pathname#+ called 4606 times.
+Pathname#plus called 4606 times.
+Pathname#join called 4600 times.
+Pathname#extname called 4291 times.
+Pathname#hash called 4207 times.
+Pathname#to_path called 2706 times.
+Pathname#directory? called 2396 times.
+Pathname#entries called 966 times.
+Dir#each called 966 times.
+Pathname#basename called 424 times.
+Pathname#prepend_prefix called 392 times.
+Pathname#cleanpath called 392 times.
+Pathname#cleanpath_aggressive called 392 times.
+Pathname#split called 161 times.
+Pathname#open called 153 times.
+Pathname#exist? called 152 times.
+Pathname#sub called 142 times.
+```
+
 ## Status
 
 * Rust compilation is working
