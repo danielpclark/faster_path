@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
 [![Tweet This](https://raw.githubusercontent.com/danielpclark/faster_path/master/assets/tweet.png)](https://twitter.com/share?url=https%3A%2F%2Fgithub.com%2Fdanielpclark%2Ffaster_path&via=6ftdan&hashtags=Ruby&text=You%20could%20save%2015%25%20or%20more%20on%20website%20load%20time%20by%20switching%20to%20the%20FasterPath%20gem.)
 
-#### As of gem version 0.0.9 this shaves off 66% of my Rails applications page load time.
+#### This gem shaves off more than 30% of my Rails applications page load time.
 
 The primary **GOAL** of this project is to improve performance in the most heavily used areas of Ruby as
 path relation and file lookup is currently a huge bottleneck in performance.  As this is the case the
