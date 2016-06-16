@@ -8,7 +8,7 @@ extern crate libc;
 
 use std::path::{Path,MAIN_SEPARATOR};
 use libc::c_char;
-use std::ffi::{CStr,CString,OsStr};
+use std::ffi::{CStr,CString};
 use std::str;
 use std::mem;
 
