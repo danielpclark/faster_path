@@ -12,14 +12,19 @@ pub extern fn dirname_for_chop(string: *const c_char) -> *const c_char {
     return string
   }
 
-  let path = Path::new(r_str).parent().unwrap_or(Path::new(""));
+  let mut offset = 0;
+  let mut trailing_slashes = r_str.chars().rev();
+  loop {
+    match trailing_slashes.next() {
+      Some(MAIN_SEPARATOR) => { offset = offset + 1 },
+      _                    => { break               },
+    }
+  }
+  
+  let r_str = &r_str[0..r_str.len()-offset];
 
-  let out_str = if !path.to_str().unwrap().is_empty() {
-    format!("{}{}", path.to_str().unwrap(), MAIN_SEPARATOR)
-  } else {
-    format!("{}", path.to_str().unwrap())
-  };
+  let base = r_str.rsplit_terminator(MAIN_SEPARATOR).nth(0).unwrap_or("");
 
-  let output = CString::new(out_str).unwrap();
+  let output = CString::new(&r_str[0..r_str.len()-base.len()]).unwrap();
   output.into_raw()
 }
