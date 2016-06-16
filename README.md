@@ -16,7 +16,7 @@ be a sledge hammer ;-)
 
 ## Why
 
-I did a check on Rails on what methods were being called the most and where the application spend
+I read a blog post about the new Sprockets 3.0 series being faster than the 2.0 series so I tried it out.  Not only was it not faster but it made my website take 31.8% longer to load.  So I reverted back to the 2.0 series and I did a check on Rails on what methods were being called the most and where the application spends
 most of its time.  It turns out roughly 80% _(as far as I can tell)_ of the time spent and calls made
 are file Path handling.  This is shocking, but it only gets worse when handling assets.  **That is
 why we need to deal with these load heavy methods in the most efficient manner!**
