@@ -81,7 +81,7 @@ If you want to see the best results in Rails with this gem you will likely need 
 
 I've said this about Sprockets but this required two other gems to be updated as well.  These are the gems and versions I upgraded and consider group 1 (Sprockets 2) and group 2 (Sprockets 3).  My data is based on method calls rather than source code.
 
-|Sprocket 2 Group|Sprockets 3 Group|
+|Sprockets 2 Group|Sprockets 3 Group|
 |:---:|:---:|
 |sprockets 2.12.4|sprockets 3.6|
 |sass 3.2.19|sass 5.0.4|
