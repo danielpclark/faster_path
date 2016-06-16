@@ -108,6 +108,8 @@ And then execute:
 Or install it yourself as:
 
     $ gem install faster_path
+    
+**MAC USERS:** At the moment Mac users need to install the extension manualy.  Goto the gem directory and run `cargo build --release` .  There is an issue opened for this and I'm looking for people who have Macs yo help on this.
 
 ## Usage
 
