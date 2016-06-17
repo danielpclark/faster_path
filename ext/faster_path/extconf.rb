@@ -12,8 +12,8 @@ unless find_executable('cargo')
 end
 
 Dir.chdir(File.expand_path("../../", File.dirname(__FILE__))) do
-  system("rake build_src")
-  system("rake clean_src")
+  %x(rake build_src)
+  %x(rake clean_src)
 end
 
 create_makefile('faster_path/dummy')
