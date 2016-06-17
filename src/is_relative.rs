@@ -1,3 +1,8 @@
+use std::path::MAIN_SEPARATOR;
+use libc::c_char;
+use std::ffi::{CStr};
+use std::str;
+
 #[no_mangle]
 pub extern fn is_relative(string: *const c_char) -> bool {
   let c_str = unsafe {

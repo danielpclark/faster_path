@@ -1,3 +1,8 @@
+use std::path::MAIN_SEPARATOR;
+use libc::c_char;
+use std::ffi::{CStr,CString};
+use std::str;
+
 #[no_mangle]
 pub extern fn dirname_for_chop(string: *const c_char) -> *const c_char {
   let c_str = unsafe {

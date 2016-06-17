@@ -1,3 +1,8 @@
+use std::path::{Path,MAIN_SEPARATOR};
+use libc::c_char;
+use std::ffi::{CStr,CString};
+use std::str;
+
 #[no_mangle]
 pub extern fn dirname(string: *const c_char) -> *const c_char {
   let c_str = unsafe {

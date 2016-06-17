@@ -6,22 +6,16 @@
 // copied, modified, or distributed except according to those terms.
 extern crate libc;
 
-use std::path::{Path,MAIN_SEPARATOR};
-use libc::c_char;
-use std::ffi::{CStr,CString};
-use std::str;
-use std::mem;
-
-include!("ruby_string.rs");
-include!("ruby_array.rs");
-include!("is_absolute.rs");
-include!("is_relative.rs");
-include!("is_blank.rs");
-include!("both_are_blank.rs");
-include!("basename.rs");
-include!("dirname.rs");
-include!("basename_for_chop.rs");
-include!("dirname_for_chop.rs");
+pub mod ruby_string;
+pub mod ruby_array;
+pub mod is_absolute;
+pub mod is_relative;
+pub mod is_blank;
+pub mod both_are_blank;
+pub mod basename;
+pub mod dirname;
+pub mod basename_for_chop;
+pub mod dirname_for_chop;
 
 // EXAMPLE
 //

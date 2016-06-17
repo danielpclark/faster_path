@@ -1,3 +1,8 @@
+use std::path::MAIN_SEPARATOR;
+use libc::c_char;
+use std::ffi::{CStr,CString};
+use std::str;
+
 #[allow(dead_code)]
 fn rubyish_basename(string: &str, globish_string: &str) -> String {
   let result = if globish_string == ".*" {

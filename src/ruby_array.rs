@@ -1,3 +1,6 @@
+use libc;
+use std::mem;
+
 #[repr(C)]
 pub struct RubyArray {
   len: libc::size_t,
