@@ -13,6 +13,10 @@ module FasterPath
         FasterPath.absolute?(@path)
       end
 
+      def directory?
+        FasterPath.directory?(@path)
+      end
+
       def chop_basename(pth)
         FasterPath.chop_basename(pth)
       end

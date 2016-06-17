@@ -12,7 +12,11 @@ class MonkeyPatchesTest < Minitest::Test
   end
 
   def test_it_redefines_absolute?
-    assert @path.method(:absolute?).source[/FasterPath/] 
+    assert @path.method(:absolute?).source[/FasterPath/]
+  end
+
+  def test_it_redefines_directory?
+    assert @path.method(:directory?).source[/FasterPath/]
   end
 
   def test_it_redefines_chop_basename
