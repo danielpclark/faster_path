@@ -26,4 +26,8 @@ class MonkeyPatchesTest < Minitest::Test
   def test_it_redefines_relative?
     assert @path.method(:relative?).source[/FasterPath/] 
   end
+
+  def test_it_redefines_add_trailing_separator
+    assert @path.method(:add_trailing_separator).source[/FasterPath/]
+  end
 end if ENV['TEST_MONKEYPATCHES'].to_s['true']

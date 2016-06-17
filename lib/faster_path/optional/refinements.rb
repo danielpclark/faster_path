@@ -25,6 +25,11 @@ module FasterPath
       def relative?
         FasterPath.relative?(@path)
       end
+
+      def add_trailing_separator(pth)
+        FasterPath.add_trailing_separator(pth)
+      end
+      private :add_trailing_separator
     end
   end
 end

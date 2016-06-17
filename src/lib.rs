@@ -17,6 +17,7 @@ pub mod basename;
 pub mod dirname;
 pub mod basename_for_chop;
 pub mod dirname_for_chop;
+pub mod add_trailing_separator;
 
 // EXAMPLE
 //
