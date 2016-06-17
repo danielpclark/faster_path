@@ -9,6 +9,7 @@ extern crate libc;
 pub mod ruby_string;
 pub mod ruby_array;
 pub mod is_absolute;
+pub mod is_directory;
 pub mod is_relative;
 pub mod is_blank;
 pub mod both_are_blank;

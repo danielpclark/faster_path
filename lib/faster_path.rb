@@ -8,6 +8,11 @@ module FasterPath
     Rust.is_absolute(pth)
   end
 
+  # Spec to Pathname#directory?
+  def self.directory?(pth)
+    Rust.is_directory(pth)
+  end
+
   # Spec to Pathname#relative?
   def self.relative?(pth)
     Rust.is_relative(pth)
@@ -53,6 +58,7 @@ module FasterPath
     end
 
     attach_function :is_absolute, [ :string ], :bool
+    attach_function :is_directory, [ :string ], :bool
     attach_function :is_relative, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
     attach_function :both_are_blank, [ :string, :string ], :bool
