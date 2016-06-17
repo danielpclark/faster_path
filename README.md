@@ -130,6 +130,7 @@ Current methods implemented:
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 66.0% |
 | `FasterPath.relative?` | `Pathname#relative?` | 1262.3% |
 | `FasterPath.blank?` | | |
+| `FasterPath.directory?` | `Pathname#directory?` | 20% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch 
