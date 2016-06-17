@@ -1,3 +1,7 @@
+use libc::c_char;
+use std::ffi::{CStr};
+use std::str;
+
 #[no_mangle]
 pub extern fn is_blank(string: *const c_char) -> bool {
   let c_str = unsafe {

@@ -1,3 +1,7 @@
+use libc::c_char;
+use std::ffi::{CStr,CString};
+use std::str;
+
 pub struct RubyString;
 
 // Coercing strs into Strings has some loss of performance
