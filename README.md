@@ -100,7 +100,7 @@ Ensure Rust is installed:
 [Rust Downloads](https://www.rust-lang.org/downloads.html)
 
 ```
-curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=stable
+curl -sSf https://static.rust-lang.org/rustup.sh | sh
 ```
 
 Add this line to your application's Gemfile:
