@@ -53,7 +53,7 @@ fn it_chomps_strings_correctly(){
   assert_eq!(rubyish_basename("asdf/asdf.rb.swp", "rb.swp")    , "asdf.");
 }
 
-//#[no_mangle]
+#[no_mangle]
 pub extern fn basename(str_pth: *const c_char, comp_ext: *const c_char) -> *const c_char {
   let c_str1 = unsafe {
     assert!(!str_pth.is_null());
