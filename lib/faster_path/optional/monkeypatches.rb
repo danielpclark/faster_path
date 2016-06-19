@@ -3,7 +3,11 @@ module FasterPath
     ::File.class_eval do
       def basename(pth)
         FasterPath.basename(pth)
-      end 
+      end
+
+      def extname(pth)
+        FasterPath.extname(pth)
+      end
     end 
 
     ::Pathname.class_eval do
