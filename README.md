@@ -132,6 +132,7 @@ Current methods implemented:
 | `FasterPath.blank?` | | |
 | `FasterPath.directory?` | `Pathname#directory?` | 20% |
 | `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 63.8% |
+| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 61.2% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch 
