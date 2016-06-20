@@ -125,13 +125,13 @@ Current methods implemented:
 
 |FasterPath Rust Implementation|Ruby 2.3.1 Implementation|Performance Improvement|
 |---|---|:---:|
-| `FasterPath.absolute?` | `Pathname#absolute?` | 1234.6% |
-| `FasterPath.basename` | `File.basename` | 31.3% |
-| `FasterPath.chop_basename` | `Pathname#chop_basename` | 66.0% |
-| `FasterPath.relative?` | `Pathname#relative?` | 1262.3% |
+| `FasterPath.absolute?` | `Pathname#absolute?` | 93.9% |
+| `FasterPath.basename` | `File.basename` | -43.0% (regression!)|
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 50.6% |
+| `FasterPath.relative?` | `Pathname#relative?` | 93.2% |
 | `FasterPath.blank?` | | |
-| `FasterPath.directory?` | `Pathname#directory?` | 20% |
-| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 63.8% |
+| `FasterPath.directory?` | `Pathname#directory?` | 25.5% |
+| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 46.8% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch 
