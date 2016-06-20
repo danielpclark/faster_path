@@ -32,7 +32,7 @@ module FasterPath
   end
 
   def self.basename(pth, ext="")
-    Rust.basename(pth, ext)
+    Rust.basename(pth, ext) unless (pth || ext) 
   end 
 
   def self.add_trailing_separator(pth)
