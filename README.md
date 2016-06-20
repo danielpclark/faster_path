@@ -106,7 +106,7 @@ curl -sSf https://static.rust-lang.org/rustup.sh | sh
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path', '~> 0.1.0'
+gem 'faster_path', '~> 0.1'
 ```
 
 And then execute:
@@ -126,7 +126,7 @@ Current methods implemented:
 |FasterPath Rust Implementation|Ruby 2.3.1 Implementation|Performance Improvement|
 |---|---|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 93.9% |
-| `FasterPath.basename` | `File.basename` | -43.0% (regression!)|
+| `FasterPath.basename` | `File.basename` | 75% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 50.6% |
 | `FasterPath.relative?` | `Pathname#relative?` | 93.2% |
 | `FasterPath.blank?` | | |
