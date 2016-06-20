@@ -1,6 +1,10 @@
 require 'test_helper'
 
 class AbsoluteTest < Minitest::Test
+  def test_it_safely_takes_nil
+    refute FasterPath.absolute? nil
+  end
+
   def test_it_determins_absolute_path
     assert FasterPath.absolute?("/hello")
     refute FasterPath.absolute?("goodbye")

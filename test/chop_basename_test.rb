@@ -1,6 +1,10 @@
 require 'test_helper'
 
 class ChopBasenameTest < Minitest::Test
+  def test_nil_inputs
+    assert_nil FasterPath.chop_basename(nil) 
+  end
+
   def test_it_chops_basename_
     result = FasterPath.chop_basename("/hello/world.txt")
     assert_equal result.length, 2

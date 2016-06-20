@@ -1,6 +1,10 @@
 require 'test_helper'
 
 class AddTrailingSeparatorTest < Minitest::Test
+  def test_it_handles_nil
+    refute FasterPath.add_trailing_separator nil
+  end
+
   def test_add_trailing_separator
     assert_equal FasterPath.add_trailing_separator(''), ''
     assert_equal FasterPath.add_trailing_separator('/'), '/'

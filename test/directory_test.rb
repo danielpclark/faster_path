@@ -1,6 +1,10 @@
 require 'test_helper'
 
 class DirectoryTest < Minitest::Test
+  def test_nil_for_directory?
+    refute FasterPath.directory? nil
+  end
+
   def test_of_As
     result_pair = ->str{
       [

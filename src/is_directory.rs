@@ -6,8 +6,9 @@ use std::path::Path;
 #[no_mangle]
 pub extern fn is_directory(string: *const c_char) -> bool {
   let c_str = unsafe {
-    assert!(!string.is_null());
-
+    if string.is_null() {
+      return false;
+    }
     CStr::from_ptr(string)
   };
 

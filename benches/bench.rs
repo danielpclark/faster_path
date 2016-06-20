@@ -57,7 +57,9 @@ fn ruby_to_rust_from_c_char(b: &mut Bencher){
   // USE THIS METHOD!!! (19ns)
   b.iter(|| { 
     let c_str = unsafe {
-      assert!(!s.is_null());
+      if s.is_null() {
+        return "";
+      }
       CStr::from_ptr(s)
     };
     str::from_utf8(c_str.to_bytes()).unwrap_or("")
