@@ -56,11 +56,15 @@ fn it_chomps_strings_correctly(){
 #[no_mangle]
 pub extern fn basename(str_pth: *const c_char, comp_ext: *const c_char) -> *const c_char {
   let c_str1 = unsafe {
-    assert!(!str_pth.is_null());
+    if str_pth.is_null(){
+      return str_pth;
+    } 
     CStr::from_ptr(str_pth)
   };
   let c_str2 = unsafe {
-    assert!(!comp_ext.is_null());
+    if comp_ext.is_null() {
+      return str_pth;
+    }
     CStr::from_ptr(comp_ext)
   };
   let string         = str::from_utf8(c_str1.to_bytes()).unwrap();
