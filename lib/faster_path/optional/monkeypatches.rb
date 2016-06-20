@@ -1,3 +1,5 @@
+require 'pathname'
+
 module FasterPath
   def self.sledgehammer_everything!
     ::File.class_eval do

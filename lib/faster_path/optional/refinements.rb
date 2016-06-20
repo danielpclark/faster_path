@@ -1,3 +1,5 @@
+require 'pathname'
+
 module FasterPath
   module RefineFile
     refine File do

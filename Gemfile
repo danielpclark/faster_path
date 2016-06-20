@@ -1,4 +1,7 @@
-source 'https://rubygems.org'
+source 'https://rubygems.org' do
+  # Specify your gem's dependencies in faster_path.gemspec
+  gemspec
+end
 
-# Specify your gem's dependencies in faster_path.gemspec
-gemspec
+# https://github.com/ruby/spec dependencies
+eval_gemfile File.expand_path('spec/ruby_spec/Gemfile', File.dirname(__FILE__))
