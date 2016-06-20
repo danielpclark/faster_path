@@ -1,6 +1,10 @@
 require 'test_helper'
 
 class RelativeTest < Minitest::Test
+  def test_it_takes_nil_safely
+    refute FasterPath.relative? nil
+  end
+
   def test_it_knows_its_relativeness
     refute FasterPath.relative? '/'
     refute FasterPath.relative? '/a'
