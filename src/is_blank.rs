@@ -5,8 +5,9 @@ use std::str;
 #[no_mangle]
 pub extern fn is_blank(string: *const c_char) -> bool {
   let c_str = unsafe {
-    assert!(!string.is_null());
-
+    if string.is_null() {
+      return true;
+    }
     CStr::from_ptr(string)
   };
 
