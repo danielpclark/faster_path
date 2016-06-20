@@ -6,8 +6,9 @@ use std::str;
 #[no_mangle]
 pub extern fn dirname_for_chop(string: *const c_char) -> *const c_char {
   let c_str = unsafe {
-    assert!(!string.is_null());
-
+    if string.is_null() {
+      return string
+    }
     CStr::from_ptr(string)
   };
 
