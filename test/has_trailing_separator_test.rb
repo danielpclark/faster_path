@@ -51,4 +51,17 @@ class HasTrailingSeparatorTest < Minitest::Test
     assert_equal(*result_pair.("foor for thought"))
     assert_equal(*result_pair.("2gb63b@%TY25GHawefb3/g3qb"))
   end
+
+  def test_has_trailing_separator_with_nil
+    assert_equal test_for_error { FasterPath.has_trailing_separator?(nil) }, 'OK'
+  end
+
+  private
+
+  def test_for_error
+    yield if block_given?
+    'OK'
+  rescue
+    $!
+  end
 end
