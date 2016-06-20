@@ -3,8 +3,8 @@ module FasterPath
     ::File.class_eval do
       def basename(pth)
         FasterPath.basename(pth)
-      end 
-    end 
+      end
+    end
 
     ::Pathname.class_eval do
       def absolute?
@@ -24,11 +24,10 @@ module FasterPath
         FasterPath.relative?(@path)
       end
 
-     def add_trailing_separator(pth)
+      def add_trailing_separator(pth)
         FasterPath.add_trailing_separator(pth)
-     end
-     private :add_trailing_separator
+      end
+      private :add_trailing_separator
     end
   end
 end
-

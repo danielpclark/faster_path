@@ -1,5 +1,5 @@
 require 'test_helper'
-require "faster_path/optional/refinements"
+require 'faster_path/optional/refinements'
 
 class RefinedPathname
   using FasterPath::RefinePathname
@@ -10,7 +10,7 @@ end
 
 class DirectoryRefinementTest < Minitest::Test
   def test_refines_pathname_directory?
-    assert RefinedPathname.new.directory?("/")
+    assert RefinedPathname.new.directory?('/')
   end
 
   def test_nil_behaves_the_same

@@ -5,7 +5,7 @@ module FasterPath
         FasterPath.basename(pth)
       end
     end
-  end 
+  end
 
   module RefinePathname
     refine Pathname do
