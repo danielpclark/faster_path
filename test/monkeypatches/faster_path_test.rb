@@ -33,7 +33,7 @@ class MonkeyPatchesTest < Minitest::Test
     end
 
     def test_it_redefines_has_trailing_separator
-      assert @path.method(:has_trailing_separator).source[/FasterPath/]
+      assert @path.method(:has_trailing_separator?).source[/FasterPath/]
     end
   else
     def test_it_redefines_absolute?
@@ -57,7 +57,7 @@ class MonkeyPatchesTest < Minitest::Test
     end
 
     def test_it_redefines_has_trailing_separator
-      refute @path.method(:has_trailing_separator).source[/FasterPath/]
+      refute @path.method(:has_trailing_separator?).source[/FasterPath/]
     end
   end
 end
