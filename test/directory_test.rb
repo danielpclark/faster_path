@@ -6,61 +6,59 @@ class DirectoryTest < Minitest::Test
   end
 
   def test_of_As
-    result_pair = ->str{
+    result_pair = lambda do |str|
       [
         Pathname.new(str).send(:directory?),
         FasterPath.directory?(str)
       ]
-    }
-    assert_equal( *result_pair.("aa/a//a")                 )
-    assert_equal( *result_pair.("/aaa/a//a")               )
-    assert_equal( *result_pair.("/aaa/a//a/a")             )
-    assert_equal( *result_pair.("/aaa/a//a/a")             )
-    assert_equal( *result_pair.("a//aaa/a//a/a")           )
-    assert_equal( *result_pair.("a//aaa/a//a/aaa")         )
-    assert_equal( *result_pair.("/aaa/a//a/aaa/a")         )
-    assert_equal( *result_pair.("a//aaa/a//a/aaa/a")       )
-    assert_equal( *result_pair.("a//aaa/a//a/aaa////")     )
-    assert_equal( *result_pair.("a/a//aaa/a//a/aaa/a")     )
-    assert_equal( *result_pair.("////a//aaa/a//a/aaa/a")   )
-    assert_equal( *result_pair.("////a//aaa/a//a/aaa////") )
+    end
+    assert_equal(*result_pair.call('aa/a//a'))
+    assert_equal(*result_pair.call('/aaa/a//a'))
+    assert_equal(*result_pair.call('/aaa/a//a/a'))
+    assert_equal(*result_pair.call('/aaa/a//a/a'))
+    assert_equal(*result_pair.call('a//aaa/a//a/a'))
+    assert_equal(*result_pair.call('a//aaa/a//a/aaa'))
+    assert_equal(*result_pair.call('/aaa/a//a/aaa/a'))
+    assert_equal(*result_pair.call('a//aaa/a//a/aaa/a'))
+    assert_equal(*result_pair.call('a//aaa/a//a/aaa////'))
+    assert_equal(*result_pair.call('a/a//aaa/a//a/aaa/a'))
+    assert_equal(*result_pair.call('////a//aaa/a//a/aaa/a'))
+    assert_equal(*result_pair.call('////a//aaa/a//a/aaa////'))
   end
-
 
   def test_of_Bs
-    result_pair = ->str{
+    result_pair = lambda do |str|
       [
         Pathname.new(str).send(:directory?),
         FasterPath.directory?(str)
       ]
-    }
-    assert_equal( *result_pair.(".")                        )
-    assert_equal( *result_pair.(".././")                    )
-    assert_equal( *result_pair.(".///..")                   )
-    assert_equal( *result_pair.("/././/")                   )
-    assert_equal( *result_pair.("//../././")                )
-    assert_equal( *result_pair.(".///.../..")               )
-    assert_equal( *result_pair.("/././/.//.")               )
-    assert_equal( *result_pair.("/...//../././")            )
-    assert_equal( *result_pair.("/..///.../..//")           )
-    assert_equal( *result_pair.("/./././/.//...")           )
-    assert_equal( *result_pair.("/...//.././././/.")        )
-    assert_equal( *result_pair.("./../..///.../..//")       )
-    assert_equal( *result_pair.("///././././/.//...")       )
-    assert_equal( *result_pair.("./../..///.../..//././")   )
-    assert_equal( *result_pair.("///././././/.//....///")   )
+    end
+    assert_equal(*result_pair.call('.'))
+    assert_equal(*result_pair.call('.././'))
+    assert_equal(*result_pair.call('.///..'))
+    assert_equal(*result_pair.call('/././/'))
+    assert_equal(*result_pair.call('//../././'))
+    assert_equal(*result_pair.call('.///.../..'))
+    assert_equal(*result_pair.call('/././/.//.'))
+    assert_equal(*result_pair.call('/...//../././'))
+    assert_equal(*result_pair.call('/..///.../..//'))
+    assert_equal(*result_pair.call('/./././/.//...'))
+    assert_equal(*result_pair.call('/...//.././././/.'))
+    assert_equal(*result_pair.call('./../..///.../..//'))
+    assert_equal(*result_pair.call('///././././/.//...'))
+    assert_equal(*result_pair.call('./../..///.../..//././'))
+    assert_equal(*result_pair.call('///././././/.//....///'))
   end
 
-
   def test_of_Cs
-    result_pair = ->str{
+    result_pair = lambda do |str|
       [
         Pathname.new(str).send(:directory?),
         FasterPath.directory?(str)
       ]
-    }
-    assert_equal( *result_pair.("http://www.example.com")   )
-    assert_equal( *result_pair.("foor for thought")         )
-    assert_equal( *result_pair.("2gb63b@%TY25GHawefb3/g3qb"))
+    end
+    assert_equal(*result_pair.call('http://www.example.com'))
+    assert_equal(*result_pair.call('foor for thought'))
+    assert_equal(*result_pair.call('2gb63b@%TY25GHawefb3/g3qb'))
   end
 end

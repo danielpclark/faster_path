@@ -1,13 +1,13 @@
-require "test_helper"
-require "minitest/benchmark"
+require 'test_helper'
+require 'minitest/benchmark'
 
 class FasterPathBenchmark < Minitest::Benchmark
   def bench_rust_blank?
-    assert_performance_constant do |n|
+    assert_performance_constant do |_n|
       100.times do
-        FasterPath.blank? "world.txt"
-        FasterPath.blank? "  "
-        FasterPath.blank? ""
+        FasterPath.blank? 'world.txt'
+        FasterPath.blank? '  '
+        FasterPath.blank? ''
       end
     end
   end

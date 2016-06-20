@@ -1,5 +1,5 @@
 require 'test_helper'
-require "faster_path/optional/refinements"
+require 'faster_path/optional/refinements'
 # At the moment refinements don't allow introspection
 
 class RefinedPathname
@@ -7,12 +7,12 @@ class RefinedPathname
   def relative?(v)
     Pathname.new(v).relative?
   end
-end 
+end
 
 class RelativeRefinementTest < Minitest::Test
   def test_refines_pathname_relative?
-    refute RefinedPathname.new.relative?("/")
-  end 
+    refute RefinedPathname.new.relative?('/')
+  end
 
   def test_nil_behaves_the_same
     assert_raises(TypeError) { RefinedPathname.new.relative?(nil) }

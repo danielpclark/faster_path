@@ -21,10 +21,10 @@ pub mod add_trailing_separator;
 
 // EXAMPLE
 //
-//#[no_mangle]
-//pub extern fn one_and_two() -> RubyArray {
+// #[no_mangle]
+// pub extern fn one_and_two() -> RubyArray {
 //  let mut words = vec![];
 //  words.push(RubyString::to_ruby(&"one".to_string()));
 //  words.push(RubyString::to_ruby(&"two".to_string()));
 //  RubyArray::from_vec(words)
-//}
+// }
