@@ -53,15 +53,6 @@ class HasTrailingSeparatorTest < Minitest::Test
   end
 
   def test_has_trailing_separator_with_nil
-    assert_equal test_for_error { FasterPath.has_trailing_separator?(nil) }, 'OK'
-  end
-
-  private
-
-  def test_for_error
-    yield if block_given?
-    'OK'
-  rescue
-    $!
+    refute FasterPath.has_trailing_separator?(nil)
   end
 end
