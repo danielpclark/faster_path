@@ -2,6 +2,7 @@
 [![Gem Version](https://badge.fury.io/rb/faster_path.svg)](https://badge.fury.io/rb/faster_path)
 [![Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
 [![Tweet This](https://raw.githubusercontent.com/danielpclark/faster_path/master/assets/tweet.png)](https://twitter.com/share?url=https%3A%2F%2Fgithub.com%2Fdanielpclark%2Ffaster_path&via=6ftdan&hashtags=Ruby&text=You%20could%20save%2015%25%20or%20more%20on%20website%20page%20load%20time%20by%20switching%20to%20the%20FasterPath%20gem.)
+[New Wiki Up!](https://github.com/danielpclark/faster_path/wiki)
 
 #### This gem shaves off more than 30% of my Rails application page load time.
 
