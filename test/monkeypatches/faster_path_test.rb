@@ -7,9 +7,9 @@ if ENV['TEST_MONKEYPATCHES'].to_s['true']
 end
 
 class MonkeyPatchesTest < Minitest::Test
-    def setup
-      @path = Pathname.new(".")
-    end
+  def setup
+    @path = Pathname.new(".")
+  end
 
   if ENV['TEST_MONKEYPATCHES'].to_s['true']
     def test_it_redefines_absolute?
@@ -31,6 +31,10 @@ class MonkeyPatchesTest < Minitest::Test
     def test_it_redefines_add_trailing_separator
       assert @path.method(:add_trailing_separator).source[/FasterPath/]
     end
+
+    def test_it_redefines_has_trailing_separator
+      assert @path.method(:has_trailing_separator?).source[/FasterPath/]
+    end
   else
     def test_it_redefines_absolute?
       refute @path.method(:absolute?).source[/FasterPath/]
@@ -51,5 +55,9 @@ class MonkeyPatchesTest < Minitest::Test
     def test_it_redefines_add_trailing_separator
       refute @path.method(:add_trailing_separator).source[/FasterPath/]
     end
-  end 
+
+    def test_it_redefines_has_trailing_separator
+      refute @path.method(:has_trailing_separator?).source[/FasterPath/]
+    end
+  end
 end
