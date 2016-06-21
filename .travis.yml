@@ -10,4 +10,4 @@ before_install:
   - gem install bundler -v 1.12.5
   - curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
   - bundle && bundle exec rake build_src && rake clean_src
-script: bundle exec rake test
+script: WITH_REGRESSION=true bundle exec rake test
