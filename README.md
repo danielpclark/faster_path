@@ -169,6 +169,8 @@ Whenever feasible implement it in Rust.
 After checking out the repo, make sure you have Rust installed.  Then run `bundle && rake build_lib` .
 Then, run `rake test` to run the tests, and `rake bench` for benchmarks.
 
+Learn and share performance tips on the [wiki](https://github.com/danielpclark/faster_path/wiki)!
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/danielpclark/faster_path.
