@@ -3,6 +3,14 @@ require 'pathname'
 require "ffi"
 
 module FasterPath
+  def self.rust_arch_bits
+    Rust.rust_arch_bits
+  end
+
+  def self.ruby_arch_bits
+    1.size * 8
+  end
+
   # Spec to Pathname#absolute?
   def self.absolute?(pth)
     Rust.is_absolute(pth)
@@ -69,6 +77,7 @@ module FasterPath
       end
     end
 
+    attach_function :rust_arch_bits, [], :int32
     attach_function :is_absolute, [ :string ], :bool
     attach_function :is_directory, [ :string ], :bool
     attach_function :is_relative, [ :string ], :bool
