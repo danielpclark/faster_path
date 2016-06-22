@@ -21,9 +21,9 @@ pub extern "C" fn extname(string: *const c_char) -> *const c_char {
     let mut separator_index = 0;
     loop {
         let char = chars_iter.next();
-        if (char.is_some()) {
-            if (char.unwrap().1 != MAIN_SEPARATOR) {
-                if (char.unwrap().1 == '.') {
+        if char.is_some() {
+            if char.unwrap().1 != MAIN_SEPARATOR {
+                if char.unwrap().1 == '.' {
                     dot_index = char.unwrap().0;
                     reversed_ext.push(char.unwrap().1 as u8);
                     break;
@@ -39,11 +39,11 @@ pub extern "C" fn extname(string: *const c_char) -> *const c_char {
         }
     }
 
-    if (separator_index >= dot_index) {
+    if separator_index >= dot_index {
         return CString::new("").unwrap().into_raw();
     }
 
-    if (reversed_ext.len() == 1) {
+    if reversed_ext.len() == 1 {
         return CString::new("").unwrap().into_raw();
     }
 
