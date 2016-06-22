@@ -43,6 +43,10 @@ module FasterPath
     Rust.has_trailing_separator(pth)
   end
 
+  def self.extname(pth)
+    Rust.extname(pth)
+  end
+
   # EXAMPLE
   #def self.one_and_two
   #  Rust.one_and_two.to_a
@@ -76,6 +80,7 @@ module FasterPath
     attach_function :dirname_for_chop, [ :string ], :string # decoupling behavior
     attach_function :add_trailing_separator, [ :string ], :string
     attach_function :has_trailing_separator, [ :string ], :bool
+    attach_function :extname, [ :string ], :string
 
     # EXAMPLE
     #attach_function :one_and_two, [], FromRustArray.by_value

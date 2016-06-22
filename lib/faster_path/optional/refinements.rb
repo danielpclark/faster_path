@@ -4,6 +4,10 @@ module FasterPath
       def basename(pth)
         FasterPath.basename(pth)
       end
+
+      def extname(pth)
+        FasterPath.extname(pth)
+      end
     end
   end 
 
