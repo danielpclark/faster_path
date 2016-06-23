@@ -38,4 +38,9 @@ Rake::TestTask.new(:bench) do |t|
   t.pattern = 'test/**/*_benchmark.rb'
 end
 
+Rake::TestTask.new(:pbench) do |t|
+  t.libs = %w(lib test test/pbench)
+  t.pattern = 'test/pbench/pbench_suite.rb'
+end
+
 task :default => :test
