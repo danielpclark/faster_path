@@ -11,3 +11,4 @@
 mkmf.log
 **/*.swp
 **/*.gem
+.idea
