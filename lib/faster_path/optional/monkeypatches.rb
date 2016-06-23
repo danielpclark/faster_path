@@ -1,14 +1,14 @@
 module FasterPath
   def self.sledgehammer_everything!
     ::File.class_eval do
-      def basename(pth)
+      def self.basename(pth)
         FasterPath.basename(pth)
-      end
+      end if ENV['WITH_REGRESSION']
 
-      def extname(pth)
+      def self.extname(pth)
         FasterPath.extname(pth)
       end
-    end 
+    end
 
     ::Pathname.class_eval do
       def absolute?
