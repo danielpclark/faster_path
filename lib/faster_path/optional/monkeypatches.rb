@@ -1,8 +1,8 @@
 module FasterPath
   def self.sledgehammer_everything!
     ::File.class_eval do
-      def self.basename(pth)
-        FasterPath.basename(pth)
+      def self.basename(pth, ext = '')
+        FasterPath.basename(pth, ext)
       end if ENV['WITH_REGRESSION']
 
       def self.extname(pth)

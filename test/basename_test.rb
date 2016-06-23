@@ -2,7 +2,7 @@ require 'test_helper'
 
 class BasenameTest < Minitest::Test
   def test_nil_inputs
-    assert_nil FasterPath.basename(nil,nil) 
+    assert_nil FasterPath.basename(nil,nil)
     assert_equal FasterPath.basename('',nil), ""
     assert_nil FasterPath.basename(nil,'')
     assert_equal FasterPath.basename('asdf',nil), "asdf"
@@ -21,18 +21,19 @@ class BasenameTest < Minitest::Test
     assert_equal FasterPath.basename('ruby.rb', ''),      'ruby.rb'
     assert_equal FasterPath.basename('ruby.rbx', '.rb*'), 'ruby.rbx'
     assert_equal FasterPath.basename('ruby.rbx'), 'ruby.rbx'
-    
+
     # Try some extensions w/o a '.'
     assert_equal FasterPath.basename('ruby.rbx', 'rbx'), 'ruby.'
     assert_equal FasterPath.basename('ruby.rbx', 'x'),   'ruby.rb'
     assert_equal FasterPath.basename('ruby.rbx', '*'),   'ruby.rbx'
-    
+
     # A couple of regressions:
     assert_equal FasterPath.basename('', ''),           ''
     assert_equal FasterPath.basename('/'),              '/'
     assert_equal FasterPath.basename('//'),             '/'
     assert_equal FasterPath.basename('//dir///base//'), 'base'
-  end 
+    assert_equal FasterPath.basename('.x', '.x'), '.x'
+  end
 
   def test_it_does_the_same_as_file_basename
     assert_equal File.basename('/home/gumby/work/ruby.rb'),        'ruby.rb'
@@ -45,12 +46,12 @@ class BasenameTest < Minitest::Test
     assert_equal File.basename('ruby.rb', ''),      'ruby.rb'
     assert_equal File.basename('ruby.rbx', '.rb*'), 'ruby.rbx'
     assert_equal File.basename('ruby.rbx'), 'ruby.rbx'
-    
+
     # Try some extensions w/o a '.'
     assert_equal File.basename('ruby.rbx', 'rbx'), 'ruby.'
     assert_equal File.basename('ruby.rbx', 'x'),   'ruby.rb'
     assert_equal File.basename('ruby.rbx', '*'),   'ruby.rbx'
-    
+
     # A couple of regressions:
     assert_equal File.basename('', ''),           ''
     assert_equal File.basename('/'),              '/'
