@@ -1,15 +1,15 @@
 module FasterPath
   module RefineFile
     refine File do
-      def basename(pth)
+      def self.basename(pth)
         FasterPath.basename(pth)
-      end
+      end if ENV['WITH_REGRESSION']
 
-      def extname(pth)
+      def self.extname(pth)
         FasterPath.extname(pth)
       end
     end
-  end 
+  end
 
   module RefinePathname
     refine Pathname do

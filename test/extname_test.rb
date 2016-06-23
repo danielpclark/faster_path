@@ -25,6 +25,8 @@ class ExtnameTest < Minitest::Test
     assert_equal "", FasterPath.extname("....")
     assert_equal "", FasterPath.extname(".foo.")
     assert_equal "", FasterPath.extname("foo.")
+    # TODO: fix
+    # assert_equal "", FasterPath.extname("..foo")
   end
 
   def test_substitutability_of_rust_and_ruby_impls
@@ -50,5 +52,7 @@ class ExtnameTest < Minitest::Test
     assert_equal( *result_pair.("....")                      )
     assert_equal( *result_pair.(".foo.")                     )
     assert_equal( *result_pair.("foo.")                      )
+    assert_equal( *result_pair.("foo.rb/")                   )
+    assert_equal( *result_pair.("foo.rb//")                  )
   end
 end
