@@ -101,6 +101,22 @@ PBENCHES[:"directory?"] = {
     end
   }
 }
+PBENCHES[:"dirname"] = {
+  new: ->x{
+    x.times do
+      FasterPath.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
+      FasterPath.dirname "/foo/"
+      FasterPath.dirname "."
+    end
+  },
+  old: ->x{
+    x.times do
+      File.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
+      File.dirname "/foo/"
+      File.dirname "."  
+    end
+  }
+}
 PBENCHES[:"extname"] = {
   new: ->x{
     x.times do

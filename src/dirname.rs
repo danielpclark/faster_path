@@ -1,4 +1,4 @@
-use std::path::{Path,MAIN_SEPARATOR};
+use std::path::MAIN_SEPARATOR;
 use libc::c_char;
 use std::ffi::{CStr,CString};
 use std::str;
@@ -22,7 +22,7 @@ pub extern "C" fn dirname(string: *const c_char) -> *const c_char {
 
     let last_none_slash = r_str.char_indices()
         .rev()
-        .find(|&(usize, char)| char != MAIN_SEPARATOR);
+        .find(|&(_, char)| char != MAIN_SEPARATOR);
 
     if !last_none_slash.is_some() {
         return CString::new("/").unwrap().into_raw();
@@ -31,7 +31,7 @@ pub extern "C" fn dirname(string: *const c_char) -> *const c_char {
     let most_right_slash = r_str[0..last_none_slash.unwrap().0]
         .char_indices()
         .rev()
-        .find(|&(usize, char)| char == MAIN_SEPARATOR);
+        .find(|&(_, char)| char == MAIN_SEPARATOR);
 
     if most_right_slash.is_some() {
 
@@ -54,7 +54,7 @@ pub extern "C" fn dirname(string: *const c_char) -> *const c_char {
 
         let path_last_none_slash = path.char_indices()
             .rev()
-            .find(|&(usize, char)| char != MAIN_SEPARATOR);
+            .find(|&(_, char)| char != MAIN_SEPARATOR);
 
         if !path_last_none_slash.is_some() {
 
