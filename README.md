@@ -158,7 +158,7 @@ FasterPath.sledgehammer_everything!
 
 ---
 
-**Optional methods which have regressions.**  These will not be included by default in monkey-patches or refinements.  To try them anyways use the environment flag of `WITH_REGRESSION`.  These methods are her to be improved upon.
+**Optional methods which have regressions.**  These will not be included by default in monkey-patches or refinements.  To try them anyways use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
 
 |FasterPath Implementation|Ruby Implementation| Regression|
 |---|---|:---:|
