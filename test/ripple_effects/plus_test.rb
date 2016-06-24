@@ -3,6 +3,7 @@ require 'faster_path/optional/refinements'
 
 class RefinedPathname
   using FasterPath::RefinePathname
+  using FasterPath::RefineFile
   def plus(a,b)
     send(:+,a,b).to_s
   end 

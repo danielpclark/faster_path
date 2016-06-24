@@ -3,6 +3,7 @@ require 'faster_path/optional/refinements'
 
 class RefinedPathname
   using FasterPath::RefinePathname
+  using FasterPath::RefineFile
   def del_trailing_separator(pth)
     Pathname.allocate.send(:del_trailing_separator, pth)
   end 
