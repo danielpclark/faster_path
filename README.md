@@ -127,7 +127,6 @@ Current methods implemented:
 |FasterPath Rust Implementation|Ruby 2.3.1 Implementation|Performance Improvement|
 |---|---|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 93.9% |
-| `FasterPath.basename` | `File.basename` | -43.0% (regression!)|
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 50.6% |
 | `FasterPath.relative?` | `Pathname#relative?` | 93.2% |
 | `FasterPath.blank?` | | |
@@ -156,6 +155,17 @@ And for the sledgehammer of monkey patching you can do
 require "faster_path/optional/monkeypatches"
 FasterPath.sledgehammer_everything!
 ```
+
+---
+
+**Optional methods which have regressions.**  These will not be included by default in monkey-patches or refinements.  To try them anyways use the environment flag of `WITH_REGRESSION`.  These methods are her to be improved upon.
+
+|FasterPath Implementation|Ruby Implementation| Regression|
+|---|---|:---:|
+| `FasterPath.dirname` | `File.dirname` | -78.6%|
+| `FasterPath.basename` | `File.basename` | -33.8%|
+| `FasterPath.extname` | `File#extname` | (depends on CPU cache) |
+
 
 ## Getting Started with Development
 
