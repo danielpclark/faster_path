@@ -179,8 +179,8 @@ Methods will be written as exclusively in Rust as possible.  Even just writing a
 Rust method like `!absolute?` _(not absolute)_ drops 39% of the performance already gained in Rust.
 Whenever feasible implement it in Rust.
 
-After checking out the repo, make sure you have Rust installed.  Then run `bundle && rake build_lib` .
-Then, run `rake test` to run the tests, and `rake bench` for benchmarks.
+After checking out the repo, make sure you have Rust installed, then run `bundle`.
+Run `rake test` to run the tests, and `rake bench` for benchmarks.
 
 Learn and share performance tips on the [wiki](https://github.com/danielpclark/faster_path/wiki)!
 
