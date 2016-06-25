@@ -2,13 +2,13 @@ require "bundler/gem_tasks"
 require "rake/testtask"
 require 'fileutils'
 
-desc "Building extension..."
+desc "Build Rust extension"
 task :build_src do
   puts "Building extension..."
   system("cargo build --release")
 end
 
-desc "Cleaning up build..."
+desc "Clean up Rust build"
 task :clean_src do
   puts "Cleaning up build..."
   # Remove all but library file
@@ -22,7 +22,7 @@ task :clean_src do
   )
 end
 
-desc "Compiling Rust extension..."
+desc "Build + clean up Rust extension"
 task build_lib: [:build_src, :clean_src] do
   puts "Completed build!"
 end
