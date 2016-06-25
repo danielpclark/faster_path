@@ -27,18 +27,18 @@ task build_lib: [:build_src, :clean_src] do
   puts "Completed build!"
 end
 
-Rake::TestTask.new(:test) do |t|
+Rake::TestTask.new(test: :build_lib) do |t|
   t.libs << "test"
   t.libs << "lib"
   t.test_files = FileList['test/**/*_test.rb']
 end
 
-Rake::TestTask.new(:bench) do |t|
+Rake::TestTask.new(bench: :build_lib) do |t|
   t.libs = %w(lib test)
   t.pattern = 'test/**/*_benchmark.rb'
 end
 
-Rake::TestTask.new(:pbench) do |t|
+Rake::TestTask.new(pbench: :build_lib) do |t|
   t.libs = %w(lib test test/pbench)
   t.pattern = 'test/pbench/pbench_suite.rb'
 end
