@@ -23,7 +23,7 @@ task :clean_src do
 end
 
 desc "Compiling Rust extension..."
-task :build_lib => [:build_src, :clean_src] do
+task build_lib: [:build_src, :clean_src] do
   puts "Completed build!"
 end
 
@@ -43,4 +43,4 @@ Rake::TestTask.new(:pbench) do |t|
   t.pattern = 'test/pbench/pbench_suite.rb'
 end
 
-task :default => :test
+task default: :test
