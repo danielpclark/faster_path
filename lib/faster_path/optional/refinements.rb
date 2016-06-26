@@ -42,6 +42,10 @@ module FasterPath
       def has_trailing_separator?(pth)
         FasterPath.has_trailing_separator?(pth)
       end
+
+      def entries
+        FasterPath.entries(@path)
+      end if ENV['WITH_REGRESSION']
     end
   end
 end
