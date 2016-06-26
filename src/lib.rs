@@ -21,6 +21,7 @@ pub mod add_trailing_separator;
 pub mod has_trailing_separator;
 pub mod extname;
 pub mod rust_arch_bits;
+mod path_parsing;
 
 // EXAMPLE
 //

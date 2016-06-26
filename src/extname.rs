@@ -1,6 +1,6 @@
-use std::path::MAIN_SEPARATOR;
 use libc::c_char;
 use std::ffi::{CStr, CString};
+use path_parsing::extract_last_path_segment;
 
 #[no_mangle]
 pub extern "C" fn extname(c_pth: *const c_char) -> *const c_char {
@@ -8,9 +8,7 @@ pub extern "C" fn extname(c_pth: *const c_char) -> *const c_char {
     return c_pth
   }
 
-  let name = unsafe { CStr::from_ptr(c_pth) }.to_str().unwrap()
-    .trim_right_matches(MAIN_SEPARATOR)
-    .rsplit(MAIN_SEPARATOR).next().unwrap_or("");
+  let name = extract_last_path_segment(unsafe { CStr::from_ptr(c_pth) }.to_str().unwrap());
 
   if let Some(dot_i) = name.rfind('.') {
     if dot_i > 0 && dot_i < name.len() - 1 && name[..dot_i].chars().rev().next().unwrap() != '.' {
