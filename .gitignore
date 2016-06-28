@@ -14,3 +14,6 @@ mkmf.log
 **/*.gem
 .idea
 /rubyspec_temp/
+*.dll
+*.dylib
+*.so

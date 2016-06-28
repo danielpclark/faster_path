@@ -21,12 +21,13 @@ Gem::Specification.new do |spec|
   spec.files += Dir['lib/**/*']
   spec.files += Dir['src/**/*']
 
-  spec.extensions    << "ext/faster_path/extconf.rb"
+  spec.extensions    = ["ext/Rakefile"]
   spec.require_paths = ["lib"]
 
   spec.add_dependency "bundler", "~> 1.12"
   spec.add_dependency "rake", "~> 12.0"
   spec.add_dependency "ffi", "~> 1.9"
+  spec.add_dependency "thermite", "~> 0.11.0"
   spec.add_development_dependency "method_source", "~> 0.8.2"
   spec.add_development_dependency "minitest", "~> 5.10"
   spec.add_development_dependency "minitest-reporters", "~> 1.1"

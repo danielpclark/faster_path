@@ -1,6 +1,6 @@
 require 'bundler/gem_tasks'
 require 'rake/testtask'
-require 'fileutils'
+require 'thermite/tasks'
 
 desc 'System Details'
 task :sysinfo do
@@ -24,29 +24,11 @@ task :sysinfo do
   end
 end
 
-desc 'Build Rust extension'
-task :build_src do
-  puts 'Building extension...'
-  sh 'cargo build --release'
-end
-
-desc 'Clean up Rust build'
-task :clean_src do
-  puts 'Cleaning up build...'
-  # Remove all but library file
-  FileUtils.
-    rm_rf(
-      Dir.
-      glob('target/release/*').
-      keep_if do |f|
-        !f[/\.(?:so|dll|dylib|deps)\z/]
-      end
-  )
-end
+thermite = Thermite::Tasks.new
 
 desc 'Build + clean up Rust extension'
-task build_lib: [:build_src, :clean_src] do
-  puts 'Completed build!'
+task build_lib: 'thermite:build' do
+  thermite.run_cargo 'clean'
 end
 
 desc 'Code Quality Check'
