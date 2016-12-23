@@ -1,4 +1,4 @@
-
+require 'test_helper'
 
 describe "Gemspec has valid file list" do
   it "is up to date" do
