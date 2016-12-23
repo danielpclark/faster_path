@@ -1,8 +1,10 @@
 require 'test_helper'
-require 'bundler/cli'
+#require 'bundler/cli'
 require 'fileutils' 
 require 'rubygems'
 require 'rubygems/package'
+require 'rubygems/installer_test_case'
+
 
 # Gem::Installer.at
 # - https://github.com/rubygems/rubygems/blob/master/lib/rubygems/installer_test_case.rb#L192-L196
@@ -19,21 +21,36 @@ require 'rubygems/package'
 # Gem.instance_variable_get :@ruby_api_version
 # # => "2.3.0"
 
-describe 'Bundler Test' do
 
-  after do
-    Dir.chdir(Pathname('__FILE__').parent.parent)
-    system('bundle --system') # Revert from previous path used
+class GemInstallTest < Gem::InstallerTestCase
+  def setup
+    super
+    common_installer_setup
+
+    #if __name__ =~ /^test_install(_|$)/ then
+    #  FileUtils.rm_r @spec.gem_dir
+    #  FileUtils.rm_r @user_spec.gem_dir
+    #end
+
+    @config = Gem.configuration
   end
 
-  it 'Compiles the extension' do
-    skip 'WIP'
+  def teardown
+    common_installer_teardown
+    Dir.chdir(Pathname('__FILE__').parent.parent)
+  end
+
+  def test_compiles_the_extension
+    #skip 'WIP'
     
     stars = "*" * 30
     ######################
     # BUILD GEM
     gemspec = 'faster_path.gemspec'
-    @spec = eval IO.read(gemspec)
+    @spec = eval IO.read( File.join(File.expand_path(Pathname(__FILE__).parent.parent), gemspec) )
+
+    @installer.gem_dir = @spec.gem_dir
+
     gemfile = "#{@spec.name}-#{@spec.version}.gem"
     Gem::Package.build @spec
     _(Dir.entries('.')).must_include gemfile, "Current directory does not include gem"
@@ -42,31 +59,42 @@ describe 'Bundler Test' do
     
     ########################
     
-    faster_path_gem = Pathname(__FILE__).parent.parent
+    faster_path_gem = File.expand_path(Pathname(__FILE__).parent.parent)
     puts stars
     puts "The faster_path_gem path is #{faster_path_gem}"
     _(Dir.entries(faster_path_gem)).must_include gemfile, "Current path does not include gem"
     
     ########################
 
-    Dir.mktmpdir('build_test') do |tempdir|
-      Dir.chdir(tempdir) do
-        puts "Changed into that directory"
+    #Dir.mktmpdir('build_test') do |tempdir|
+    #  Dir.chdir(tempdir) do
+    #    puts "Changed into #{tempdir} directory"
 
-        Gem.use_paths(tempdir)
-        Gem.ensure_gem_subdirectories(tempdir)
-        @installer = Gem::Install.at(@spec, install_dir: tmpdir)
-               
-        puts stars
-        puts "Testing directory results"
-        _(Dir.entries(tempdir)).must_include 'target'
-        _(Dir.entries(tempdir + 'target')).must_include 'release'
-        _(Dir.entries(tempdir + 'target/release').keep_if {|i| i['faster_path']}).must_be :one?
-      end
-    end
+    #    puts "Assigning temporary directory with Gem.use_paths"
+    #    Gem.use_paths(tempdir)
+
+    #    puts "Clear unresolved deps"
+    #    Gem::Specification.unresolved_deps.clear
+
+    #    puts "Ensure directory exists"
+    #    Gem.ensure_gem_subdirectories(tempdir)
+
+    #    # Don't know if this is needed
+    #    Gem::RemoteFetcher.fetcher = Gem::FakeFetcher.new
+
+    #    puts "Initializing installer for gemspec"
+    #    @installer = Gem::Installer.at(@spec, install_dir: tempdir)
+    #    puts "Done initializing installer for gemspec"
+    #           
+    #    puts stars
+    #    puts "Testing directory results"
+    #    _(Dir.entries(tempdir)).must_include 'target'
+    #    _(Dir.entries(tempdir + 'target')).must_include 'release'
+    #    _(Dir.entries(tempdir + 'target/release').keep_if {|i| i['faster_path']}).must_be :one?
+    #  end
+    #end
   end
 end
-
 
 
 
