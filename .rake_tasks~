@@ -1,0 +1,13 @@
+bench
+build
+build_lib
+build_src
+clean
+clean_src
+clobber
+gem_compile_test
+install
+install:local
+pbench
+release[remote]
+test
