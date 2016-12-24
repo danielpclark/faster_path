@@ -5,6 +5,7 @@
 /_yardoc/
 /coverage/
 /doc/
+/log/
 /pkg/
 /spec/reports/
 /tmp/
@@ -12,3 +13,5 @@ mkmf.log
 **/*.swp
 **/*.gem
 .idea
+.rake_tasks
+.rake_tasks~

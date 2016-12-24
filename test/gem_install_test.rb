@@ -32,6 +32,9 @@ class GemInstallTest < Gem::TestCase
     super
 
     Gem.configuration = @config
+    
+    Dir.chdir(@root)
+    system('bundle --system') # Revert from previous path used
   end
 
   def test_a_gem_gets_built
@@ -40,28 +43,24 @@ class GemInstallTest < Gem::TestCase
   end
 
   def test_extract_files
-    puts Pathname.pwd
-    
+    require 'logger'
+    FileUtils.mkdir_p File.join(@root, 'log')
+    @logger = Logger.new(File.join @root, 'log', 'gem_build.log')
+
     set_fetcher
     require 'rubygems/dependency_installer'
-    #@spec.dependencies.each do |dep|
-      inst = Gem::DependencyInstaller.new
-      request_set = inst.resolve_dependencies @spec.name, @spec.version #dep.name, dep.requirement
-      request_set.install({})
-      #inst.errors
-    #end
+    inst = Gem::DependencyInstaller.new
+    request_set = inst.resolve_dependencies @spec.name, @spec.version
+    request_set.install({})
+    #inst.errors
     
-    
-    #install_gem @spec
     @installer.install
-    puts Pathname.pwd
-    puts `tree #{@gemhome}`
-    puts Pathname.pwd
-    @installer.extract_files
-    puts Pathname.pwd
+    @logger.info `tree #{@gemhome}`
+    @logger.close
+    #@installer.extract_files
 
     assert_path_exists File.join @spec.gem_dir, 'bin/executable'
-    puts Pathname.pwd
+    
   end
 
   def test_compiles_the_extension
