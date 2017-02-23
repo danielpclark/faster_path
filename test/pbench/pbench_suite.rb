@@ -11,9 +11,9 @@ require 'pbench'
 #  }
 #}
 
-PBENCHES = {} 
+PBENCHES = {}
 PBENCHES[:"allocate, instead of new,"] = {
-  # The allocate test is both for demonstration and as a baseline for comparing 
+  # The allocate test is both for demonstration and as a baseline for comparing
   # different results from different computer systems.  The code for these methods
   # won't change.
   new: ->x{
@@ -113,7 +113,7 @@ PBENCHES[:"dirname"] = {
     x.times do
       File.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
       File.dirname "/foo/"
-      File.dirname "."  
+      File.dirname "."
     end
   }
 }
@@ -174,6 +174,20 @@ PBENCHES[:"relative?"] = {
     x.times do
       Pathname.new("/hello").relative?
       Pathname.new("goodbye").relative?
+    end
+  }
+}
+PBENCHES[:"entries"] = {
+  new: ->x{
+    x.times do
+      FasterPath.entries("./")
+      FasterPath.entries("./src")
+    end
+  },
+  old: ->x{
+    x.times do
+      Pathname.new("./").entries
+      Pathname.new("./src").entries
     end
   }
 }
