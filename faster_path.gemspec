@@ -14,19 +14,13 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT OR Apache-2.0"
 
   spec.files         = [
-    ".gitignore", ".travis.yml", "Cargo.lock", "Cargo.toml", "Gemfile",
+    "Cargo.lock", "Cargo.toml", "Gemfile",
     "MIT-LICENSE.txt", "README.md", "Rakefile", "bin/console", "bin/setup",
-    "ext/faster_path/extconf.rb", "faster_path.gemspec", "lib/faster_path.rb",
-    "lib/faster_path/optional/monkeypatches.rb", "lib/faster_path/optional/refinements.rb",
-    "lib/faster_path/version.rb", "src/add_trailing_separator.rs", "src/basename.rs",
-    "src/basename_for_chop.rs", "src/both_are_blank.rs", "src/dirname.rs",
-    "src/dirname_for_chop.rs", "src/extname.rs", "src/has_trailing_separator.rs",
-    "src/is_absolute.rs", "src/is_blank.rs", "src/is_directory.rs", "src/is_relative.rs",
-    "src/lib.rs", "src/path_parsing.rs", "src/ruby_array.rs", "src/ruby_string.rs",
-    "src/rust_arch_bits.rs"
+    "ext/faster_path/extconf.rb", "faster_path.gemspec"
   ]
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.files += Dir['lib/**/*']
+  spec.files += Dir['src/**/*']
+
   spec.extensions    << "ext/faster_path/extconf.rb"
   spec.require_paths = ["lib"]
 
