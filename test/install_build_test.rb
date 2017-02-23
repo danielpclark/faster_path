@@ -11,10 +11,6 @@ class InstallBuildTest < Gem::InstallerTestCase
   # Gemfile name
   def faster_path; "faster_path-#{FasterPath::VERSION}.gem" end
 
-  ## UNUSED
-  # Current Ruby gem stash from Rubygems
-  def gem_cache; @gem_cache ||= File.join(ENV['GEM_HOME'], 'cache') end
-
   ##
   # Load gemspec and change paths relative to current file
   def gem_spec
