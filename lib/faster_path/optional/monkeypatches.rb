@@ -1,3 +1,5 @@
+require 'pathname'
+
 module FasterPath
   def self.sledgehammer_everything!
     ::File.class_eval do
@@ -41,7 +43,10 @@ module FasterPath
         FasterPath.has_trailing_separator?(pth)
       end
       private :has_trailing_separator?
+
+      def entries
+        FasterPath.entries(@path)
+      end if ENV['WITH_REGRESSION']
     end
   end
 end
-

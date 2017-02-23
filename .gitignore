@@ -13,5 +13,4 @@ mkmf.log
 **/*.swp
 **/*.gem
 .idea
-.rake_tasks
-.rake_tasks~
+/rubyspec_temp/

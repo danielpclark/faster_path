@@ -117,7 +117,7 @@ And then execute:
 Or install it yourself as:
 
     $ gem install faster_path
-    
+
 **MAC USERS:** At the moment Mac users need to install the extension manualy.  Go to the gem directory and run `cargo build --release` .  There is an issue opened for this and I'm looking for people who have Macs to help on this.
 
 ## Usage
@@ -136,7 +136,7 @@ Current methods implemented:
 | `FasterPath.extname` | `File#extname` | 11.2% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
-standard library with the included refinements, or even call a method to monkeypatch 
+standard library with the included refinements, or even call a method to monkeypatch
 everything everywhere.
 
 **Note:** `Pathname#chop_basename` in Ruby STDLIB has a bug with blank strings, that is the
@@ -183,6 +183,42 @@ After checking out the repo, make sure you have Rust installed, then run `bundle
 Run `rake test` to run the tests, and `rake bench` for benchmarks.
 
 Learn and share performance tips on the [wiki](https://github.com/danielpclark/faster_path/wiki)!
+
+### Building and running tests
+
+First, bundle the gem's development dependencies by running `bundle`.
+
+Then, build the rust code:
+
+```sh
+rake build_src
+```
+
+FasterPath is tested with [The Ruby Spec Suite](https://github.com/ruby/spec) to ensure it is compatible with the
+native implementation, and also has its own test suite testing its monkey-patching and refinements functionality.
+
+To run all the tests at once, simply run `rake`.
+To run all the ruby spec tests, run `mspec`.
+
+To run an individual test or benchmark from FasterPath's own suite:
+
+```sh
+# An individual test file:
+ruby -I lib:test test/benches/absolute_benchmark.rb
+# All tests:
+rake minitest
+```
+
+To run an individual ruby spec test, run `mspec` with a path relative to `spec/ruby_spec`, e.g.:
+
+```sh
+# A path to a file or a directory:
+mspec core/file/basename_spec.rb
+# Tests most relevant to FasterPath:
+mspec core/file library/pathname
+# All tests:
+mspec
+```
 
 ## Contributing
 

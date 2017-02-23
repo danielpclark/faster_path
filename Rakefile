@@ -27,16 +27,14 @@ task build_lib: [:build_src, :clean_src] do
   puts "Completed build!"
 end
 
-Rake::TestTask.new(test: :build_lib) do |t|
+Rake::TestTask.new(minitest: :build_lib) do |t|
   t.libs << "test"
   t.libs << "lib"
   t.test_files = FileList['test/**/*_test.rb']
 end
 
-Rake::TestTask.new(:gem_compile_test) do |t|
-  t.libs << "test"
-  t.libs << "lib"
-  t.test_files = FileList['test/gem_install_test.rb']
+task :test => :minitest do |t|
+  exec 'mspec --format spec core/file library/pathname'
 end
 
 Rake::TestTask.new(bench: :build_lib) do |t|

@@ -20,6 +20,7 @@ pub mod dirname_for_chop;
 pub mod add_trailing_separator;
 pub mod has_trailing_separator;
 pub mod extname;
+pub mod entries;
 pub mod rust_arch_bits;
 mod path_parsing;
 
@@ -32,4 +33,3 @@ mod path_parsing;
 //  words.push(RubyString::to_ruby(&"two".to_string()));
 //  RubyArray::from_vec(words)
 //}
-
