@@ -17,6 +17,7 @@ class EntriesBenchmark < BenchmarkHelper
         FasterPath.entries("src")
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_entries
@@ -27,5 +28,6 @@ class EntriesBenchmark < BenchmarkHelper
         Pathname.new("src").entries
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end

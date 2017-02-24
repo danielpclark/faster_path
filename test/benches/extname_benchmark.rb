@@ -21,6 +21,7 @@ class ExtnameBenchmark < BenchmarkHelper
         CASES.each { |path| FasterPath.extname(path) }
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_extname
@@ -30,5 +31,6 @@ class ExtnameBenchmark < BenchmarkHelper
         CASES.each { |path| File.extname(path) }
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end

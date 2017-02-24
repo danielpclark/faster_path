@@ -13,6 +13,7 @@ class HasTrailingSeparatorBenchmark < BenchmarkHelper
         FasterPath.has_trailing_separator? 'hello/'
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_has_trailing_separator
@@ -23,5 +24,6 @@ class HasTrailingSeparatorBenchmark < BenchmarkHelper
         Pathname.allocate.send :has_trailing_separator?, 'hello/'
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end

@@ -13,6 +13,7 @@ class AddTrailingSeparatorBenchmark < BenchmarkHelper
         FasterPath.add_trailing_separator('/hello/world/')
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_add_trailing_separator
@@ -23,6 +24,7 @@ class AddTrailingSeparatorBenchmark < BenchmarkHelper
         Pathname.allocate.send(:add_trailing_separator, '/hello/world/')
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end
 
