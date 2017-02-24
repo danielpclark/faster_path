@@ -1,12 +1,14 @@
-require "test_helper"
-require "minitest/benchmark"
-require "pathname"
+require "benchmark_helper"
 
-class FasterPathBenchmark < Minitest::Benchmark
-
+class DirnameBenchmark < BenchmarkHelper
+  def teardown
+    super __FILE__
+  end
+  
   def bench_ruby_dirname
     assert_performance_constant do |n|
-      10000.times do
+      TIMER[__FILE__].rust.mark
+      n.times do
         File.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
         File.dirname "/foo/"
         File.dirname "."  
@@ -16,7 +18,8 @@ class FasterPathBenchmark < Minitest::Benchmark
 
   def bench_rust_dirname
     assert_performance_constant do |n|
-      10000.times do
+      TIMER[__FILE__].ruby.mark
+      n.times do
         FasterPath.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
         FasterPath.dirname "/foo/"
         FasterPath.dirname "."

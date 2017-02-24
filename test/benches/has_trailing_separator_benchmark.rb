@@ -1,10 +1,14 @@
-require 'test_helper'
-require 'minitest/benchmark'
+require 'benchmark_helper'
 
-class FasterPathBenchmark < Minitest::Benchmark
+class HasTrailingSeparatorBenchmark < BenchmarkHelper
+  def teardown
+    super __FILE__
+  end
+  
   def bench_rust_has_trailing_separator
     assert_performance_constant do |n|
-      100_000.times do
+      TIMER[__FILE__].rust.mark
+      n.times do
         FasterPath.has_trailing_separator? '////a//aaa/a//a/aaa////'
         FasterPath.has_trailing_separator? 'hello/'
       end
@@ -13,7 +17,8 @@ class FasterPathBenchmark < Minitest::Benchmark
 
   def bench_ruby_has_trailing_separator
     assert_performance_constant do |n|
-      100_000.times do
+      TIMER[__FILE__].ruby.mark
+      n.times do
         Pathname.allocate.send :has_trailing_separator?, '////a//aaa/a//a/aaa////'
         Pathname.allocate.send :has_trailing_separator?, 'hello/'
       end

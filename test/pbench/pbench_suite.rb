@@ -117,6 +117,20 @@ PBENCHES[:"dirname"] = {
     end
   }
 }
+PBENCHES[:"entries"] = {
+  new: ->x{
+    x.times do
+      FasterPath.entries("./")
+      FasterPath.entries("./src")
+    end
+  },
+  old: ->x{
+    x.times do
+      Pathname.new("./").entries
+      Pathname.new("./src").entries
+    end
+  }
+}
 PBENCHES[:"extname"] = {
   new: ->x{
     x.times do
@@ -174,20 +188,6 @@ PBENCHES[:"relative?"] = {
     x.times do
       Pathname.new("/hello").relative?
       Pathname.new("goodbye").relative?
-    end
-  }
-}
-PBENCHES[:"entries"] = {
-  new: ->x{
-    x.times do
-      FasterPath.entries("./")
-      FasterPath.entries("./src")
-    end
-  },
-  old: ->x{
-    x.times do
-      Pathname.new("./").entries
-      Pathname.new("./src").entries
     end
   }
 }

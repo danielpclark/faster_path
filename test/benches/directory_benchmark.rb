@@ -1,10 +1,14 @@
-require "test_helper"
-require "minitest/benchmark"
+require "benchmark_helper"
 
-class FasterPathBenchmark < Minitest::Benchmark
+class DirectoryBenchmark < BenchmarkHelper
+  def teardown
+    super __FILE__
+  end
+  
   def bench_rust_directory?
     assert_performance_constant do |n|
-      10000.times do
+      TIMER[__FILE__].rust.mark
+      n.times do
         FasterPath.directory?("/hello")
         FasterPath.directory?("goodbye")
       end
@@ -13,7 +17,8 @@ class FasterPathBenchmark < Minitest::Benchmark
 
   def bench_ruby_directory?
     assert_performance_constant do |n|
-      10000.times do
+      TIMER[__FILE__].ruby.mark
+      n.times do
         Pathname.new("/hello").directory?
         Pathname.new("goodbye").directory?
       end

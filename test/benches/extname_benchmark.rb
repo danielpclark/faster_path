@@ -1,7 +1,10 @@
-require "test_helper"
-require "minitest/benchmark"
+require "benchmark_helper"
 
-class FasterPathBenchmark < Minitest::Benchmark
+class ExtnameBenchmark < BenchmarkHelper
+  def teardown
+    super __FILE__
+  end
+  
   CASES = %w(
     verylongfilename_verylongfilename_verylongfilename_verylongfilename.rb
     /very/long/path/name/very/long/path/name/very/long/path/name/file.rb
@@ -13,7 +16,8 @@ class FasterPathBenchmark < Minitest::Benchmark
 
   def bench_rust_extname
     assert_performance_constant do |n|
-      100000.times do
+      TIMER[__FILE__].rust.mark
+      n.times do
         CASES.each { |path| FasterPath.extname(path) }
       end
     end
@@ -21,7 +25,8 @@ class FasterPathBenchmark < Minitest::Benchmark
 
   def bench_ruby_extname
     assert_performance_constant do |n|
-      100000.times do
+      TIMER[__FILE__].ruby.mark
+      n.times do
         CASES.each { |path| File.extname(path) }
       end
     end
