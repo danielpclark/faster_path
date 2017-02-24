@@ -14,6 +14,7 @@ class BasenameBenchmark < BenchmarkHelper
         FasterPath.basename('/home/gumby/work/ruby.rb', '.*')
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_basename
@@ -25,5 +26,6 @@ class BasenameBenchmark < BenchmarkHelper
         File.basename('/home/gumby/work/ruby.rb', '.*')
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end

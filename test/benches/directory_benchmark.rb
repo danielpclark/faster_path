@@ -13,6 +13,7 @@ class DirectoryBenchmark < BenchmarkHelper
         FasterPath.directory?("goodbye")
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_directory?
@@ -23,5 +24,6 @@ class DirectoryBenchmark < BenchmarkHelper
         Pathname.new("goodbye").directory?
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end

@@ -14,6 +14,7 @@ class DirnameBenchmark < BenchmarkHelper
         File.dirname "."  
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_rust_dirname
@@ -25,5 +26,6 @@ class DirnameBenchmark < BenchmarkHelper
         FasterPath.dirname "."
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end

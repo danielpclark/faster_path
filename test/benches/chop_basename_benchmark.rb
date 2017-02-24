@@ -14,6 +14,7 @@ class ChopBasenameBenchmark < BenchmarkHelper
         FasterPath.chop_basename ""
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_chop_basename
@@ -25,5 +26,6 @@ class ChopBasenameBenchmark < BenchmarkHelper
         Pathname.new("").send :chop_basename, ""
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end

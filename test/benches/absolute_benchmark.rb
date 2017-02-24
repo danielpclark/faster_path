@@ -13,6 +13,7 @@ class AbsoluteBenchmark < BenchmarkHelper
         FasterPath.absolute?("goodbye")
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_absolute?
@@ -23,5 +24,6 @@ class AbsoluteBenchmark < BenchmarkHelper
         Pathname.new("goodbye").absolute?
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end

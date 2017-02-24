@@ -13,6 +13,7 @@ class RelativeBenchmark < BenchmarkHelper
         FasterPath.relative?("goodbye")
       end
     end
+    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_relative?
@@ -23,5 +24,6 @@ class RelativeBenchmark < BenchmarkHelper
         Pathname.new("goodbye").relative?
       end
     end
+    TIMER[__FILE__].ruby.mark
   end
 end
