@@ -6,24 +6,16 @@ class AbsoluteBenchmark < BenchmarkHelper
   end
 
   def bench_rust_absolute?
-    assert_performance_constant do |n|
-      TIMER[__FILE__].rust.mark
-      n.times do
-        FasterPath.absolute?("/hello")
-        FasterPath.absolute?("goodbye")
-      end
+    benchmark_graph __FILE__, :rust do
+      FasterPath.absolute?("/hello")
+      FasterPath.absolute?("goodbye")
     end
-    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_absolute?
-    assert_performance_constant do |n|
-      TIMER[__FILE__].ruby.mark
-      n.times do
-        Pathname.new("/hello").absolute?
-        Pathname.new("goodbye").absolute?
-      end
+    benchmark_graph __FILE__, :ruby do
+      Pathname.new("/hello").absolute?
+      Pathname.new("goodbye").absolute?
     end
-    TIMER[__FILE__].ruby.mark
   end
 end

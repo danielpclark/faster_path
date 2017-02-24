@@ -6,26 +6,18 @@ class BasenameBenchmark < BenchmarkHelper
   end
 
   def bench_rust_basename
-    assert_performance_constant do |n|
-      TIMER[__FILE__].rust.mark
-      n.times do
-        FasterPath.basename("/hello/world")
-        FasterPath.basename('/home/gumby/work/ruby.rb', '.rb')
-        FasterPath.basename('/home/gumby/work/ruby.rb', '.*')
-      end
+    benchmark_graph __FILE__, :rust do
+      FasterPath.basename("/hello/world")
+      FasterPath.basename('/home/gumby/work/ruby.rb', '.rb')
+      FasterPath.basename('/home/gumby/work/ruby.rb', '.*')
     end
-    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_basename
-    assert_performance_constant do |n|
-      TIMER[__FILE__].ruby.mark
-      n.times do
-        File.basename("/hello/world")
-        File.basename('/home/gumby/work/ruby.rb', '.rb')
-        File.basename('/home/gumby/work/ruby.rb', '.*')
-      end
+    benchmark_graph __FILE__, :ruby do
+      File.basename("/hello/world")
+      File.basename('/home/gumby/work/ruby.rb', '.rb')
+      File.basename('/home/gumby/work/ruby.rb', '.*')
     end
-    TIMER[__FILE__].ruby.mark
   end
 end

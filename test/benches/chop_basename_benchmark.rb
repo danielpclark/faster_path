@@ -6,26 +6,18 @@ class ChopBasenameBenchmark < BenchmarkHelper
   end
   
   def bench_rust_chop_basename
-    assert_performance_constant do |n|
-      TIMER[__FILE__].rust.mark
-      n.times do
-        FasterPath.chop_basename "/hello/world.txt"
-        FasterPath.chop_basename "world.txt"
-        FasterPath.chop_basename ""
-      end
+    benchmark_graph __FILE__, :rust do
+      FasterPath.chop_basename "/hello/world.txt"
+      FasterPath.chop_basename "world.txt"
+      FasterPath.chop_basename ""
     end
-    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_chop_basename
-    assert_performance_constant do |n|
-      TIMER[__FILE__].ruby.mark
-      n.times do
-        Pathname.new("").send :chop_basename, "/hello/world.txt"
-        Pathname.new("").send :chop_basename, "world.txt"
-        Pathname.new("").send :chop_basename, ""
-      end
+    benchmark_graph __FILE__, :ruby do
+      Pathname.new("").send :chop_basename, "/hello/world.txt"
+      Pathname.new("").send :chop_basename, "world.txt"
+      Pathname.new("").send :chop_basename, ""
     end
-    TIMER[__FILE__].ruby.mark
   end
 end

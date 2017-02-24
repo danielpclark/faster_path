@@ -6,26 +6,18 @@ class DirnameBenchmark < BenchmarkHelper
   end
   
   def bench_ruby_dirname
-    assert_performance_constant do |n|
-      TIMER[__FILE__].rust.mark
-      n.times do
-        File.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
-        File.dirname "/foo/"
-        File.dirname "."  
-      end
+    benchmark_graph __FILE__, :rust do
+      File.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
+      File.dirname "/foo/"
+      File.dirname "."  
     end
-    TIMER[__FILE__].rust.mark
   end
 
   def bench_rust_dirname
-    assert_performance_constant do |n|
-      TIMER[__FILE__].ruby.mark
-      n.times do
-        FasterPath.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
-        FasterPath.dirname "/foo/"
-        FasterPath.dirname "."
-      end
+    benchmark_graph __FILE__, :ruby do
+      FasterPath.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
+      FasterPath.dirname "/foo/"
+      FasterPath.dirname "."
     end
-    TIMER[__FILE__].ruby.mark
   end
 end

@@ -10,24 +10,16 @@ class EntriesBenchmark < BenchmarkHelper
   end
 
   def bench_rust_entries
-    assert_performance_constant do |n|
-      TIMER[__FILE__].rust.mark
-      n.times do
-        FasterPath.entries(".")
-        FasterPath.entries("src")
-      end
+    benchmark_graph __FILE__, :rust do
+      FasterPath.entries(".")
+      FasterPath.entries("src")
     end
-    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_entries
-    assert_performance_constant do |n|
-      TIMER[__FILE__].ruby.mark
-      n.times do
-        Pathname.new(".").entries
-        Pathname.new("src").entries
-      end
+    benchmark_graph __FILE__, :ruby do
+      Pathname.new(".").entries
+      Pathname.new("src").entries
     end
-    TIMER[__FILE__].ruby.mark
   end
 end

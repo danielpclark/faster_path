@@ -6,25 +6,17 @@ class AddTrailingSeparatorBenchmark < BenchmarkHelper
   end
 
   def bench_rust_add_trailing_separator
-    assert_performance_constant do |n|
-      TIMER[__FILE__].rust.mark
-      n.times do
-        FasterPath.add_trailing_separator('/hello/world')
-        FasterPath.add_trailing_separator('/hello/world/')
-      end
+    benchmark_graph __FILE__, :rust do
+      FasterPath.add_trailing_separator('/hello/world')
+      FasterPath.add_trailing_separator('/hello/world/')
     end
-    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_add_trailing_separator
-    assert_performance_constant do |n|
-      TIMER[__FILE__].ruby.mark
-      n.times do
-        Pathname.allocate.send(:add_trailing_separator, '/hello/world')
-        Pathname.allocate.send(:add_trailing_separator, '/hello/world/')
-      end
+    benchmark_graph __FILE__, :ruby do
+      Pathname.allocate.send(:add_trailing_separator, '/hello/world')
+      Pathname.allocate.send(:add_trailing_separator, '/hello/world/')
     end
-    TIMER[__FILE__].ruby.mark
   end
 end
 

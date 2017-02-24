@@ -37,4 +37,14 @@ class BenchmarkHelper < Minitest::Benchmark
       g.write( outfile )
     end
   end
+
+  def benchmark_graph file, lang
+    assert_performance_constant do |n|
+      TIMER[file][lang].mark
+      n.times do
+        yield
+      end
+    end
+    TIMER[file][lang].mark
+  end
 end

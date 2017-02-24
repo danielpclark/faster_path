@@ -6,24 +6,16 @@ class DirectoryBenchmark < BenchmarkHelper
   end
   
   def bench_rust_directory?
-    assert_performance_constant do |n|
-      TIMER[__FILE__].rust.mark
-      n.times do
-        FasterPath.directory?("/hello")
-        FasterPath.directory?("goodbye")
-      end
+    benchmark_graph __FILE__, :rust do
+      FasterPath.directory?("/hello")
+      FasterPath.directory?("goodbye")
     end
-    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_directory?
-    assert_performance_constant do |n|
-      TIMER[__FILE__].ruby.mark
-      n.times do
-        Pathname.new("/hello").directory?
-        Pathname.new("goodbye").directory?
-      end
+    benchmark_graph __FILE__, :ruby do
+      Pathname.new("/hello").directory?
+      Pathname.new("goodbye").directory?
     end
-    TIMER[__FILE__].ruby.mark
   end
 end

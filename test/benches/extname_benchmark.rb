@@ -15,22 +15,14 @@ class ExtnameBenchmark < BenchmarkHelper
   ) + ['']
 
   def bench_rust_extname
-    assert_performance_constant do |n|
-      TIMER[__FILE__].rust.mark
-      n.times do
-        CASES.each { |path| FasterPath.extname(path) }
-      end
+    benchmark_graph __FILE__, :rust do
+      CASES.each { |path| FasterPath.extname(path) }
     end
-    TIMER[__FILE__].rust.mark
   end
 
   def bench_ruby_extname
-    assert_performance_constant do |n|
-      TIMER[__FILE__].ruby.mark
-      n.times do
-        CASES.each { |path| File.extname(path) }
-      end
+    benchmark_graph __FILE__, :ruby do
+      CASES.each { |path| File.extname(path) }
     end
-    TIMER[__FILE__].ruby.mark
   end
 end
