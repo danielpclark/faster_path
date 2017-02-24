@@ -1,10 +1,14 @@
-require "test_helper"
-require "minitest/benchmark"
+require "benchmark_helper"
 
-class FasterPathBenchmark < Minitest::Benchmark
+class RelativeBenchmark < BenchmarkHelper
+  def teardown
+    super __FILE__
+  end
+  
   def bench_rust_relative?
     assert_performance_constant do |n|
-      10000.times do
+      TIMER[__FILE__].rust.mark
+      n.times do
         FasterPath.relative?("/hello")
         FasterPath.relative?("goodbye")
       end
@@ -13,7 +17,8 @@ class FasterPathBenchmark < Minitest::Benchmark
 
   def bench_ruby_relative?
     assert_performance_constant do |n|
-      10000.times do
+      TIMER[__FILE__].ruby.mark
+      n.times do
         Pathname.new("/hello").relative?
         Pathname.new("goodbye").relative?
       end

@@ -1,11 +1,18 @@
-require "test_helper"
-require "minitest/benchmark"
-require "pathname"
+require "benchmark_helper"
 
-class FasterPathBenchmark < Minitest::Benchmark
+class EntriesBenchmark < BenchmarkHelper
+  def teardown
+    super __FILE__
+  end
+
+  def self.bench_range
+    [2000, 4000, 6000, 8000, 10_000]
+  end
+
   def bench_rust_entries
     assert_performance_constant do |n|
-      10000.times do
+      TIMER[__FILE__].rust.mark
+      n.times do
         FasterPath.entries(".")
         FasterPath.entries("src")
       end
@@ -14,7 +21,8 @@ class FasterPathBenchmark < Minitest::Benchmark
 
   def bench_ruby_entries
     assert_performance_constant do |n|
-      10000.times do
+      TIMER[__FILE__].ruby.mark
+      n.times do
         Pathname.new(".").entries
         Pathname.new("src").entries
       end
