@@ -4,9 +4,10 @@ rvm:
   - 2.2.6
   - 2.3.3
 env:
-  - TEST_MONKEYPATCHES=true
-  - TEST_MONKEYPATCHES=false
+  - NO_ENV_VARS=USED
   - WITH_REGRESSION=true
+  - TEST_MONKEYPATCHES=true
+  - TEST_MONKEYPATCHES=true WITH_REGRESSION=true
 before_install: 
   - gem install bundler -v 1.12.5
   - curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
