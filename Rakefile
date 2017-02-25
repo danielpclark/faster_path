@@ -34,7 +34,7 @@ Rake::TestTask.new(minitest: :build_lib) do |t|
 end
 
 task :test => :minitest do |t|
-  exec 'mspec --format spec core/file library/pathname'
+  exec 'mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname'
 end
 
 Rake::TestTask.new(bench: :build_lib) do |t|
