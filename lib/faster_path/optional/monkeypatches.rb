@@ -48,5 +48,6 @@ module FasterPath
         FasterPath.entries(@path)
       end if ENV['WITH_REGRESSION']
     end
+    "CAUTION: Monkey patching effects everything! Be very sure you want this!"
   end
 end
