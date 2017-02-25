@@ -5,7 +5,7 @@ module FasterPath
     refine File do
       def self.basename(pth, ext = '')
         FasterPath.basename(pth, ext)
-      end if ENV['WITH_REGRESSION']
+      end
 
       def self.extname(pth)
         FasterPath.extname(pth)
@@ -13,7 +13,7 @@ module FasterPath
 
       def self.dirname(pth)
         FasterPath.dirname(pth)
-      end if ENV['WITH_REGRESSION']
+      end
     end
   end
 

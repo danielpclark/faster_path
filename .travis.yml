@@ -8,6 +8,10 @@ env:
   - WITH_REGRESSION=true
   - TEST_MONKEYPATCHES=true
   - TEST_MONKEYPATCHES=true WITH_REGRESSION=true
+matrix:
+  allow_failures:
+    - env: WITH_REGRESSION=true
+    - env: TEST_MONKEYPATCHES=true WITH_REGRESSION=true
 before_install: 
   - gem install bundler -v 1.12.5
   - curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
