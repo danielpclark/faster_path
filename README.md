@@ -171,7 +171,7 @@ FasterPath.sledgehammer_everything!
 |---|---|
 | `FasterPath.dirname` | `File.dirname` |
 | `FasterPath.basename` | `File.basename` |
-| `FasterPath.extname` | `File#extname` |
+| `FasterPath.extname` | `File.extname` |
 
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
 performance seems to vary based on CPU cache on possibly 64bit/32bit system environmnets.
