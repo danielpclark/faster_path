@@ -166,14 +166,18 @@ FasterPath.sledgehammer_everything!
 
 ---
 
-**Optional methods which have regressions.**  These will not be included by default in monkey-patches or refinements.  To try them anyways use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
+**Optional methods which ~~have regressions.~~ are unstable.**  These will **not** be included by default in monkey-patches.  Be cautious when using the `FasterPath::RefineFile` refinement.  To try them anyways use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
 
-|FasterPath Implementation|Ruby Implementation| Regression|
-|---|---|:---:|
-| `FasterPath.dirname` | `File.dirname` | -78.6%|
-| `FasterPath.basename` | `File.basename` | -33.8%|
-| `FasterPath.extname` | `File#extname` | (depends on CPU cache) |
+|FasterPath Implementation|Ruby Implementation|
+|---|---|
+| `FasterPath.dirname` | `File.dirname` |
+| `FasterPath.basename` | `File.basename` |
+| `FasterPath.extname` | `File#extname` |
 
+It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
+performance seems to vary based on CPU cache on possibly 64bit/32bit system environmnets.
+
+**Developers for FasterPath:** Most of these need to be rewritten, please use `WITH_REGRESSION` in your testing.  You can see the resulting failures currently on TravisCI under "Allow Failures".
 
 ## Getting Started with Development
 
