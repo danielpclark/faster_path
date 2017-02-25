@@ -176,7 +176,7 @@ FasterPath.sledgehammer_everything!
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
 performance seems to vary based on CPU cache on possibly 64bit/32bit system environmnets.
 
-**Developers for FasterPath:** Most of these need to be rewritten, please use `WITH_REGRESSION` in your testing.  You can see the resulting failures currently on TravisCI under "Allow Failures".
+**Developers for FasterPath:** Most of these need to be rewritten, please use `WITH_REGRESSION=true TEST_MONKEYPATCHES=true` in your testing.  You can see the resulting failures currently on TravisCI under "Allow Failures".
 
 ## Getting Started with Development
 
