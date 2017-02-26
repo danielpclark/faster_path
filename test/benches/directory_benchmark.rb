@@ -10,7 +10,7 @@ class DirectoryBenchmark < BenchmarkHelper
     super
     graph_benchmarks
   end
-  
+
   def bench_rust_directory?
     benchmark_graph :rust do
       FasterPath.directory?("/hello")

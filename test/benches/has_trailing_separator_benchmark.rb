@@ -10,7 +10,7 @@ class HasTrailingSeparatorBenchmark < BenchmarkHelper
     super
     graph_benchmarks
   end
-  
+
   def bench_rust_has_trailing_separator
     benchmark_graph :rust do
       FasterPath.has_trailing_separator? '////a//aaa/a//a/aaa////'

@@ -10,7 +10,7 @@ class RelativeBenchmark < BenchmarkHelper
     super
     graph_benchmarks
   end
-  
+
   def bench_rust_relative?
     benchmark_graph :rust do
       FasterPath.relative?("/hello")

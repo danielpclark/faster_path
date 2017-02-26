@@ -10,7 +10,7 @@ class ChopBasenameBenchmark < BenchmarkHelper
     super
     graph_benchmarks
   end
-  
+
   def bench_rust_chop_basename
     benchmark_graph :rust do
       FasterPath.chop_basename "/hello/world.txt"

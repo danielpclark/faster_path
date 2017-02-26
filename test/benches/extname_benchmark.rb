@@ -10,7 +10,7 @@ class ExtnameBenchmark < BenchmarkHelper
     super
     graph_benchmarks
   end
-  
+
   def cases
     %w(
       verylongfilename_verylongfilename_verylongfilename_verylongfilename.rb

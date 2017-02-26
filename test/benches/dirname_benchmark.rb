@@ -10,12 +10,12 @@ class DirnameBenchmark < BenchmarkHelper
     super
     graph_benchmarks
   end
-  
+
   def bench_ruby_dirname
     benchmark_graph :rust do
       File.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
       File.dirname "/foo/"
-      File.dirname "."  
+      File.dirname "."
     end
   end
 

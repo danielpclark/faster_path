@@ -3,7 +3,7 @@ require "benchmark_helper"
 class EntriesBenchmark < BenchmarkHelper
 
   def setup
-    @file ||= __FILE__ 
+    @file ||= __FILE__
   end
 
   def teardown
