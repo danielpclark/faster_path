@@ -16,35 +16,34 @@ class BenchmarkHelper < Minitest::Benchmark
     [20_000, 40_000, 60_000, 80_000, 100_000]
   end
 
-  def teardown file
-    super()
-    if TIMER[file].rust.time? && TIMER[file].ruby.time?
+  def graph_benchmarks
+    if TIMER[@file].rust.time? && TIMER[@file].ruby.time?
       # print graph
       g = Gruff::Line.new
-      g.title = File.basename(file).to_s[0..-4].split('_').map(&:capitalize).join(' ')
+      g.title = File.basename(@file).to_s[0..-4].split('_').map(&:capitalize).join(' ')
       g.labels = (self.instance_exec{defined?(self.class.bench_range) ? self.class.bench_range : nil} || BenchmarkHelper.bench_range).
         each.with_index.
         reduce({}) {|h,(v,i)|
           h[i+1]=v;h
       }.merge({0 => 0})
 
-      g.data(:ruby, TIMER[file].ruby.times.unshift(0))
-      g.data(:rust, TIMER[file].rust.times.unshift(0))
+      g.data(:ruby, TIMER[@file].ruby.times.unshift(0))
+      g.data(:rust, TIMER[@file].rust.times.unshift(0))
 
       outfile = File.join(File.expand_path('..',__dir__),'doc','graph')
       FileUtils.mkdir_p outfile
-      outfile = File.join(outfile, File.basename(file)[0..-3] + 'png')
+      outfile = File.join(outfile, File.basename(@file)[0..-3] + 'png')
       g.write( outfile )
     end
   end
 
-  def benchmark_graph file, lang
+  def benchmark_graph lang
     assert_performance_constant do |n|
-      TIMER[file][lang].mark
+      TIMER[@file][lang].mark
       n.times do
         yield
       end
     end
-    TIMER[file][lang].mark
+    TIMER[@file][lang].mark
   end
 end

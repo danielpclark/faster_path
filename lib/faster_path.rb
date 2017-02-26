@@ -35,8 +35,9 @@ module FasterPath
   # This implementation correctly handles blank strings just as Pathname had intended
   # to handle non-path strings.
   def self.chop_basename(pth)
-    d,b = [Rust.dirname_for_chop(pth), Rust.basename_for_chop(pth)]
-    [d,b] unless Rust.both_are_blank(d,b)
+    d = Rust.dirname_for_chop(pth)
+    b = Rust.basename_for_chop(pth)
+    [d, b] unless Rust.both_are_blank(d, b)
   end
 
   def self.blank?(str)
@@ -64,9 +65,9 @@ module FasterPath
   end
 
   # EXAMPLE
-  #def self.one_and_two
+  # def self.one_and_two
   #  Rust.one_and_two.to_a
-  #end
+  # end
 
   private
   module Rust
@@ -101,7 +102,7 @@ module FasterPath
     attach_function :entries, [ :string ], FromRustArray.by_value
 
     # EXAMPLE
-    #attach_function :one_and_two, [], FromRustArray.by_value
+    # attach_function :one_and_two, [], FromRustArray.by_value
   end
   private_constant :Rust
 end
