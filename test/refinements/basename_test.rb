@@ -4,7 +4,7 @@ class RefinedFile
   using FasterPath::RefineFile
   def basename(*args)
     File.basename(*args)
-  end 
+  end
 end
 
 class BasenameTest < Minitest::Test
@@ -21,16 +21,16 @@ class BasenameTest < Minitest::Test
     assert_equal(RefinedFile.new.basename('ruby.rb', ''),      'ruby.rb',  "GemStone E")
     assert_equal(RefinedFile.new.basename('ruby.rbx', '.rb*'), 'ruby.rbx', "GemStone F")
     assert_equal(RefinedFile.new.basename('ruby.rbx'), 'ruby.rbx',         "GemStone G")
-    
+
     # Try some extensions w/o a '.'
     assert_equal(RefinedFile.new.basename('ruby.rbx', 'rbx'), 'ruby.',     "GemStone H")
     assert_equal(RefinedFile.new.basename('ruby.rbx', 'x'),   'ruby.rb',   "GemStone I")
     assert_equal(RefinedFile.new.basename('ruby.rbx', '*'),   'ruby.rbx',  "GemStone J")
-    
+
     # A couple of regressions:
     assert_equal(RefinedFile.new.basename('', ''),           '',     'File.basename regression 1')
     assert_equal(RefinedFile.new.basename('/'),              '/',    'File.basename regression 2')
     assert_equal(RefinedFile.new.basename('//'),             '/',    'File.basename regression 3')
     assert_equal(RefinedFile.new.basename('//dir///base//'), 'base', 'File.basename regression 4')
   end
-end 
+end

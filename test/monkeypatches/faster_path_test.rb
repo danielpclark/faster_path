@@ -21,11 +21,11 @@ class MonkeyPatchesTest < Minitest::Test
     end
 
     def test_it_redefines_chop_basename
-      assert @path.method(:chop_basename).source[/FasterPath/] 
+      assert @path.method(:chop_basename).source[/FasterPath/]
     end
 
     def test_it_redefines_relative?
-      assert @path.method(:relative?).source[/FasterPath/] 
+      assert @path.method(:relative?).source[/FasterPath/]
     end
 
     def test_it_redefines_add_trailing_separator
@@ -45,11 +45,11 @@ class MonkeyPatchesTest < Minitest::Test
     end
 
     def test_it_redefines_chop_basename
-      refute @path.method(:chop_basename).source[/FasterPath/] 
+      refute @path.method(:chop_basename).source[/FasterPath/]
     end
 
     def test_it_redefines_relative?
-      refute @path.method(:relative?).source[/FasterPath/] 
+      refute @path.method(:relative?).source[/FasterPath/]
     end
 
     def test_it_redefines_add_trailing_separator

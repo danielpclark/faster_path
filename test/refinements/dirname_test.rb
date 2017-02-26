@@ -13,7 +13,7 @@ class DirnameTest < Minitest::Test
   def setup
     @refined_file = RefinedFile.new
   end
-  
+
   def test_it_gets_dirnames_correctly
     assert_equal('/home', @refined_file.dirname('/home/jason'))
     assert_equal('/home/jason', @refined_file.dirname('/home/jason/poot.txt'))
@@ -43,6 +43,6 @@ class DirnameTest < Minitest::Test
     assert_equal("/foo", @refined_file.dirname("/foo/."))
     assert_equal("/foo", @refined_file.dirname("/foo/./"))
     assert_equal("/foo/..", @refined_file.dirname("/foo/../."))
-    assert_equal("foo", @refined_file.dirname("foo/../"))    
+    assert_equal("foo", @refined_file.dirname("foo/../"))
   end
-end 
+end

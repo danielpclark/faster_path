@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'minitest/benchmark'
 
-class Pbench #< Minitest::Benchmark
+class Pbench # < Minitest::Benchmark
   def initialize(_) # if for whatever reason we inherit from Minitest::Benchmark - they take 1 parameter
   end
 
@@ -43,7 +43,7 @@ class Pbench #< Minitest::Benchmark
       times_b << t
     end
 
-    increase(average(times_a),average(times_b)).round(1)
+    increase(average(times_a), average(times_b)).round(1)
   end
 
   # run(hash)
@@ -57,9 +57,9 @@ class Pbench #< Minitest::Benchmark
     io.send :puts, "-"*80
     hsh.keys.each do |k|
       h = hsh[k]
-      result = performance(h[:old],h[:new])
+      result = performance(h[:old], h[:new])
       io.send :puts, "Performance change for #{k} is %.1f%" % result
-    end 
+    end
   end
 
   def os_lang_specs

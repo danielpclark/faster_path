@@ -6,7 +6,7 @@ class RefinedPathname
   using FasterPath::RefineFile
   def has_trailing_separator?(pth)
     Pathname.allocate.send(:has_trailing_separator?, pth)
-  end 
+  end
 end
 
 class HasTrailingSeparatorTest < Minitest::Test

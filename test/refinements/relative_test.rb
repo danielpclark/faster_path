@@ -7,12 +7,12 @@ class RefinedPathname
   def relative?(v)
     Pathname.new(v).relative?
   end
-end 
+end
 
 class RelativeRefinementTest < Minitest::Test
   def test_refines_pathname_relative?
     refute RefinedPathname.new.relative?("/")
-  end 
+  end
 
   def test_nil_behaves_the_same
     assert_raises(TypeError) { RefinedPathname.new.relative?(nil) }

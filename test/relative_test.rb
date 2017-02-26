@@ -21,7 +21,7 @@ class RelativeTest < Minitest::Test
       refute FasterPath.relative? '//a/b/c'
     end
   end
-  
+
   def test_it_knows_its_relativeness_in_dos_like_drive_letters
     refute FasterPath.relative? 'A:'
     refute FasterPath.relative? 'A:/'

@@ -11,7 +11,7 @@ class AbsoluteTest < Minitest::Test
   end
 
   def test_it_returns_similar_results_to_pathname_absolute?
-    ["",".","/",".asdf","/asdf/asdf","/asdf/asdf.asdf","asdf/asdf.asd"].each do |pth|
+    ["", ".", "/", ".asdf", "/asdf/asdf", "/asdf/asdf.asdf", "asdf/asdf.asd"].each do |pth|
       assert_equal Pathname.new(pth).absolute?,
                    FasterPath.absolute?(pth)
     end

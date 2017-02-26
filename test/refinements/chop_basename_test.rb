@@ -7,10 +7,10 @@ class RefinedPathname
   def chop_basename(v)
     Pathname.new(v).send :chop_basename, v
   end
-end 
+end
 
 class ChopBasenameRefinementTest < Minitest::Test
   def test_refines_pathname_chop_basename
     assert RefinedPathname.new.chop_basename("/hello/world")
-  end 
+  end
 end

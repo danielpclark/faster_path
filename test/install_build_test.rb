@@ -14,7 +14,7 @@ class InstallBuildTest < Gem::InstallerTestCase
   ##
   # Load gemspec and change paths relative to current file
   def gem_spec
-    @gem_spec ||= eval IO.read( testify_path "faster_path.gemspec" )
+    @gem_spec ||= instance_eval IO.read( testify_path "faster_path.gemspec" )
     reassociate_gemspec_paths
     @gem_spec
   end
@@ -38,13 +38,13 @@ class InstallBuildTest < Gem::InstallerTestCase
   def test_install_gem_in_rvm_gemset
     skip 'TODO: Need to install into empty RVM gemset and verify ext compilation'
   end
-  
+
   def test_install_gem_in_bundler_vendor
     skip 'TODO: Need to bundle install to a vendor directory here and verify ext compilation'
-    #Dir.chdir @tempdir do
+    # Dir.chdir @tempdir do
     #  bundle :package, "cache-path" => "vendor"
     #  assert_equal Dir.new(bundled_app(faster_path).dirname).entries, ""
-    #end
+    # end
   end
 
   private
@@ -52,10 +52,10 @@ class InstallBuildTest < Gem::InstallerTestCase
     @gem_specd ||= false
     [:files, :bindir, :executables, :extensions, :require_paths].each do |path|
       @gem_spec.send "#{path}=", if @gem_spec.send(path).is_a? String
-        testify_path @gem_spec.send(path)
-      else
-        @gem_spec.send(path).reduce([]){ |a,v| a << testify_path(v); a }
-      end
+                                   testify_path @gem_spec.send(path)
+                                 else
+                                   @gem_spec.send(path).reduce([]){ |a, v| a << testify_path(v); a }
+                                 end
     end unless @gem_specd
     @gem_specd = true
   end

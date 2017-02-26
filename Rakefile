@@ -16,9 +16,9 @@ task :clean_src do
     rm_rf(
       Dir.
       glob('target/release/*').
-      keep_if {|f|
+      keep_if do |f|
         !f[/\.(?:so|dll|dylib|deps)\z/]
-      }
+      end
   )
 end
 
@@ -27,13 +27,21 @@ task build_lib: [:build_src, :clean_src] do
   puts "Completed build!"
 end
 
+desc "Code Quality Check"
+task :lint do
+  puts
+  puts "Quality check starting..."
+  system("rubocop")
+  puts
+end
+
 Rake::TestTask.new(minitest: :build_lib) do |t|
   t.libs << "test"
   t.libs << "lib"
   t.test_files = FileList['test/**/*_test.rb']
 end
 
-task :test => :minitest do |t|
+task test: [:minitest, :lint] do |_t|
   exec 'mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname'
 end
 

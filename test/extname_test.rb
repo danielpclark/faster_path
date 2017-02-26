@@ -29,12 +29,12 @@ class ExtnameTest < Minitest::Test
   end
 
   def test_substitutability_of_rust_and_ruby_impls
-    result_pair = ->str{
+    result_pair = lambda do |str|
       [
           File.send(:extname, str),
           FasterPath.extname(str)
       ]
-    }
+    end
     assert_equal( *result_pair.("foo.rb")                    )
     assert_equal( *result_pair.("/foo/bar.rb")               )
     assert_equal( *result_pair.("/foo.rb/bar.c")             )

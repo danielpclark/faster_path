@@ -69,7 +69,6 @@ module FasterPath
   #  Rust.one_and_two.to_a
   # end
 
-  private
   module Rust
     extend FFI::Library
     ffi_lib begin

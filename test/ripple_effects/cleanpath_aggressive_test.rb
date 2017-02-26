@@ -6,57 +6,63 @@ class RefinedPathname
   using FasterPath::RefineFile
   def cleanpath_aggressive(pth)
     Pathname.new(pth).send(:cleanpath_aggressive).to_s
-  end 
+  end
 end
 
 class CleanpathAggressiveTest < Minitest::Test
-  def test_clean_aggressive_defaults
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/')                     , '/'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('')                      , '.'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('.')                     , '.'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('..')                    , '..'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a')                     , 'a'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/.')                    , '/'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/..')                   , '/'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/a')                    , '/a'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('./')                    , '.'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('../')                   , '..'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/')                    , 'a'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a//b')                  , 'a/b'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/.')                   , 'a'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/./')                  , 'a'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/..')                  , '.'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/../')                 , '.'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/a/.')                  , '/a'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('./..')                  , '..'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('../.')                  , '..'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('./../')                 , '..'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('.././')                 , '..'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/./..')                 , '/'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/../.')                 , '/'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/./../')                , '/'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/.././')                , '/'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/b/c')                 , 'a/b/c'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('./b/c')                 , 'b/c'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/./c')                 , 'a/c'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/b/.')                 , 'a/b'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/../.')                , '.'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('/../.././../a')         , '/a'
-    assert_equal RefinedPathname.new.cleanpath_aggressive('a/b/../../../../c/../d'), '../../d' 
+  def test_clean_aggressive_defaults1
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/'), '/'
+    assert_equal RefinedPathname.new.cleanpath_aggressive(''), '.'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('.'), '.'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('..'), '..'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a'), 'a'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/.'), '/'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/..'), '/'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/a'), '/a'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('./'), '.'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('../'), '..'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/'), 'a'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a//b'), 'a/b'
+  end
+
+  def test_clean_aggressive_defaults2
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/.'), 'a'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/./'), 'a'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/..'), '.'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/../'), '.'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/a/.'), '/a'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('./..'), '..'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('../.'), '..'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('./../'), '..'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('.././'), '..'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/./..'), '/'
+  end
+
+  def test_clean_aggressive_defaults3
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/../.'), '/'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/./../'), '/'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/.././'), '/'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/b/c'), 'a/b/c'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('./b/c'), 'b/c'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/./c'), 'a/c'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/b/.'), 'a/b'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/../.'), '.'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('/../.././../a'), '/a'
+    assert_equal RefinedPathname.new.cleanpath_aggressive('a/b/../../../../c/../d'), '../../d'
   end
 
   def test_clean_aggressive_dosish_stuff
     if File.dirname("//") == "//" # DOSISH_UNC
-      assert_equal RefinedPathname.new.cleanpath_aggressive('//a/b/c/')  , '//a/b/c'
+      assert_equal RefinedPathname.new.cleanpath_aggressive('//a/b/c/'), '//a/b/c'
     else
-      assert_equal RefinedPathname.new.cleanpath_aggressive('///')       , '/'
-      assert_equal RefinedPathname.new.cleanpath_aggressive('///a')      , '/a'
-      assert_equal RefinedPathname.new.cleanpath_aggressive('///..')     , '/'
-      assert_equal RefinedPathname.new.cleanpath_aggressive('///.')      , '/'
+      assert_equal RefinedPathname.new.cleanpath_aggressive('///'), '/'
+      assert_equal RefinedPathname.new.cleanpath_aggressive('///a'), '/a'
+      assert_equal RefinedPathname.new.cleanpath_aggressive('///..'), '/'
+      assert_equal RefinedPathname.new.cleanpath_aggressive('///.'), '/'
       assert_equal RefinedPathname.new.cleanpath_aggressive('///a/../..'), '/'
     end
 
-    if File::ALT_SEPARATOR != nil # DOSISH
+    if !File::ALT_SEPARATOR.nil? # DOSISH
       assert_equal RefinedPathname.new.cleanpath_aggressive('c:\\foo\\bar'), 'c:/foo/bar'
     end
   end

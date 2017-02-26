@@ -35,10 +35,10 @@ module Spec
       end
 
       requires = options.delete(:requires) || []
-      #if artifice = options.delete(:artifice) { "fail" unless RSpec.current_example.metadata[:realworld] }
+      # if artifice = options.delete(:artifice) { "fail" unless RSpec.current_example.metadata[:realworld] }
       #  requires << File.expand_path("../artifice/#{artifice}.rb", __FILE__)
-      #end
-      #requires << "support/hax"
+      # end
+      # requires << "support/hax"
       requires_str = requires.map {|r| "-r#{r}" }.join(" ")
 
       load_path = []

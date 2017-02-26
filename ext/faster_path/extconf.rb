@@ -8,12 +8,12 @@ unless find_executable('cargo')
   puts
   puts "curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly"
   puts
-  END { puts "Exiting..."}
+  at_exit { puts "Exiting..."}
 end
 
 Dir.chdir(File.expand_path("../../", File.dirname(__FILE__))) do
-  %x(rake build_src)
-  %x(rake clean_src)
+  `rake build_src`
+  `rake clean_src`
 end
 
 create_makefile('faster_path/dummy')

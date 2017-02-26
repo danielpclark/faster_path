@@ -7,7 +7,7 @@ include StopWatch
 
 class BenchmarkHelper < Minitest::Benchmark
   TIMER = Hash.new.tap do |t|
-    t.default_proc = proc do |hash,key|
+    t.default_proc = proc do |hash, key|
       hash[key] = Struct.new(:ruby, :rust).new(Timer.new, Timer.new)
     end
   end
@@ -21,16 +21,16 @@ class BenchmarkHelper < Minitest::Benchmark
       # print graph
       g = Gruff::Line.new
       g.title = File.basename(@file).to_s[0..-4].split('_').map(&:capitalize).join(' ')
-      g.labels = (self.instance_exec{defined?(self.class.bench_range) ? self.class.bench_range : nil} || BenchmarkHelper.bench_range).
+      g.labels = (instance_exec{defined?(self.class.bench_range) ? self.class.bench_range : nil} || BenchmarkHelper.bench_range).
         each.with_index.
-        reduce({}) {|h,(v,i)|
-          h[i+1]=v;h
+        reduce({}) {|h, (v, i)|
+        h[i+1]=v; h
       }.merge({0 => 0})
 
       g.data(:ruby, TIMER[@file].ruby.times.unshift(0))
       g.data(:rust, TIMER[@file].rust.times.unshift(0))
 
-      outfile = File.join(File.expand_path('..',__dir__),'doc','graph')
+      outfile = File.join(File.expand_path('..', __dir__), 'doc', 'graph')
       FileUtils.mkdir_p outfile
       outfile = File.join(outfile, File.basename(@file)[0..-3] + 'png')
       g.write( outfile )

@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = FasterPath::VERSION
   spec.authors       = ["Daniel P. Clark"]
   spec.email         = ["6ftdan@gmail.com"]
-  spec.summary       = %q{Reimplementation of Pathname for better performance}
-  spec.description   = %q{FasterPath is a reimplementation of Pathname for better performance.}
+  spec.summary       = 'Reimplementation of Pathname for better performance'
+  spec.description   = 'FasterPath is a reimplementation of Pathname for better performance.'
   spec.homepage      = "https://github.com/danielpclark/faster_path"
   spec.license       = "MIT OR Apache-2.0"
 
@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest", "~> 5.10"
   spec.add_development_dependency "minitest-reporters", "~> 1.1"
   spec.add_development_dependency "color_pound_spec_reporter", "~> 0.0.9"
+  spec.add_development_dependency "rubocop", "~> 0.47"
   unless ENV['CI']
     spec.add_development_dependency "stop_watch", "~> 0.1.0"
     spec.add_development_dependency "gruff", "~> 0.7.0"

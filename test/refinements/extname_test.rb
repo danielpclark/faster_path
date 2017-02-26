@@ -4,7 +4,7 @@ class RefinedFile
   using FasterPath::RefineFile
   def extname(path)
     File.extname(path)
-  end 
+  end
 end
 
 class ExtnameTest < Minitest::Test
@@ -30,4 +30,4 @@ class ExtnameTest < Minitest::Test
     assert_equal "", RefinedFile.new.extname(".foo.")
     assert_equal "", RefinedFile.new.extname("foo.")
   end
-end 
+end

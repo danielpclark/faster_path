@@ -13,6 +13,7 @@ AllCops:
     - 'spec/**/*'
     - 'src/**/*'
     - 'target/**/*'
+    - 'test/support/bundler/helpers.rb'
   DisabledByDefault: true
 
 #################### Lint ################################
