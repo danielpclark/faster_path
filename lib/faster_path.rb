@@ -73,7 +73,7 @@ module FasterPath
     extend FFI::Library
     ffi_lib begin
       prefix = Gem.win_platform? ? "" : "lib"
-      "#{File.expand_path("../target/release/", File.dirname(__FILE__))}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
+      "#{File.expand_path("../target/release/", __dir__)}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
     end
 
     class FromRustArray < FFI::Struct
