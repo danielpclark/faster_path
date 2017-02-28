@@ -4,20 +4,18 @@ module FasterPath
   module MonkeyPatches
     def self._ruby_core_file!
       ::File.class_eval do
-        if ENV['WITH_REGRESSION']
-          def self.basename(pth, ext = '')
-            FasterPath.basename(pth, ext)
-          end
-
-          def self.extname(pth)
-            FasterPath.extname(pth)
-          end
-
-          def self.dirname(pth)
-            FasterPath.dirname(pth)
-          end
+        def self.basename(pth, ext = '')
+          FasterPath.basename(pth, ext)
         end
-      end
+
+        def self.extname(pth)
+          FasterPath.extname(pth)
+        end
+
+        def self.dirname(pth)
+          FasterPath.dirname(pth)
+        end
+      end if ENV['WITH_REGRESSION']
     end
 
     def self._ruby_library_pathname!
