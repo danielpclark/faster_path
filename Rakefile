@@ -5,7 +5,7 @@ require 'fileutils'
 desc "Build Rust extension"
 task :build_src do
   puts "Building extension..."
-  system("cargo build --release")
+  sh "cargo build --release"
 end
 
 desc "Clean up Rust build"
@@ -31,7 +31,7 @@ desc "Code Quality Check"
 task :lint do
   puts
   puts "Quality check starting..."
-  system("rubocop")
+  sh "rubocop"
   puts
 end
 
