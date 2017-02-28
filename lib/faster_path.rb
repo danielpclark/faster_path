@@ -1,6 +1,7 @@
 require "faster_path/version"
 require 'pathname'
 require "ffi"
+require 'faster_path/asset_resolution'
 
 module FasterPath
   def self.rust_arch_bits
