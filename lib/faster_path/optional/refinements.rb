@@ -47,7 +47,7 @@ module FasterPath
 
       def entries
         FasterPath.entries(@path)
-      end if ENV['WITH_REGRESSION']
+      end
     end
   end
 end
