@@ -6,17 +6,15 @@ module FasterPath
   module AssetResolution # BREAK IN CASE OF EMERGENCY ;-)
     class << self
       def verify!
-        if !file?
-          if rust?
-            compile!
-            unless file?
-              raise "Rust failed to compile asset! The dynamic library for this package was not found."
-            end
-          else
-            raise "The dynamic library for this package was not found nor was Rust's cargo executable found. This package will not work without it!"
-          end
+        return lib_file if file?
+
+        if rust?
+          compile!
+          raise "Rust failed to compile asset! The dynamic library for this package was not found." unless file?
+          return lib_file
         end
-        lib_file
+
+        raise "The dynamic library for this package was not found nor was Rust's cargo executable found. This package will not work without it!"
       end
 
       private
