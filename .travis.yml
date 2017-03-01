@@ -1,19 +1,20 @@
 sudo: true
 language: ruby
 rvm:
-  - 2.2.6
-  - 2.3.3
+- 2.2.6
+- 2.3.3
 env:
-  - NO_ENV_VARS=USED
+  matrix:
   - WITH_REGRESSION=true
   - TEST_MONKEYPATCHES=true
   - TEST_MONKEYPATCHES=true WITH_REGRESSION=true
+  - secure: UCarEfq9wDpD6FV0dIdfDMCWfeLoKBAM2PS+xZ82K1uoFBMtwet/UuEuz06OnX6B9k2TwV0aqQpkUuo6o+h9YoHKAGz1/O5iB5uJaHcoII8yL43LH4YUADqupsgbvFzUCdcLuKCvDVG5RD96tt5XX87UdyZMgHvBV41wKOoUF+0ZyIWq8sKFPlItM+oYN55gY+PZ5ZadsOOkWDbTAG/LuxDi1GJxb/ObiYkjk4b93xzKEx1t7H2LSs8/f8dg0w1gnM6bVXQHjdXGuAw8jqy6IoszFh2oKDyttix4yB5l5xxj/NwO/aJNmOLBRNf611WskH6RLKWteCxwyY0gIZnDlC7q+SMYJtDapuffvqqKdlC5ECcVNimw9D3DwuxizP/5IGoC5+X+RIJiWBx/RJgFV2dw22/XvC62rOMttQL1K1dUByMRJL1pjLoauofbTdJgZgdrb1eDxGNyxL+Rg8za2wqs5NtENnXY6RIX4NvSXUPE9vRLdYnmGtH5hLF36hRh5AwvgOZ544xYT2ss6FxUJNo/zphlE7zfZrD+waeUBRUabzi6S5xEBXainj01UjtfVXRDtcjV9vbh5pYYjZsX8lLZAdW8OZeKxhaOv7zQyUtAwMHE/sGfKj1yQSDh2fscY48mepV7xUPVE7jRgUDk1ayt2a+WeGE2DCR3KBv5gkk=
 matrix:
   allow_failures:
-    - env: WITH_REGRESSION=true
-    - env: TEST_MONKEYPATCHES=true WITH_REGRESSION=true
-before_install: 
-  - gem install bundler -v 1.12.5
-  - curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
-  - bundle && bundle exec rake build_src && rake clean_src
+  - env: WITH_REGRESSION=true
+  - env: TEST_MONKEYPATCHES=true WITH_REGRESSION=true
+before_install:
+- gem install bundler -v 1.12.5
+- curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
+- bundle && bundle exec rake build_src && rake clean_src
 script: bundle exec rake test
