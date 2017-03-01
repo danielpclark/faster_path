@@ -1,14 +1,16 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'simplecov'
-require 'coveralls'
+if ENV['TEST_MONKEYPATCHES'] && ENV['WITH_REGRESSION']
+  require 'simplecov'
+  require 'coveralls'
 
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
-  SimpleCov::Formatter::HTMLFormatter,
-  Coveralls::SimpleCov::Formatter
-]
-SimpleCov.start do
-  add_filter '/test/'
-  add_filter '/spec/'
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+    SimpleCov::Formatter::HTMLFormatter,
+    Coveralls::SimpleCov::Formatter
+  ]
+  SimpleCov.start do
+    add_filter '/test/'
+    add_filter '/spec/'
+  end
 end
 require 'faster_path'
 require 'minitest/autorun'
