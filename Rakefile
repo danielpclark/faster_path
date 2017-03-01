@@ -31,7 +31,7 @@ desc "Code Quality Check"
 task :lint do
   puts
   puts "Quality check starting..."
-  sh "rubocop -c .rubocop.yml"
+  sh "rubocop"
   puts
 end
 
