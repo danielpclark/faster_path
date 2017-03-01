@@ -1,0 +1,60 @@
+# This is a redundancy check for the rust compiled library needed for this gem.
+# If the asset is not available and we can't compile it from this code then FAIL
+# on require of 'faster_path' with a very clear message as to why."
+
+module FasterPath
+  module AssetResolution # BREAK IN CASE OF EMERGENCY ;-)
+    class << self
+      def verify!
+        if !file?
+          if rust?
+            compile!
+            unless file?
+              raise "Rust failed to compile asset! The dynamic library for this package was not found."
+            end
+          else
+            raise "The dynamic library for this package was not found nor was Rust's cargo executable found. This package will not work without it!"
+          end
+        end
+        lib_file
+      end
+
+      private
+
+      def compile!
+        require 'open3'
+        Dir.chdir(File.expand_path('../../', __dir__)) do
+          Open3.popen3("rake build_lib") do |stdin, stdout, stderr, wait_thr|
+            stdin.close
+
+            wait_thr && wait_thr.value.exitstatus
+            out = Thread.new { stdout.read }.value.strip
+            Thread.new { stderr.read }.value
+            out
+          end
+        end
+      end
+
+      def rust?
+        require 'mkmf'
+        MakeMakefile::Logging.instance_variable_set(:@log, File.open(File::NULL, 'w'))
+        MakeMakefile.instance_eval "undef :message; def message(*); end"
+        MakeMakefile.find_executable('cargo')
+      end
+
+      def file?
+        File.exist? lib_file
+      end
+
+      def lib_dir
+        File.expand_path("../../target/release/", __dir__)
+      end
+
+      def lib_file
+        prefix = Gem.win_platform? ? "" : "lib"
+        "#{lib_dir}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
+      end
+    end
+  end
+end
+FasterPath::AssetResolution.verify! unless ENV['TEST']
