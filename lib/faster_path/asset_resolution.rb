@@ -33,6 +33,7 @@ module FasterPath
             out
           end
         end
+        File.exist? lib_file
       end
 
       def rust?

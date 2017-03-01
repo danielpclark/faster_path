@@ -13,7 +13,7 @@ class AssetResolutionTest < Minitest::Test
     old_method = ar.method(:file?)
     ar.instance_eval "undef :file?; def file?; false end"
     refute ar.send(:file?), 'Rewritten :file? should have been false!'
-    assert_equal "Building extension...\nCleaning up build...\nCompleted build!", ar.send(:compile!)
+    assert ar.send(:compile!)
     assert_raises {ar.verify!} # Test path where cargo exists but asset won't compile
     ar.instance_eval 'undef :rust?; def rust?; false end'
     assert_raises {ar.verify!} # Test path where both cargo and asset file do not exist
