@@ -63,8 +63,10 @@ class Pbench # < Minitest::Benchmark
   end
 
   def os_lang_specs
-    "#{FasterPath.ruby_arch_bits}-bit #{`ruby -v`.chomp}\n" +
-      "#{FasterPath.rust_arch_bits}-bit #{`rustc -V`.chomp}"
+    os_stats = "#{FasterPath.ruby_arch_bits}-bit #{`ruby -v`.chomp}\n"
+    rust, detail = `rustc -Vv`.split("\n", 2)
+    os_stats += "#{FasterPath.rust_arch_bits}-bit #{rust}\n"
+    os_stats + "architecture: #{detail.scan(/(?<=host: ).+(?=\n)/).first}"
   end
 
   def increase(old_num, new_num)
