@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.files         = [
     "Cargo.lock", "Cargo.toml", "Gemfile",
     "MIT-LICENSE.txt", "README.md", "Rakefile", "bin/console", "bin/setup",
-    "ext/faster_path/extconf.rb", "faster_path.gemspec"
+    "ext/Rakefile", "faster_path.gemspec"
   ]
   spec.files += Dir['lib/**/*']
   spec.files += Dir['src/**/*']
