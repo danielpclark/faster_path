@@ -1,7 +1,8 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 if ENV['TEST_MONKEYPATCHES'] &&
     ENV['WITH_REGRESSION'] &&
-    ENV['TRAVIS_OS_NAME'] == 'linux'
+    ENV['TRAVIS_OS_NAME'] == 'linux' &&
+    Gem::Dependency.new('', '~> 2.3', '< 2.4').match?('', RUBY_VERSION)
   require 'simplecov'
   require 'coveralls'
 
