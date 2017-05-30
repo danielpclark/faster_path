@@ -67,6 +67,11 @@ task test: [:minitest, :lint] do |_t|
   exec 'mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname'
 end
 
+desc "Honest and full mspec results"
+task :mspec_full do
+  exec %(bash -c "TEST_MONKEYPATCHES=true WITH_REGRESSION=true mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname")
+end
+
 Rake::TestTask.new(bench: :build_lib) do |t|
   t.libs = %w(lib test)
   t.pattern = 'test/**/*_benchmark.rb'
