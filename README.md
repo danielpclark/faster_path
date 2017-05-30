@@ -113,7 +113,7 @@ curl -sSf https://static.rust-lang.org/rustup.sh | sh
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path', '~> 0.1.0'
+gem 'faster_path', '~> 0.3.0'
 ```
 
 And then execute:
@@ -143,7 +143,6 @@ Current methods implemented:
 | `FasterPath.absolute?` | `Pathname#absolute?` | 93.9% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 50.6% |
 | `FasterPath.relative?` | `Pathname#relative?` | 93.2% |
-| `FasterPath.blank?` | | |
 | `FasterPath.directory?` | `Pathname#directory?` | 25.5% |
 | `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 46.8% |
 | `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 61.2% |
@@ -169,9 +168,11 @@ require "faster_path/optional/monkeypatches"
 FasterPath.sledgehammer_everything!
 ```
 
-## Unstable optional bits
+## Optional Rust implementations
 
-**Optional methods which ~~have regressions.~~ are unstable.**  These will **not** be included by default in monkey-patches.  Be cautious when using the `FasterPath::RefineFile` refinement.  To try them anyways use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
+**These are stable, not performant, and not included in `File` by default.**
+
+These will **not** be included by default in monkey-patches.  Be cautious when using the `FasterPath::RefineFile` refinement.  To try them with monkeypatching use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
 
 |FasterPath Implementation|Ruby Implementation|
 |---|---|
@@ -180,9 +181,7 @@ FasterPath.sledgehammer_everything!
 | `FasterPath.extname` | `File.extname` |
 
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
-performance seems to vary based on CPU cache on possibly 64bit/32bit system environmnets.
-
-**Developers for FasterPath:** Most of these need to be rewritten, please use `WITH_REGRESSION=true TEST_MONKEYPATCHES=true` in your testing.  You can see the resulting failures currently on TravisCI under "Allow Failures".
+performance seems to vary based on CPU cache on possibly 64bit/32bit system environmnets.  When these methods were initially written, and somewhat simplistic, they were faster than the C implementations on `File`.  After the implementations have been perfected to match the behavior in Ruby they don't perform as well and are therefore not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.  If you don't want to pass the `WITH_REGRESSION` environment variable you can put any turthy parameter on the monkey patch method to include it.
 
 ## Getting Started with Development
 
