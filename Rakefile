@@ -78,12 +78,12 @@ task :mspec_encoding_full do
 end
 
 Rake::TestTask.new(bench: :build_lib) do |t|
-  t.libs = %w(lib test)
+  t.libs = %w[lib test]
   t.pattern = 'test/**/*_benchmark.rb'
 end
 
 Rake::TestTask.new(pbench: :build_lib) do |t|
-  t.libs = %w(lib test test/pbench)
+  t.libs = %w[lib test test/pbench]
   t.pattern = 'test/pbench/pbench_suite.rb'
 end
 
