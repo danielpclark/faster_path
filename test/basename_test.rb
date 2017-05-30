@@ -33,6 +33,18 @@ class BasenameTest < Minitest::Test
     assert_equal FasterPath.basename('//'),             '/'
     assert_equal FasterPath.basename('//dir///base//'), 'base'
     assert_equal FasterPath.basename('.x', '.x'), '.x'
+
+    # returns the basename for unix suffix
+    assert_equal FasterPath.basename("bar.c", ".c"), "bar"
+    assert_equal FasterPath.basename("bar.txt", ".txt"), "bar"
+    assert_equal FasterPath.basename("/bar.txt", ".txt"), "bar"
+    assert_equal FasterPath.basename("/foo/bar.txt", ".txt"), "bar"
+    assert_equal FasterPath.basename("bar.txt", ".exe"), "bar.txt"
+    assert_equal FasterPath.basename("bar.txt.exe", ".exe"), "bar.txt"
+    assert_equal FasterPath.basename("bar.txt.exe", ".txt"), "bar.txt.exe"
+    assert_equal FasterPath.basename("bar.txt", ".*"), "bar"
+    assert_equal FasterPath.basename("bar.txt.exe", ".*"), "bar.txt"
+    assert_equal FasterPath.basename("bar.txt.exe", ".txt.exe"), "bar"
   end
 
   def test_it_does_the_same_as_file_basename

@@ -1,16 +1,22 @@
+extern crate array_tool;
 use libc::c_char;
 use std::ffi::{CStr, CString};
 use path_parsing::extract_last_path_segment;
+use self::array_tool::string::Squeeze;
 
 #[no_mangle]
 pub extern "C" fn basename(c_pth: *const c_char, c_ext: *const c_char) -> *const c_char {
-  // TODO: rb_raise on type or encoding errors
-  // TODO: support objects that respond to `to_path`
   if c_pth.is_null() || c_ext.is_null() {
     return c_pth;
   }
   let pth = unsafe { CStr::from_ptr(c_pth) }.to_str().unwrap();
   let ext = unsafe { CStr::from_ptr(c_ext) }.to_str().unwrap();
+
+  // Known edge case
+  match &pth.squeeze("/")[..] {
+    "/" => { return CString::new("/").unwrap().into_raw() }
+    _ => {}
+  }
 
   let mut name = extract_last_path_segment(pth);
 

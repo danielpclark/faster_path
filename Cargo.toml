@@ -14,3 +14,4 @@ crate-type = ["dylib"]
 
 [dependencies]
 libc = "0.2.11"
+array_tool = "0.3.8"

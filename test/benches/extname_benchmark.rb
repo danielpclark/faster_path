@@ -12,14 +12,14 @@ class ExtnameBenchmark < BenchmarkHelper
   end
 
   def cases
-    %w(
+    %w[
       verylongfilename_verylongfilename_verylongfilename_verylongfilename.rb
       /very/long/path/name/very/long/path/name/very/long/path/name/file.rb
       /ext/mail.rb
       lots/of/trailing/slashes.rb/////////////////////
       .hiddenfile
       very_long_extension_verylongextensionverylongextensionverylongextensionverylongextension.rb
-    ) + ['']
+    ] + ['']
   end
 
   def bench_rust_extname
