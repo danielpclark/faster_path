@@ -4,14 +4,20 @@ module FasterPath
   module RefineFile
     refine File do
       def self.basename(pth, ext = '')
+        pth = pth.to_path if pth.respond_to? :to_path
+        raise TypeError unless pth.is_a? String
         FasterPath.basename(pth, ext)
       end
 
       def self.extname(pth)
+        pth = pth.to_path if pth.respond_to? :to_path
+        raise TypeError unless pth.is_a? String
         FasterPath.extname(pth)
       end
 
       def self.dirname(pth)
+        pth = pth.to_path if pth.respond_to? :to_path
+        raise TypeError unless pth.is_a? String
         FasterPath.dirname(pth)
       end
     end
