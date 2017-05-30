@@ -12,7 +12,7 @@ pub extern "C" fn basename(c_pth: *const c_char, c_ext: *const c_char) -> *const
   let pth = unsafe { CStr::from_ptr(c_pth) }.to_str().unwrap();
   let ext = unsafe { CStr::from_ptr(c_ext) }.to_str().unwrap();
 
-  // Two known edge cases.
+  // Known edge case
   match &pth.squeeze("/")[..] {
     "/" => { return CString::new("/").unwrap().into_raw() }
     _ => {}
