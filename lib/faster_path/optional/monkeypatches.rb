@@ -63,8 +63,8 @@ module FasterPath
   end
   private_constant :MonkeyPatches
 
-  def self.sledgehammer_everything!
-    MonkeyPatches._ruby_core_file!
+  def self.sledgehammer_everything!(include_file = false)
+    MonkeyPatches._ruby_core_file! if include_file # SLOW; DON'T AUTO INCLUDE
     MonkeyPatches._ruby_library_pathname!
     "CAUTION: Monkey patching effects everything! Be very sure you want this!"
   end

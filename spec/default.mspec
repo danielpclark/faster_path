@@ -5,4 +5,4 @@ class MSpecScript
   set :prefix, 'spec/ruby_spec'
 end
 
-MSpec.disable_feature :encoding
+MSpec.disable_feature :encoding unless ENV['ENCODING']
