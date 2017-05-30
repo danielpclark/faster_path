@@ -2,6 +2,8 @@
 # If the asset is not available and we can't compile it from this code then FAIL
 # on require of 'faster_path' with a very clear message as to why."
 
+require 'thermite/config'
+
 module FasterPath
   module AssetResolution # BREAK IN CASE OF EMERGENCY ;-)
     class << self
@@ -45,13 +47,13 @@ module FasterPath
         File.exist? lib_file
       end
 
-      def lib_dir
-        File.expand_path("../../target/release/", __dir__)
-      end
-
       def lib_file
-        prefix = Gem.win_platform? ? "" : "lib"
-        "#{lib_dir}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
+        @lib_file ||= begin
+          toplevel_dir = File.dirname(File.dirname(File.dirname(__FILE__)))
+          config = Thermite::Config.new(cargo_project_path: toplevel_dir,
+                                        ruby_project_path: toplevel_dir)
+          config.ruby_extension_path
+        end
       end
     end
   end

@@ -1,7 +1,8 @@
-require "faster_path/version"
+require 'faster_path/version'
+require 'ffi'
 require 'pathname'
-require "ffi"
 require 'faster_path/asset_resolution'
+require 'thermite/config'
 
 module FasterPath
   def self.rust_arch_bits
@@ -73,8 +74,10 @@ module FasterPath
   module Rust
     extend FFI::Library
     ffi_lib begin
-      prefix = Gem.win_platform? ? "" : "lib"
-      "#{File.expand_path("../target/release/", __dir__)}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
+      toplevel_dir = File.dirname(File.dirname(__FILE__))
+      config = Thermite::Config.new(cargo_project_path: toplevel_dir,
+                                    ruby_project_path: toplevel_dir)
+      config.ruby_extension_path
     end
 
     class FromRustArray < FFI::Struct

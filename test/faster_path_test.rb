@@ -1,11 +1,13 @@
 require 'test_helper'
-require 'ffi'
+require 'thermite/config'
 
 class FasterPathTest < Minitest::Test
   def test_it_build_linked_library
     assert File.exist? begin
-      prefix = Gem.win_platform? ? "" : "lib"
-      "#{File.expand_path("../target/release/", File.dirname(__FILE__))}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
+      toplevel_dir = File.dirname(File.dirname(__FILE__))
+      config = Thermite::Config.new(cargo_project_path: toplevel_dir,
+                                    ruby_project_path: toplevel_dir)
+      config.ruby_extension_path
     end
   end
 end

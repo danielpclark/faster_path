@@ -8,6 +8,9 @@ repository = "https://github.com/danielpclark/faster_path"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 
+[package.metadata.thermite]
+github_releases = true
+
 [lib]
 name = "faster_path"
 crate-type = ["dylib"]

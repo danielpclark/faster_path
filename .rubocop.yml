@@ -2,7 +2,7 @@ AllCops:
   Include:
     - 'Gemfile'
     - 'Rakefile'
-    - 'lib/**/*'
+    - 'lib/**/*.rb'
     - '*.gemspec'
   Exclude:
     - 'assets/**/*'
