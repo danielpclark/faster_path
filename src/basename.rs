@@ -1,6 +1,8 @@
+extern crate array_tool;
 use libc::c_char;
 use std::ffi::{CStr, CString};
 use path_parsing::extract_last_path_segment;
+use self::array_tool::string::Squeeze;
 
 #[no_mangle]
 pub extern "C" fn basename(c_pth: *const c_char, c_ext: *const c_char) -> *const c_char {
@@ -11,9 +13,8 @@ pub extern "C" fn basename(c_pth: *const c_char, c_ext: *const c_char) -> *const
   let ext = unsafe { CStr::from_ptr(c_ext) }.to_str().unwrap();
 
   // Two known edge cases.
-  match pth {
+  match &pth.squeeze("/")[..] {
     "/" => { return CString::new("/").unwrap().into_raw() }
-    "//" => { return CString::new("/").unwrap().into_raw() }
     _ => {}
   }
 

@@ -23,7 +23,7 @@ module FasterPath
           raise TypeError unless pth.is_a? String
           FasterPath.dirname(pth)
         end
-      end if ENV['WITH_REGRESSION']
+      end
     end
 
     def self._ruby_library_pathname!
@@ -63,7 +63,7 @@ module FasterPath
   end
   private_constant :MonkeyPatches
 
-  def self.sledgehammer_everything!(include_file = false)
+  def self.sledgehammer_everything!(include_file = !!ENV['WITH_REGRESSION'])
     MonkeyPatches._ruby_core_file! if include_file # SLOW; DON'T AUTO INCLUDE
     MonkeyPatches._ruby_library_pathname!
     "CAUTION: Monkey patching effects everything! Be very sure you want this!"
