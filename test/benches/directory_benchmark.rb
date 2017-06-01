@@ -1,7 +1,6 @@
 require "benchmark_helper"
 
 class DirectoryBenchmark < BenchmarkHelper
-
   def setup
     @file ||= __FILE__
   end
@@ -12,14 +11,14 @@ class DirectoryBenchmark < BenchmarkHelper
   end
 
   def bench_rust_directory?
-    benchmark_graph :rust do
+    benchmark :rust do
       FasterPath.directory?("/hello")
       FasterPath.directory?("goodbye")
     end
   end
 
   def bench_ruby_directory?
-    benchmark_graph :ruby do
+    benchmark :ruby do
       Pathname.new("/hello").directory?
       Pathname.new("goodbye").directory?
     end

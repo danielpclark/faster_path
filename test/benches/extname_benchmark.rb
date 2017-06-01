@@ -1,7 +1,6 @@
 require "benchmark_helper"
 
 class ExtnameBenchmark < BenchmarkHelper
-
   def setup
     @file ||= __FILE__
   end
@@ -23,13 +22,13 @@ class ExtnameBenchmark < BenchmarkHelper
   end
 
   def bench_rust_extname
-    benchmark_graph :rust do
+    benchmark :rust do
       cases.each { |path| FasterPath.extname(path) }
     end
   end
 
   def bench_ruby_extname
-    benchmark_graph :ruby do
+    benchmark :ruby do
       cases.each { |path| File.extname(path) }
     end
   end

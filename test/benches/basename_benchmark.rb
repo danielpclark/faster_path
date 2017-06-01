@@ -1,7 +1,6 @@
 require "benchmark_helper"
 
 class BasenameBenchmark < BenchmarkHelper
-
   def setup
     @file ||= __FILE__
   end
@@ -12,7 +11,7 @@ class BasenameBenchmark < BenchmarkHelper
   end
 
   def bench_rust_basename
-    benchmark_graph :rust do
+    benchmark :rust do
       FasterPath.basename("/hello/world")
       FasterPath.basename('/home/gumby/work/ruby.rb', '.rb')
       FasterPath.basename('/home/gumby/work/ruby.rb', '.*')
@@ -20,7 +19,7 @@ class BasenameBenchmark < BenchmarkHelper
   end
 
   def bench_ruby_basename
-    benchmark_graph :ruby do
+    benchmark :ruby do
       File.basename("/hello/world")
       File.basename('/home/gumby/work/ruby.rb', '.rb')
       File.basename('/home/gumby/work/ruby.rb', '.*')
