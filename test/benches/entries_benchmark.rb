@@ -1,7 +1,6 @@
 require "benchmark_helper"
 
 class EntriesBenchmark < BenchmarkHelper
-
   def setup
     @file ||= __FILE__
   end
@@ -16,14 +15,14 @@ class EntriesBenchmark < BenchmarkHelper
   end
 
   def bench_rust_entries
-    benchmark_graph :rust do
+    benchmark :rust do
       FasterPath.entries(".")
       FasterPath.entries("src")
     end
   end
 
   def bench_ruby_entries
-    benchmark_graph :ruby do
+    benchmark :ruby do
       Pathname.new(".").entries
       Pathname.new("src").entries
     end

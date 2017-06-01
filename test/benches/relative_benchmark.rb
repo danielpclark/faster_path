@@ -1,7 +1,6 @@
 require "benchmark_helper"
 
 class RelativeBenchmark < BenchmarkHelper
-
   def setup
     @file ||= __FILE__
   end
@@ -12,14 +11,14 @@ class RelativeBenchmark < BenchmarkHelper
   end
 
   def bench_rust_relative?
-    benchmark_graph :rust do
+    benchmark :rust do
       FasterPath.relative?("/hello")
       FasterPath.relative?("goodbye")
     end
   end
 
   def bench_ruby_relative?
-    benchmark_graph :ruby do
+    benchmark :ruby do
       Pathname.new("/hello").relative?
       Pathname.new("goodbye").relative?
     end

@@ -1,7 +1,6 @@
 require "benchmark_helper"
 
 class AbsoluteBenchmark < BenchmarkHelper
-
   def setup
     @file ||= __FILE__
   end
@@ -12,14 +11,14 @@ class AbsoluteBenchmark < BenchmarkHelper
   end
 
   def bench_rust_absolute?
-    benchmark_graph :rust do
+    benchmark :rust do
       FasterPath.absolute?("/hello")
       FasterPath.absolute?("goodbye")
     end
   end
 
   def bench_ruby_absolute?
-    benchmark_graph :ruby do
+    benchmark :ruby do
       Pathname.new("/hello").absolute?
       Pathname.new("goodbye").absolute?
     end
