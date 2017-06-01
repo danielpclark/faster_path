@@ -107,4 +107,5 @@ class BenchmarkHelper < Minitest::Benchmark
         str.prepend((idx%3).zero? ? val + ',' : val)
       end.chop
   end
+  private :commafy
 end
