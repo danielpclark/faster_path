@@ -14,10 +14,10 @@ env:
   matrix:
   - WITH_REGRESSION=true
   - TEST_MONKEYPATCHES=true WITH_REGRESSION=true
-  - ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
+  - RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
 matrix:
   allow_failures:
-  - env: ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
+  - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
 before_install:
 - gem install bundler -v 1.14.5
 - curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
