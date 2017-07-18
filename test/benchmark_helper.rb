@@ -9,6 +9,16 @@ class BenchmarkHelper < Minitest::Benchmark
     [20_000, 40_000, 60_000, 80_000, 100_000]
   end
 
+  def benchmark lang
+    assert_performance_constant do |n|
+      send(lang).mark
+      n.times do
+        yield
+      end
+    end
+    send(lang).mark
+  end
+
   def graph_benchmarks
     if rust.time? && ruby.time?
       g = Gruff::Line.new
@@ -22,26 +32,14 @@ class BenchmarkHelper < Minitest::Benchmark
     end
   end
 
-  def benchmark lang
-    assert_performance_constant do |n|
-      send(lang).mark
-      n.times do
-        yield
-      end
-    end
-    send(lang).mark
-  end
-  private :benchmark
-
+  private
   def test_name
     File.basename(@file, '.rb')
   end
-  private :test_name
 
   def graph_title
     test_name.split('_').map(&:capitalize).join(' ')
   end
-  private :graph_title
 
   def output_file
     path = File.join(File.expand_path('..', __dir__), 'doc', 'graph')
@@ -50,14 +48,12 @@ class BenchmarkHelper < Minitest::Benchmark
 
     File.join path, "#{test_name}.png"
   end
-  private :output_file
 
   def ranges_for_benchmarks
     instance_exec do
       self.class.bench_range if defined?(self.class.bench_range)
     end || BenchmarkHelper.bench_range
   end
-  private :ranges_for_benchmarks
 
   def generate_benchmark_range_labels
     ranges_for_benchmarks.
@@ -66,7 +62,6 @@ class BenchmarkHelper < Minitest::Benchmark
         hash[ idx.succ ] = commafy val
       end.merge({0 => 0})
   end
-  private :generate_benchmark_range_labels
 
   Languages = Struct.new(:ruby, :rust) do
     def initialize
@@ -83,22 +78,18 @@ class BenchmarkHelper < Minitest::Benchmark
   def timers
     TIMERS[@file]
   end
-  private :timers
 
   def ruby
     timers.ruby
   end
-  private :ruby
 
   def rust
     timers.rust
   end
-  private :rust
 
   def graph_times lang
     send(lang).times.unshift(0)
   end
-  private :graph_times
 
   def commafy num
     num.to_s.chars.reverse.
@@ -107,5 +98,4 @@ class BenchmarkHelper < Minitest::Benchmark
         str.prepend((idx%3).zero? ? val + ',' : val)
       end.chop
   end
-  private :commafy
 end

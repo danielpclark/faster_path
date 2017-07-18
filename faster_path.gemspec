@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "color_pound_spec_reporter", "~> 0.0.9"
   spec.add_development_dependency "rubocop", "~> 0.47"
   unless ENV['CI']
-    spec.add_development_dependency "stop_watch", "~> 0.1.0"
+    spec.add_development_dependency "stop_watch", "~> 1.0.0"
     spec.add_development_dependency "gruff", "~> 0.7.0"
   end
 end
