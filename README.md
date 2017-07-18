@@ -113,7 +113,7 @@ curl -sSf https://static.rust-lang.org/rustup.sh | sh
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path', '~> 0.3.0'
+gem 'faster_path', '~> 0.1.12'
 ```
 
 And then execute:
