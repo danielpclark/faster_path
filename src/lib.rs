@@ -14,6 +14,7 @@ pub mod is_relative;
 pub mod is_blank;
 pub mod both_are_blank;
 pub mod basename;
+pub mod plus;
 pub mod dirname;
 pub mod basename_for_chop;
 pub mod dirname_for_chop;

@@ -39,8 +39,12 @@ pub extern fn plus(string: *const c_char, string2: *const c_char) -> *const c_ch
       index_list2.remove(0);
       basename_list2.remove(0);
     }
-    if !let Some(r1) = chop_basename(prefix1) { break };
-    (prefix1,basename1) = r1;
+    match chop_basename(prefix1) {
+      None => { break },
+      Some(val) => {
+        (prefix1, basename1) = val
+      },
+    }
     if basename1 == "." { continue };
     if basename1 == ".." || basename_list2.is_empty() || basename_list2[0] != ".." {
       prefix1 = prefix1 + basename1;
@@ -66,5 +70,3 @@ pub extern fn plus(string: *const c_char, string2: *const c_char) -> *const c_ch
   let output = CString::new(result).unwrap();
   output.into_raw()
 }
-
-
