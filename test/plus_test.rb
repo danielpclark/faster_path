@@ -2,8 +2,7 @@ require 'test_helper'
 
 class PlusTest < Minitest::Test
   def defassert(result, var1, var2)
-    assert_equal result,
-      Pathname.allocate.send(:plus, Pathname.new(var1), Pathname.new(var2)).to_s
+    assert_equal result, FasterPath.plus(var1, var2)
   end
 
   # def test_nil_inputs

@@ -16,6 +16,7 @@ pub mod both_are_blank;
 pub mod basename;
 pub mod plus;
 pub mod dirname;
+pub mod chop_basename;
 pub mod basename_for_chop;
 pub mod dirname_for_chop;
 pub mod add_trailing_separator;
