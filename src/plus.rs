@@ -3,8 +3,11 @@ use std::path::Path;
 use libc::c_char;
 use std::ffi::{CStr,CString};
 use std::str;
-use chop_basename::chop_basename;
+use chop_basename::rust::chop_basename;
+use basename::rust::basename;
+use dirname::rust::dirname;
 use self::array_tool::vec::Shift;
+use std::ops::Index;
 
 #[no_mangle]
 pub extern fn plus(string: *const c_char, string2: *const c_char) -> *const c_char {
@@ -33,87 +36,95 @@ pub extern fn plus(string: *const c_char, string2: *const c_char) -> *const c_ch
 }
 
 fn plus_paths(path1: &str, path2: &str) -> String {
-  let prefix2 = path2;
+  let mut prefix2 = path2.to_string();
   let mut index_list2: Vec<usize> = vec![];
   let mut basename_list2: Vec<String> = vec![];
 
   loop {
-    match chop_basename(prefix2) {
+    match chop_basename(&prefix2[..]) {
       None => { break },
-      Some((prefix2, basename2)) => {
-        index_list2.unshift(prefix2.len());
+      Some((pfx2, basename2)) => {
+        prefix2 = pfx2.clone();
+        index_list2.unshift(pfx2.len());
         basename_list2.unshift(basename2.to_owned());
       },
     }
   }
-  if !prefix2.is_empty() { return path2.to_string() };
+  if !prefix2.is_empty() {
+    return path2.to_string()
+  };
 
-  let mut prefix1 = path1;
+  let mut prefix1 = path1.to_string();
 
   loop {
-    while !basename_list2.is_empty() && basename_list2.first() == "." {
+    while !basename_list2.is_empty() && basename_list2.first().unwrap() == "." {
       index_list2.shift();
       basename_list2.shift();
     }
-    let r1 = chop_basename(prefix1);
-    if r1 == None { break };
-    let Some(prefix1, basename1) = r1;
-    if basename1 == "." { continue };
-    if basename1 == ".." || basename_list2.is_empty() || basename_list2.first() != ".." {
-      prefix1.push_str(&basename1);
-      break
+    match chop_basename(&prefix1[..]) {
+      None => { break },
+      Some((mut pfx1, basename1)) => {
+        if basename1 == "." { continue };
+        if basename1 == ".." || basename_list2.is_empty() || basename_list2.first().unwrap() != ".." {
+          pfx1.push_str(&basename1);
+          prefix1 = pfx1.clone();
+          break
+          }
+        }
     }
     index_list2.shift();
     basename_list2.shift();
   }
 
-  if let Some(d,b) = chop_basename(prefix1) {
-    let r1 = basename(prefix1).contain("/")
+  let mut result: String = "".to_string();
+
+  if let Some((_,_)) = chop_basename(&prefix1[..]) {
+    let r1 = basename(&prefix1[..], "").contains("/");
     if r1 {
-      while !basename_list2.is_empty() && basename_list2.first() == '..' {
+      while !basename_list2.is_empty() && basename_list2.first().unwrap() == ".." {
         index_list2.shift();
         basename_list2.shift();
       }
     }
     if !basename_list2.is_empty() {
-      let suffix2 = path2[index_list2.first..-1];
+      let suffix2 = path2.index(index_list2.first().unwrap().to_owned()..);
       if r1 {
-        File.join(prefix1, suffix2)
+        result = Path::new(&prefix1).join(Path::new(&suffix2)).to_str().unwrap().to_string();
       } else {
-        prefix1.push_str(suffix2)
+        prefix1.push_str(&suffix2);
+        result = prefix1.to_string();
       }
     } else {
       if r1 {
-        prefix1
+        result = prefix1.to_string();
       } else {
-        File.dirname(prefix1)
+        result = dirname(&prefix1[..]);
       }
     }
   }
 
-  let output = format!("{}{}", path1, path2);
-  String::from(output)
+  String::from(result)
 }
 
 #[test]
 fn it_will_plus_same_as_ruby() {
-  assert_eq!("/"      ,       plus_paths("/"  , "/"));
-  // assert_eq!("a/b"    ,       plus_paths("a"  , "b"));
-  // assert_eq!("a"      ,       plus_paths("a"  , "."));
-  // assert_eq!("b"      ,       plus_paths("."  , "b"));
-  // assert_eq!("."      ,       plus_paths("."  , "."));
-  // assert_eq!("/b"     ,       plus_paths("a"  , "/b"));
+  assert_eq!("/"      ,       plus_paths("/"  , "/")); // PASS
+  // assert_eq!("a/b"    ,       plus_paths("a"  , "b")); // FAIL (missing /)
+  // assert_eq!("a"      ,       plus_paths("a"  , ".")); // FAIL
+  // assert_eq!("b"      ,       plus_paths("."  , "b")); // INFINITE LOOP
+  // assert_eq!("."      ,       plus_paths("."  , ".")); // INFINITE LOOP
+  assert_eq!("/b"     ,       plus_paths("a"  , "/b")); // PASS
 
-  // assert_eq!("/"      ,       plus_paths("/"  , ".."));
-  // assert_eq!("."      ,       plus_paths("a"  , ".."));
-  // assert_eq!("a"      ,       plus_paths("a/b", ".."));
-  // assert_eq!("../.."  ,       plus_paths(".." , ".."));
-  // assert_eq!("/c"     ,       plus_paths("/"  , "../c"));
-  // assert_eq!("c"      ,       plus_paths("a"  , "../c"));
-  // assert_eq!("a/c"    ,       plus_paths("a/b", "../c"));
-  // assert_eq!("../../c",       plus_paths(".." , "../c"));
+  // assert_eq!("/"      ,       plus_paths("/"  , "..")); // FAIL
+  assert_eq!("."      ,       plus_paths("a"  , "..")); // PASS
+  assert_eq!("a"      ,       plus_paths("a/b", "..")); // PASS
+  // assert_eq!("../.."  ,       plus_paths(".." , "..")); // FAIL (missing /)
+  // assert_eq!("/c"     ,       plus_paths("/"  , "../c")); // FAIL
+  // assert_eq!("c"      ,       plus_paths("a"  , "../c")); // FAIL
+  // assert_eq!("a/c"    ,       plus_paths("a/b", "../c")); // FAIL
+  // assert_eq!("../../c",       plus_paths(".." , "../c")); // FAIL (missing one /)
 
-  // assert_eq!("a//b/d//e",     plus_paths("a//b/c", "../d//e"));
+  // assert_eq!("a//b/d//e",     plus_paths("a//b/c", "../d//e")); // FAIL
 
-  // assert_eq!("//foo/var/bar", plus_paths("//foo/var", "bar"));
+  // assert_eq!("//foo/var/bar", plus_paths("//foo/var", "bar")); // FAIL (missing one /)
 }
