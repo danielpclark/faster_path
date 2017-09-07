@@ -28,8 +28,7 @@ pub extern fn plus(string: *const c_char, string2: *const c_char) -> *const c_ch
   let r_str = str::from_utf8(c_str.to_bytes()).unwrap();
   let r_str2 = str::from_utf8(c_str2.to_bytes()).unwrap();
 
-  let path = Path::new(r_str).join(r_str2);
-  let result = path.to_str().unwrap();
+  let result = plus_paths(r_str, r_str2);
   
   let output = CString::new(result).unwrap();
   output.into_raw()
@@ -63,11 +62,11 @@ fn plus_paths(path1: &str, path2: &str) -> String {
     }
     match chop_basename(&prefix1[..]) {
       None => { break },
-      Some((mut pfx1, basename1)) => {
+      Some((pfx1, basename1)) => {
+        prefix1 = pfx1.clone();
         if basename1 == "." { continue };
         if basename1 == ".." || basename_list2.is_empty() || basename_list2.first().unwrap() != ".." {
-          pfx1.push_str(&basename1);
-          prefix1 = pfx1.clone();
+          prefix1.push_str(&basename1);
           break
           }
         }
@@ -76,30 +75,32 @@ fn plus_paths(path1: &str, path2: &str) -> String {
     basename_list2.shift();
   }
 
-  let mut result: String = "".to_string();
+  let result: String;
 
-  if let Some((_,_)) = chop_basename(&prefix1[..]) {
-    let r1 = basename(&prefix1[..], "").contains("/");
+  let mut r1 = if let Some((_,_)) = chop_basename(&prefix1[..]) {true} else {false};
+
+  if !r1 {
+    r1 = basename(&prefix1[..], "").contains("/");
     if r1 {
       while !basename_list2.is_empty() && basename_list2.first().unwrap() == ".." {
         index_list2.shift();
         basename_list2.shift();
       }
     }
-    if !basename_list2.is_empty() {
-      let suffix2 = path2.index(index_list2.first().unwrap().to_owned()..);
-      if r1 {
-        result = Path::new(&prefix1).join(Path::new(&suffix2)).to_str().unwrap().to_string();
-      } else {
-        prefix1.push_str(&suffix2);
-        result = prefix1.to_string();
-      }
+  }
+  if !basename_list2.is_empty() {
+    let suffix2 = path2.index(index_list2.first().unwrap().to_owned()..);
+    if r1 {
+      result = Path::new(&prefix1).join(Path::new(&suffix2)).to_str().unwrap().to_string();
     } else {
-      if r1 {
-        result = prefix1.to_string();
-      } else {
-        result = dirname(&prefix1[..]);
-      }
+      prefix1.push_str(&suffix2);
+      result = prefix1.to_string();
+    }
+  } else {
+    if r1 {
+      result = prefix1.to_string();
+    } else {
+      result = dirname(&prefix1[..]);
     }
   }
 
@@ -108,23 +109,23 @@ fn plus_paths(path1: &str, path2: &str) -> String {
 
 #[test]
 fn it_will_plus_same_as_ruby() {
-  assert_eq!("/"      ,       plus_paths("/"  , "/")); // PASS
-  // assert_eq!("a/b"    ,       plus_paths("a"  , "b")); // FAIL (missing /)
-  // assert_eq!("a"      ,       plus_paths("a"  , ".")); // FAIL
-  // assert_eq!("b"      ,       plus_paths("."  , "b")); // INFINITE LOOP
-  // assert_eq!("."      ,       plus_paths("."  , ".")); // INFINITE LOOP
-  assert_eq!("/b"     ,       plus_paths("a"  , "/b")); // PASS
+  assert_eq!("/"      ,       plus_paths("/"  , "/"));
+  assert_eq!("a/b"    ,       plus_paths("a"  , "b"));
+  assert_eq!("a"      ,       plus_paths("a"  , "."));
+  assert_eq!("b"      ,       plus_paths("."  , "b"));
+  assert_eq!("."      ,       plus_paths("."  , "."));
+  assert_eq!("/b"     ,       plus_paths("a"  , "/b"));
 
-  // assert_eq!("/"      ,       plus_paths("/"  , "..")); // FAIL
-  assert_eq!("."      ,       plus_paths("a"  , "..")); // PASS
-  assert_eq!("a"      ,       plus_paths("a/b", "..")); // PASS
-  // assert_eq!("../.."  ,       plus_paths(".." , "..")); // FAIL (missing /)
-  // assert_eq!("/c"     ,       plus_paths("/"  , "../c")); // FAIL
-  // assert_eq!("c"      ,       plus_paths("a"  , "../c")); // FAIL
-  // assert_eq!("a/c"    ,       plus_paths("a/b", "../c")); // FAIL
-  // assert_eq!("../../c",       plus_paths(".." , "../c")); // FAIL (missing one /)
+  assert_eq!("/"      ,       plus_paths("/"  , ".."));
+  assert_eq!("."      ,       plus_paths("a"  , ".."));
+  assert_eq!("a"      ,       plus_paths("a/b", ".."));
+  assert_eq!("../.."  ,       plus_paths(".." , ".."));
+  assert_eq!("/c"     ,       plus_paths("/"  , "../c"));
+  assert_eq!("c"      ,       plus_paths("a"  , "../c"));
+  assert_eq!("a/c"    ,       plus_paths("a/b", "../c"));
+  assert_eq!("../../c",       plus_paths(".." , "../c"));
 
-  // assert_eq!("a//b/d//e",     plus_paths("a//b/c", "../d//e")); // FAIL
+  assert_eq!("a//b/d//e",     plus_paths("a//b/c", "../d//e"));
 
-  // assert_eq!("//foo/var/bar", plus_paths("//foo/var", "bar")); // FAIL (missing one /)
+  assert_eq!("//foo/var/bar", plus_paths("//foo/var", "bar"));
 }

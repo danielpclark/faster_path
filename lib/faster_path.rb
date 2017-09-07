@@ -50,7 +50,7 @@ module FasterPath
   end
 
   def self.plus(pth, pth2)
-    Rust.basename(pth, pth2)
+    Rust.plus(pth, pth2)
   end
 
   def self.add_trailing_separator(pth)

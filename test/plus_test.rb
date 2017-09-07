@@ -1,32 +1,25 @@
 require 'test_helper'
 
 class PlusTest < Minitest::Test
-  def defassert(result, var1, var2)
-    assert_equal result, FasterPath.plus(var1, var2)
-  end
+  def test_plus
+    assert_equal('/', FasterPath.plus('/', '/'))
+    assert_equal('a/b', FasterPath.plus('a', 'b'))
+    assert_equal('a', FasterPath.plus('a', '.'))
+    assert_equal('b', FasterPath.plus('.', 'b'))
+    assert_equal('.', FasterPath.plus('.', '.'))
+    assert_equal('/b', FasterPath.plus('a', '/b'))
 
-  # def test_nil_inputs
-  # end
+    assert_equal('/', FasterPath.plus('/', '..'))
+    assert_equal('.', FasterPath.plus('a', '..'))
+    assert_equal('a', FasterPath.plus('a/b', '..'))
+    assert_equal('../..', FasterPath.plus('..', '..'))
+    assert_equal('/c', FasterPath.plus('/', '../c'))
+    assert_equal('c', FasterPath.plus('a', '../c'))
+    assert_equal('a/c', FasterPath.plus('a/b', '../c'))
+    assert_equal('../../c', FasterPath.plus('..', '../c'))
 
-  def test_it_will_plus_correctly
-    defassert('/', '/', '/')
-    defassert('a/b', 'a', 'b')
-    defassert('a', 'a', '.')
-    defassert('b', '.', 'b')
-    defassert('.', '.', '.')
-    defassert('/b', 'a', '/b')
+    assert_equal('a//b/d//e', FasterPath.plus('a//b/c', '../d//e'))
 
-    defassert('/', '/', '..')
-    defassert('.', 'a', '..')
-    defassert('a', 'a/b', '..')
-    defassert('../..', '..', '..')
-    defassert('/c', '/', '../c')
-    defassert('c', 'a', '../c')
-    defassert('a/c', 'a/b', '../c')
-    defassert('../../c', '..', '../c')
-
-    defassert('a//b/d//e', 'a//b/c', '../d//e')
-
-    defassert('//foo/var/bar', '//foo/var', 'bar')
+    assert_equal('//foo/var/bar', FasterPath.plus('//foo/var', 'bar'))
   end
 end

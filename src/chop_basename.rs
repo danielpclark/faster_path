@@ -32,6 +32,10 @@ pub mod rust {
     assert_eq!(chop_basename(&""[..]), None);
     assert_eq!(chop_basename(&"/"[..]), None);
     assert_eq!(
+      chop_basename(&"."[..]),
+      Some(("".to_string(), ".".to_string()))
+    );
+    assert_eq!(
       chop_basename(&"asdf/asdf"[..]),
       Some(("asdf/".to_string(), "asdf".to_string()))
     );
