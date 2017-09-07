@@ -57,13 +57,18 @@ task :lint do
   puts
 end
 
+desc "Run Rust Tests"
+task :cargo do
+  sh "cargo test -- --nocapture"
+end
+
 Rake::TestTask.new(minitest: :build_lib) do |t|
   t.libs << "test"
   t.libs << "lib"
   t.test_files = FileList['test/**/*_test.rb']
 end
 
-task test: [:minitest, :lint] do |_t|
+task test: [:cargo, :minitest, :lint] do |_t|
   exec 'mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname'
 end
 
