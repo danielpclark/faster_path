@@ -19,7 +19,7 @@ matrix:
   allow_failures:
   - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
 before_install:
-- gem install bundler -v 1.14.5
+- gem install bundler --pre
 - curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
 - bundle && bundle exec rake build_src && rake clean_src
 script: bundle exec rake test

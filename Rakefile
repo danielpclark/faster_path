@@ -69,12 +69,12 @@ Rake::TestTask.new(minitest: :build_lib) do |t|
 end
 
 task test: [:cargo, :minitest, :lint] do |_t|
-  exec 'mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname'
+  exec 'spec/mspec/bin/mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname'
 end
 
 desc "Full mspec results w/o encoding"
 task :mspec_full do
-  exec %(bash -c "TEST_MONKEYPATCHES=true WITH_REGRESSION=true mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname")
+  exec %(bash -c "TEST_MONKEYPATCHES=true WITH_REGRESSION=true spec/mspec/bin/mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname")
 end
 
 desc "Full mspec results w/ encoding"
