@@ -49,6 +49,10 @@ module FasterPath
     Rust.basename(pth, ext)
   end
 
+  def self.plus(pth, pth2)
+    Rust.plus(pth, pth2)
+  end
+
   def self.add_trailing_separator(pth)
     Rust.add_trailing_separator(pth)
   end
@@ -93,6 +97,7 @@ module FasterPath
     attach_function :is_blank, [ :string ], :bool
     attach_function :both_are_blank, [ :string, :string ], :bool
     attach_function :basename, [ :string, :string ], :string
+    attach_function :plus, [ :string, :string ], :string
     attach_function :dirname, [ :string ], :string
     attach_function :basename_for_chop, [ :string ], :string # decoupling behavior
     attach_function :dirname_for_chop, [ :string ], :string # decoupling behavior

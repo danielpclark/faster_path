@@ -161,6 +161,22 @@ PBENCHES[:"has_trailing_separator?"] = {
     end
   end
 }
+PBENCHES[:plus] = {
+  new: lambda do |x|
+    x.times do
+      FasterPath.plus('a', 'b')
+      FasterPath.plus('.', 'b')
+      FasterPath.plus('a//b/c', '../d//e')
+    end
+  end,
+  old: lambda do |x|
+    x.times do
+      Pathname.allocate.send(:plus, 'a', 'b')
+      Pathname.allocate.send(:plus, '.', 'b')
+      Pathname.allocate.send(:plus, 'a//b/c', '../d//e')
+    end
+  end
+}
 PBENCHES[:"blank? (verses strip.empty?)"] = {
   new: lambda do |x|
     x.times do

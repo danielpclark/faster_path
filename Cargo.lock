@@ -2,20 +2,20 @@
 name = "faster_path"
 version = "0.0.1"
 dependencies = [
- "array_tool 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "libc 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "array_tool 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.2.30 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "array_tool"
-version = "0.3.8"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "libc"
-version = "0.2.11"
+version = "0.2.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
-"checksum array_tool 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)" = "10ef6b307cf6a0a6c1a7e3dbb4e9315cc79d2e2d27c2d9674413738686b63e62"
-"checksum libc 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)" = "c96061f0c8a2dc27482e394d82e23073569de41d73cd736672ccd3e5c7471bfd"
+"checksum array_tool 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "1a07ccb27c611e5cda99e498e99ba71b3ecdb7db5df02096cef42a3df5b84542"
+"checksum libc 0.2.30 (registry+https://github.com/rust-lang/crates.io-index)" = "2370ca07ec338939e356443dac2296f581453c35fe1e3a3ed06023c49435f915"

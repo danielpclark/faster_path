@@ -54,6 +54,11 @@ module FasterPath
       def entries
         FasterPath.entries(@path)
       end
+
+      def plus(pth, pth2)
+        FasterPath.plus(pth, pth2)
+      end
+      private :plus
     end
   end
 end
