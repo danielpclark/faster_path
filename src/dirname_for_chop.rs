@@ -4,7 +4,7 @@ use std::ffi::{CStr,CString};
 use std::str;
 
 #[no_mangle]
-pub extern fn dirname_for_chop(string: *const c_char) -> *const c_char {
+pub extern "C" fn dirname_for_chop(string: *const c_char) -> *const c_char {
   let c_str = unsafe {
     if string.is_null() {
       return string
