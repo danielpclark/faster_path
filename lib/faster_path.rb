@@ -77,9 +77,7 @@ module FasterPath
   end
 
   def self.entries(pth)
-    ptr = FFI::MemoryPointer.new(:pointer)
-    len = Rust.entries(pth, ptr)
-    Array(Rust::FromRustArray.new(len, ptr))
+    Array(Rust::FromRustArray.new(Rust.entries(pth)))
   end
 
   module Rust
@@ -89,11 +87,6 @@ module FasterPath
     class FromRustArray < FFI::Struct
       layout :len,    :size_t, # dynamic array layout
              :data,   :pointer #
-
-      def initialize(a, b)
-        self[:len] = a
-        self[:data] = b
-      end
 
       def to_a
         self[:data].get_array_of_string(0, self[:len]).compact
@@ -113,7 +106,7 @@ module FasterPath
     attach_function :basename_for_chop, [ :string ], :string
     attach_function :dirname_for_chop, [ :string ], :string
     attach_function :has_trailing_separator, [ :string ], :bool
-    attach_function :entries, [ :string, :pointer ], :size_t
+    attach_function :entries, [ :string ], :pointer
     # attach_function :free_array, [ :pointer ], :void
   end
   private_constant :Rust
