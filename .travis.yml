@@ -20,7 +20,6 @@ matrix:
   - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
 before_install:
 - gem install bundler --pre
-- git submodule update --init
 - curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
 - bundle && bundle exec rake build_src && rake clean_src
 script: bundle exec rake test
