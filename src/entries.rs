@@ -1,11 +1,10 @@
 use libc::c_char;
 use std::ffi::{CStr,CString};
-use std::str;
-use std::fs;
+use std::{str,ptr,fs,mem};
 use ruby_array::RubyArray;
 
 #[no_mangle]
-pub extern "C" fn entries(string: *const c_char) -> RubyArray {
+pub extern "C" fn entries(string: *const c_char, r_ptr: *mut u8) -> usize {
   let c_str = unsafe {
     assert!(!string.is_null());
 
@@ -26,5 +25,9 @@ pub extern "C" fn entries(string: *const c_char) -> RubyArray {
     files_vec.push(file_name_cstr);
   }
 
-  RubyArray::from_vec(files_vec)
+  let box_x = Box::new(RubyArray::from_vec(files_vec));
+  let size_x = mem::size_of_val(&box_x) as usize;
+  let ptr_x = Box::into_raw(box_x) as *mut RubyArray;
+  unsafe { ptr::write(r_ptr, ptr_x as u8); }
+  size_x
 }
