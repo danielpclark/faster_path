@@ -77,7 +77,7 @@ module FasterPath
   end
 
   def self.entries(pth)
-    Array(Rust::FromRustArray.new(Rust.entries(pth)))
+    Array(Rust.entries(pth))
   end
 
   module Rust
@@ -91,10 +91,6 @@ module FasterPath
       def to_a
         self[:data].get_array_of_string(0, self[:len]).compact
       end
-
-      # def self.release(ptr)
-      #   Rust.free_array(ptr)
-      # end
     end
 
     attach_function :rust_arch_bits, [], :int32
@@ -106,8 +102,8 @@ module FasterPath
     attach_function :basename_for_chop, [ :string ], :string
     attach_function :dirname_for_chop, [ :string ], :string
     attach_function :has_trailing_separator, [ :string ], :bool
-    attach_function :entries, [ :string ], :pointer
-    # attach_function :free_array, [ :pointer ], :void
+    attach_function :entries, [ :string ], FromRustArray.by_value
+    # attach_function :free_array, [ FromRustArray ], :void
   end
   private_constant :Rust
 end

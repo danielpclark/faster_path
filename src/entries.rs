@@ -4,7 +4,7 @@ use std::{str,fs};
 use ruby_array::RubyArray;
 
 #[no_mangle]
-pub unsafe extern "C" fn entries(string: *const c_char, r_ptr: *mut u8) -> *mut RubyArray {
+pub extern "C" fn entries(string: *const c_char) -> RubyArray {
   let c_str = unsafe {
     assert!(!string.is_null());
 
@@ -25,5 +25,5 @@ pub unsafe extern "C" fn entries(string: *const c_char, r_ptr: *mut u8) -> *mut 
     files_vec.push(file_name_cstr);
   }
 
-  Box::into_raw(Box::new(RubyArray::from_vec(files_vec))) as *mut RubyArray
+  RubyArray::from_vec(files_vec)
 }
