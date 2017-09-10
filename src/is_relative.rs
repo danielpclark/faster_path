@@ -3,7 +3,7 @@ use libc::c_char;
 use std::ffi::{CStr};
 
 #[no_mangle]
-pub extern "C" fn is_relative(path: *const c_char) -> bool {
+pub extern fn is_relative(path: *const c_char) -> bool {
   if path.is_null() {
     return false;
   }
