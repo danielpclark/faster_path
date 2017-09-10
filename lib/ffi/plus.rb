@@ -2,13 +2,11 @@ require 'ffi'
 
 class FasterPath::Plus < FFI::AutoPointer
   def self.release(ptr)
-    !null? and Binding.free(ptr)
+    Binding.free(ptr)
   end
 
   def to_s
-    @str ||= begin
-      null? ? nil : read_string.force_encoding('UTF-8')
-    end
+    @str ||= read_string
   end
 
   module Binding

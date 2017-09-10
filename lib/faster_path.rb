@@ -103,7 +103,6 @@ module FasterPath
     attach_function :dirname_for_chop, [ :string ], :string
     attach_function :has_trailing_separator, [ :string ], :bool
     attach_function :entries, [ :string ], FromRustArray.by_value
-    # attach_function :free_array, [ FromRustArray ], :void
   end
   private_constant :Rust
 end
