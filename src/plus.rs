@@ -10,7 +10,7 @@ use self::array_tool::vec::Shift;
 use std::ops::Index;
 
 #[no_mangle]
-pub extern fn plus(string: *const c_char, string2: *const c_char) -> *const c_char {
+pub extern "C" fn plus(string: *const c_char, string2: *const c_char) -> *const c_char {
   let c_str = unsafe {
     if string.is_null() {
       return string;

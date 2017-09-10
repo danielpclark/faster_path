@@ -30,6 +30,12 @@ task :build_src do
   sh "cargo build --release"
 end
 
+desc "Build Rust extension"
+task :test_build_src do
+  puts "Building extension..."
+  sh "cargo build"
+end
+
 desc "Clean up Rust build"
 task :clean_src do
   puts "Cleaning up build..."
@@ -62,7 +68,7 @@ task :cargo do
   sh "cargo test -- --nocapture"
 end
 
-Rake::TestTask.new(minitest: :build_lib) do |t|
+Rake::TestTask.new(minitest: :test_build_src) do |t|
   t.libs << "test"
   t.libs << "lib"
   t.test_files = FileList['test/**/*_test.rb']
