@@ -4,7 +4,7 @@ use std::str;
 use std::path::Path;
 
 #[no_mangle]
-pub extern "C" fn is_directory(string: *const c_char) -> bool {
+pub extern fn is_directory(string: *const c_char) -> bool {
   let c_str = unsafe {
     if string.is_null() {
       return false;

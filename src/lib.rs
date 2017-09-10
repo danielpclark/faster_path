@@ -6,7 +6,7 @@
 // copied, modified, or distributed except according to those terms.
 extern crate libc;
 
-pub mod free;
+pub mod ruby_string;
 pub mod ruby_array;
 pub mod is_absolute;
 pub mod is_directory;
@@ -25,3 +25,13 @@ pub mod extname;
 pub mod entries;
 pub mod rust_arch_bits;
 mod path_parsing;
+
+// EXAMPLE
+//
+//#[no_mangle]
+//pub extern fn one_and_two() -> RubyArray {
+//  let mut words = vec![];
+//  words.push(RubyString::to_ruby(&"one".to_string()));
+//  words.push(RubyString::to_ruby(&"two".to_string()));
+//  RubyArray::from_vec(words)
+//}

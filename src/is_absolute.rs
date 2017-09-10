@@ -2,8 +2,9 @@ use libc::c_char;
 use std::ffi::{CStr};
 use std::path::MAIN_SEPARATOR;
 
+
 #[no_mangle]
-pub extern "C" fn is_absolute(path: *const c_char) -> bool {
+pub extern fn is_absolute(path: *const c_char) -> bool {
   if path.is_null() {
     return false;
   }
