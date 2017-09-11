@@ -24,8 +24,32 @@ task :sysinfo do
   end
 end
 
+desc "Add libruby to deps"
+task :libruby_release do
+  filename = RbConfig::CONFIG["LIBRUBY_ALIASES"].split(" ").first
+  libfile = File.join(RbConfig::CONFIG["libdir"], filename)
+  deps = "target/release/deps"
+  unless File.exist? "#{deps}/#{filename}"
+    FileUtils.mkdir_p deps
+    FileUtils.cp libfile, deps
+  end
+  exit 1 unless File.exist? "#{deps}/#{filename}"
+end
+
+desc "Add libruby to debug deps"
+task :libruby_debug do
+  filename = RbConfig::CONFIG["LIBRUBY_ALIASES"].split(" ").first
+  libfile = File.join(RbConfig::CONFIG["libdir"], filename)
+  deps = "target/debug/deps"
+  unless File.exist? "#{deps}/#{filename}"
+    FileUtils.mkdir_p deps
+    FileUtils.cp libfile, deps
+  end
+  exit 1 unless File.exist? "#{deps}/#{filename}"
+end
+
 desc "Build Rust extension"
-task :build_src do
+task build_src: :libruby_release do
   puts "Building extension..."
   sh "cargo build --release"
 end
@@ -58,7 +82,7 @@ task :lint do
 end
 
 desc "Run Rust Tests"
-task :cargo do
+task cargo: :libruby_debug do
   sh "cargo test -- --nocapture"
 end
 

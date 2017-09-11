@@ -10,8 +10,9 @@ readme = "README.md"
 
 [lib]
 name = "faster_path"
-crate-type = ["dylib"]
+crate-type = ["cdylib"]
 
 [dependencies]
 libc = "0.2.30"
+ruru = "0.9.3"
 array_tool = "0.4.1"

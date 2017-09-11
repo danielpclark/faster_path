@@ -8,12 +8,21 @@ module FasterPath
     prefix = Gem.win_platform? ? "" : "lib"
     "#{File.expand_path("../target/release/", __dir__)}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
   end
-  require_relative 'ffi/add_trailing_separator'
+  require 'fiddle'
+  library = Fiddle.dlopen(FFI_LIBRARY)
+  Fiddle::Function.
+    new(library['Init_faster_pathname'], [], Fiddle::TYPE_VOIDP).
+    call
+
+  FasterPathname.class_eval do
+    private :add_trailing_separator
+    private :plus
+  end
+
   require_relative 'ffi/basename'
   # require_relative 'ffi/chop_basename'
   require_relative 'ffi/dirname'
   require_relative 'ffi/extname'
-  require_relative 'ffi/plus'
 
   def self.rust_arch_bits
     Rust.rust_arch_bits
@@ -25,7 +34,7 @@ module FasterPath
 
   # Spec to Pathname#absolute?
   def self.absolute?(pth)
-    Rust.is_absolute(pth)
+    FasterPathname.allocate.send(:absolute?, pth.to_s)
   end
 
   # Spec to Pathname#directory?
@@ -61,11 +70,11 @@ module FasterPath
   end
 
   def self.plus(pth, pth2)
-    Plus::Binding.plus(pth, pth2).to_s
+    FasterPathname.allocate.send(:plus, pth.to_s, pth2.to_s)
   end
 
   def self.add_trailing_separator(pth)
-    AddTrailingSeparator::Binding.add_trailing_separator(pth).to_s
+    FasterPathname.allocate.send(:add_trailing_separator, pth.to_s)
   end
 
   def self.has_trailing_separator?(pth)
@@ -94,7 +103,6 @@ module FasterPath
     end
 
     attach_function :rust_arch_bits, [], :int32
-    attach_function :is_absolute, [ :string ], :bool
     attach_function :is_directory, [ :string ], :bool
     attach_function :is_relative, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
