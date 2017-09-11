@@ -1,7 +1,7 @@
 extern crate array_tool;
 use std::path::Path;
 use std::str;
-use chop_basename::rust::chop_basename;
+use chop_basename::chop_basename;
 use basename::rust::basename;
 use dirname::rust::dirname;
 use self::array_tool::vec::Shift;

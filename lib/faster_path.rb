@@ -16,11 +16,11 @@ module FasterPath
 
   FasterPathname.class_eval do
     private :add_trailing_separator
+    private :chop_basename
     private :plus
   end
 
   require_relative 'ffi/basename'
-  # require_relative 'ffi/chop_basename'
   require_relative 'ffi/dirname'
   require_relative 'ffi/extname'
 
@@ -32,17 +32,14 @@ module FasterPath
     1.size * 8
   end
 
-  # Spec to Pathname#absolute?
   def self.absolute?(pth)
     FasterPathname.allocate.send(:absolute?, pth.to_s)
   end
 
-  # Spec to Pathname#directory?
   def self.directory?(pth)
     Rust.is_directory(pth)
   end
 
-  # Spec to Pathname#relative?
   def self.relative?(pth)
     Rust.is_relative(pth)
   end
@@ -51,14 +48,9 @@ module FasterPath
     Dirname::Binding.dirname(pth).to_s
   end
 
-  # Spec to Pathname#chop_basename
-  # WARNING! Pathname#chop_basename in STDLIB doesn't handle blank strings correctly!
-  # This implementation correctly handles blank strings just as Pathname had intended
-  # to handle non-path strings.
   def self.chop_basename(pth)
-    d = Rust.dirname_for_chop(pth)
-    b = Rust.basename_for_chop(pth)
-    [d, b] unless Rust.both_are_blank(d, b)
+    result = FasterPathname.allocate.send(:chop_basename, pth)
+    result unless result.empty?
   end
 
   def self.blank?(str)
@@ -86,31 +78,19 @@ module FasterPath
   end
 
   def self.entries(pth)
-    Array(Rust.entries(pth))
+    FasterPathname.allocate.send(:entries, pth)
   end
 
   module Rust
     extend FFI::Library
     ffi_lib ::FasterPath::FFI_LIBRARY
 
-    class FromRustArray < FFI::Struct
-      layout :len,    :size_t, # dynamic array layout
-             :data,   :pointer #
-
-      def to_a
-        self[:data].get_array_of_string(0, self[:len]).compact
-      end
-    end
-
     attach_function :rust_arch_bits, [], :int32
     attach_function :is_directory, [ :string ], :bool
     attach_function :is_relative, [ :string ], :bool
     attach_function :is_blank, [ :string ], :bool
     attach_function :both_are_blank, [ :string, :string ], :bool
-    attach_function :basename_for_chop, [ :string ], :string
-    attach_function :dirname_for_chop, [ :string ], :string
     attach_function :has_trailing_separator, [ :string ], :bool
-    attach_function :entries, [ :string ], FromRustArray.by_value
   end
   private_constant :Rust
 end

@@ -30,24 +30,6 @@ class ChopBasenameTest < Minitest::Test
     end
   end
 
-  def test_it_fixes_blank_results_to_pathname_chop_basename
-    # THIS IS THE ONLY BREAKING BEHAVIOR ON Pathname#chop_basename
-    # THIS IS THE INTENTION OF Pathname's DESIGN FOR NON-PATHS
-    [" ", "   "].
-      each do |str|
-      pcb = Pathname.new("").send :chop_basename, str
-      fpcb = FasterPath.chop_basename str
-      Array(pcb).zip(Array(fpcb)).each do |a, b|
-        if a
-          refute_equal a, b, "a: #{a} and b: #{b}"
-        else
-          assert_nil a
-          assert_nil b
-        end
-      end
-    end
-  end
-
   def test_it_returns_similar_results_to_pathname_chop_basename_for_slash
     ["", File::SEPARATOR, File::SEPARATOR*2].
       each do |str|
