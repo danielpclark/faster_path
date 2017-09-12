@@ -41,7 +41,7 @@ module FasterPath
   end
 
   def self.blank?(str)
-    FasterPathname.allocate.send(:blank?, str)
+    "#{str}".strip.empty?
   end
 
   def self.basename(pth, ext="")

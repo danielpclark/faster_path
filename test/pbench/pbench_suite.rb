@@ -177,22 +177,6 @@ PBENCHES[:plus] = {
     end
   end
 }
-PBENCHES[:"blank? (verses strip.empty?)"] = {
-  new: lambda do |x|
-    x.times do
-      FasterPath.blank? "world.txt"
-      FasterPath.blank? "  "
-      FasterPath.blank? ""
-    end
-  end,
-  old: lambda do |x|
-    x.times do
-      "world.txt".strip.empty?
-      "  ".strip.empty?
-      "".strip.empty?
-    end
-  end
-}
 PBENCHES[:"relative?"] = {
   new: lambda do |x|
     x.times do

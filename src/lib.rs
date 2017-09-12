@@ -50,12 +50,6 @@ methods!(
     )
   }
 
-  fn r_is_blank(string: RString) -> Boolean {
-    Boolean::new(
-      string.ok().unwrap_or(RString::new("")).to_str().trim().is_empty()
-    )
-  }
-
   fn r_chop_basename(pth: RString) -> Array {
     let mut arr = Array::with_capacity(2);
     let results = chop_basename::chop_basename(pth.ok().unwrap_or(RString::new("")).to_str());
@@ -137,7 +131,6 @@ pub extern "C" fn Init_faster_pathname(){
     itself.def("absolute?", r_is_absolute);
     itself.def("add_trailing_separator", r_add_trailing_separator);
     itself.def("basename", r_basename);
-    itself.def("blank?", r_is_blank);
     itself.def("chop_basename", r_chop_basename);
     itself.def("directory?", r_is_directory);
     itself.def("dirname", r_dirname);
