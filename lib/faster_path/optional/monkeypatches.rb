@@ -3,6 +3,7 @@ require 'pathname'
 module FasterPath
   module MonkeyPatches
     # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def self._ruby_core_file!
       ::File.class_eval do
         def self.basename(pth, ext = '')
