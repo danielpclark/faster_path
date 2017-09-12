@@ -140,19 +140,18 @@ Current methods implemented:
 
 |FasterPath Rust Implementation|Ruby 2.3.1 Implementation|Performance Improvement|
 |---|---|:---:|
-| `FasterPath.absolute?` | `Pathname#absolute?` | 93.9% |
-| `FasterPath.chop_basename` | `Pathname#chop_basename` | 50.6% |
-| `FasterPath.relative?` | `Pathname#relative?` | 93.2% |
-| `FasterPath.directory?` | `Pathname#directory?` | 25.5% |
-| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 46.8% |
-| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 61.2% |
+| `FasterPath.absolute?` | `Pathname#absolute?` | 88.5% |
+| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 31.1% |
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 55.8% |
+| `FasterPath.directory?` | `Pathname#directory?` | 12.7% |
+| `FasterPath.entries` | `Pathname#entries` | 7.7% |
+| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 59.2% |
+| `FasterPath.plus` | `Pathname#plus` | 77.5% |
+| `FasterPath.relative?` | `Pathname#relative?` | 83.1% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch
 everything everywhere.
-
-**Note:** `Pathname#chop_basename` in Ruby STDLIB has a bug with blank strings, that is the
-only difference in behavior against FasterPath's implementation.
 
 For the scoped **refinements** you will need to
 
