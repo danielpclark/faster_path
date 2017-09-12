@@ -29,11 +29,14 @@ task :libruby_release do
   filename = RbConfig::CONFIG["LIBRUBY_ALIASES"].split(" ").first
   libfile = File.join(RbConfig::CONFIG["libdir"], filename)
   deps = "target/release/deps"
+
+  printf "Copying libruby.so ... "
   unless File.exist? "#{deps}/#{filename}"
     FileUtils.mkdir_p deps
     FileUtils.cp libfile, deps
   end
   exit 1 unless File.exist? "#{deps}/#{filename}"
+  puts "libruby.so copied."
 end
 
 desc "Add libruby to debug deps"
@@ -41,11 +44,14 @@ task :libruby_debug do
   filename = RbConfig::CONFIG["LIBRUBY_ALIASES"].split(" ").first
   libfile = File.join(RbConfig::CONFIG["libdir"], filename)
   deps = "target/debug/deps"
+
+  printf "Copying libruby.so ... "
   unless File.exist? "#{deps}/#{filename}"
     FileUtils.mkdir_p deps
     FileUtils.cp libfile, deps
   end
   exit 1 unless File.exist? "#{deps}/#{filename}"
+  puts "libruby.so copied."
 end
 
 desc "Build Rust extension"
