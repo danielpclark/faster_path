@@ -74,7 +74,7 @@ module FasterPath
   end
 
   def self.plus(pth, pth2)
-    FasterPathname.allocate.send(:plus, pth.to_s, pth2.to_s)
+    FasterPathname.allocate.send(:plus, pth, pth2)
   end
 
   def self.relative?(pth)
