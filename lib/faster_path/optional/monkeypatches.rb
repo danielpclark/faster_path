@@ -7,7 +7,7 @@ module FasterPath
       ::File.class_eval do
         def self.basename(pth, ext = '')
           pth = pth.to_path if pth.respond_to? :to_path
-          raise TypeError unless pth.is_a? String
+          raise TypeError unless pth.is_a?(String) && ext.is_a?(String)
           FasterPath.basename(pth, ext)
         end
 
