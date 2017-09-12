@@ -3,11 +3,12 @@ require 'pathname'
 module FasterPath
   module MonkeyPatches
     # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def self._ruby_core_file!
       ::File.class_eval do
         def self.basename(pth, ext = '')
           pth = pth.to_path if pth.respond_to? :to_path
-          raise TypeError unless pth.is_a? String
+          raise TypeError unless pth.is_a?(String) && ext.is_a?(String)
           FasterPath.basename(pth, ext)
         end
 

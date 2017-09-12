@@ -1,10 +1,6 @@
 require 'test_helper'
 
 class ExtnameTest < Minitest::Test
-  def test_nil_inputs
-    assert_nil FasterPath.extname(nil)
-  end
-
   def test_extname
     assert_equal ".rb", FasterPath.extname("foo.rb")
     assert_equal ".rb", FasterPath.extname("/foo/bar.rb")

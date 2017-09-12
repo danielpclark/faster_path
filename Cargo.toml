@@ -13,5 +13,5 @@ name = "faster_path"
 crate-type = ["dylib"]
 
 [dependencies]
-libc = "0.2.30"
+ruru = "0.9.3"
 array_tool = "0.4.1"

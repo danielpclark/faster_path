@@ -1,14 +1,6 @@
 require 'test_helper'
 
 class BasenameTest < Minitest::Test
-  def test_nil_inputs
-    assert_nil FasterPath.basename(nil, nil)
-    assert_equal FasterPath.basename('', nil), ""
-    assert_nil FasterPath.basename(nil, '')
-    assert_equal FasterPath.basename('asdf', nil), "asdf"
-    assert_nil FasterPath.basename(nil, 'asdf')
-  end
-
   # Tests copied from https://searchcode.com/codesearch/view/12785140/
   def test_it_creates_basename_correctly
     assert_equal FasterPath.basename('/home/gumby/work/ruby.rb'),        'ruby.rb'

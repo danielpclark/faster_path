@@ -1,40 +1,13 @@
 extern crate array_tool;
 use std::path::Path;
-use libc::c_char;
-use std::ffi::{CStr,CString};
 use std::str;
-use chop_basename::rust::chop_basename;
-use basename::rust::basename;
-use dirname::rust::dirname;
+use chop_basename::chop_basename;
+use basename::basename;
+use dirname::dirname;
 use self::array_tool::vec::Shift;
 use std::ops::Index;
 
-#[no_mangle]
-pub extern fn plus(string: *const c_char, string2: *const c_char) -> *const c_char {
-  let c_str = unsafe {
-    if string.is_null() {
-      return string;
-    }
-    CStr::from_ptr(string)
-  };
-
-  let c_str2 = unsafe {
-    if string2.is_null() {
-      return string2;
-    }
-    CStr::from_ptr(string2)
-  };
-
-  let r_str = str::from_utf8(c_str.to_bytes()).unwrap();
-  let r_str2 = str::from_utf8(c_str2.to_bytes()).unwrap();
-
-  let result = plus_paths(r_str, r_str2);
-  
-  let output = CString::new(result).unwrap();
-  output.into_raw()
-}
-
-fn plus_paths(path1: &str, path2: &str) -> String {
+pub fn plus_paths(path1: &str, path2: &str) -> String {
   let mut prefix2 = path2.to_string();
   let mut index_list2: Vec<usize> = vec![];
   let mut basename_list2: Vec<String> = vec![];
