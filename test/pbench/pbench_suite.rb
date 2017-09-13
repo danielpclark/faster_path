@@ -71,6 +71,18 @@ PBENCHES[:basename] = {
     end
   end
 }
+PBENCHES[:children] = {
+  new: lambda do |x|
+    (x/5).times do
+      FasterPath.children(".")
+    end
+  end,
+  old: lambda do |x|
+    (x/5).times do
+      Pathname.new(".").children
+    end
+  end
+}
 PBENCHES[:chop_basename] = {
   new: lambda do |x|
     x.times do
@@ -119,13 +131,13 @@ PBENCHES[:dirname] = {
 }
 PBENCHES[:entries] = {
   new: lambda do |x|
-    x.times do
+    (x/5).times do
       FasterPath.entries("./")
       FasterPath.entries("./src")
     end
   end,
   old: lambda do |x|
-    x.times do
+    (x/5).times do
       Pathname.new("./").entries
       Pathname.new("./src").entries
     end

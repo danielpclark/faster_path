@@ -9,23 +9,6 @@ use ruru::{RString, Boolean, Array};
 use std::path::{MAIN_SEPARATOR,Path};
 use std::fs;
 
-// TOPATH = :to_path
-
-// SAME_PATHS = if File::FNM_SYSCASE.nonzero?
-//   # Avoid #zero? here because #casecmp can return nil.
-//   proc {|a, b| a.casecmp(b) == 0}
-// else
-//   proc {|a, b| a == b}
-// end
-
-// if File::ALT_SEPARATOR
-//   SEPARATOR_LIST = "#{Regexp.quote File::ALT_SEPARATOR}#{Regexp.quote File::SEPARATOR}"
-//   SEPARATOR_PAT = /[#{SEPARATOR_LIST}]/
-// else
-//   SEPARATOR_LIST = "#{Regexp.quote File::SEPARATOR}"
-//   SEPARATOR_PAT = /#{Regexp.quote File::SEPARATOR}/
-// end
-
 pub fn pn_add_trailing_separator(pth: Result<ruru::RString, ruru::result::Error>) -> RString {
   let p = pth.ok().unwrap();
   let x = format!("{}{}", p.to_str(), "a");
@@ -53,7 +36,32 @@ pub fn pn_basename(pth: Result<ruru::RString, ruru::result::Error>, ext: Result<
   )
 }
 
-// pub fn pn_children(pth: Result<ruru::RString, ruru::result::Error>, with_dir: Boolean){}
+pub fn pn_children(pth: Result<ruru::RString, ruru::result::Error>, with_dir: Result<ruru::Boolean, ruru::result::Error>) -> Array {
+  let rstring = pth.ok().unwrap_or(RString::new("."));
+  let val = rstring.to_str();
+  let mut with_directory = with_dir.ok().unwrap_or(Boolean::new(true)).to_bool();
+  if val == "." {
+    with_directory = false;
+  }
+  let mut arr = Array::new();
+
+  if let Ok(entries) = fs::read_dir(val) {
+    for entry in entries {
+      if with_directory {
+        match entry {
+          Ok(v) => { arr.push(RString::new(v.path().to_str().unwrap())); },
+          _ => {}
+        };
+      } else {
+        match entry {
+          Ok(v) => { arr.push(RString::new(v.file_name().to_str().unwrap())); },
+          _ => {}
+        };
+      }
+    }
+  }
+  arr
+}
 
 pub fn pn_chop_basename(pth: Result<ruru::RString, ruru::result::Error>) -> Array {
   let mut arr = Array::with_capacity(2);

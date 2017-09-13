@@ -57,7 +57,9 @@ methods!(
     pathname::pn_basename(pth, ext)
   }
 
-  // fn r_children(with_dir: Boolean){}
+  fn pub_children(pth: RString, with_dir: Boolean) -> Array {
+    pathname::pn_children(pth, with_dir)
+  }
 
   fn pub_chop_basename(pth: RString) -> Array {
     pathname::pn_chop_basename(pth)
@@ -154,6 +156,7 @@ pub extern "C" fn Init_faster_pathname(){
     itself.def("absolute?", pub_is_absolute);
     itself.def("add_trailing_separator", pub_add_trailing_separator);
     itself.def("basename", pub_basename);
+    itself.def("children", pub_children);
     itself.def("chop_basename", pub_chop_basename);
     itself.def("directory?", pub_is_directory);
     itself.def("dirname", pub_dirname);

@@ -29,8 +29,13 @@ module FasterPath
         FasterPath.absolute?(@path)
       end
 
-      def directory?
-        FasterPath.directory?(@path)
+      def add_trailing_separator(pth)
+        FasterPath.add_trailing_separator(pth)
+      end
+      private :add_trailing_separator
+
+      def children(with_dir=true)
+        FasterPath.children(@path, with_dir)
       end
 
       def chop_basename(pth)
@@ -38,27 +43,26 @@ module FasterPath
       end
       private :chop_basename
 
-      def relative?
-        FasterPath.relative?(@path)
-      end
-
-      def add_trailing_separator(pth)
-        FasterPath.add_trailing_separator(pth)
-      end
-      private :add_trailing_separator
-
-      def has_trailing_separator?(pth)
-        FasterPath.has_trailing_separator?(pth)
+      def directory?
+        FasterPath.directory?(@path)
       end
 
       def entries
         FasterPath.entries(@path)
       end
 
+      def has_trailing_separator?(pth)
+        FasterPath.has_trailing_separator?(pth)
+      end
+
       def plus(pth, pth2)
         FasterPath.plus(pth, pth2)
       end
       private :plus
+
+      def relative?
+        FasterPath.relative?(@path)
+      end
     end
   end
 end

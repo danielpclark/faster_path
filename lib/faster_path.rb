@@ -18,6 +18,7 @@ module FasterPath
     private :absolute?
     private :add_trailing_separator
     private :basename
+    private :children
     private :chop_basename
     private :directory?
     private :dirname
@@ -26,6 +27,26 @@ module FasterPath
     private :has_trailing_separator?
     private :plus
     private :relative?
+  end
+
+  FasterPathname.class_eval do
+    def initialize(arg)
+      unless arg.is_a? String
+        arg = arg.to_s
+      end
+      raise(ArgumentError, "null byte found") if arg.include?("\0")
+      @path = arg
+    end
+
+    # BAD; exposes private methods
+    # Need to reprivatize specific methods
+    def method_missing(method_name, *a, &b)
+      Public.send(method_name, @path, *a, &b)
+    end
+
+    def respond_to?(method_name, include_private = false)
+      Public.send(:respond_to?, method_name) || super
+    end
   end
 
   def self.rust_arch_bits
@@ -50,6 +71,10 @@ module FasterPath
 
   def self.basename(pth, ext="")
     FasterPathname::Public.allocate.send(:basename, pth, ext)
+  end
+
+  def self.children(pth, with_directory=true)
+    FasterPathname::Public.allocate.send(:children, pth, with_directory)
   end
 
   def self.chop_basename(pth)
