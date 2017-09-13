@@ -14,14 +14,18 @@ module FasterPath
     new(library['Init_faster_pathname'], [], Fiddle::TYPE_VOIDP).
     call
 
-  FasterPathname.class_eval do
+  FasterPathname::Public.class_eval do
+    private :absolute?
     private :add_trailing_separator
     private :basename
     private :chop_basename
+    private :directory?
     private :dirname
     private :entries
     private :extname
+    private :has_trailing_separator?
     private :plus
+    private :relative?
   end
 
   def self.rust_arch_bits
@@ -33,11 +37,11 @@ module FasterPath
   end
 
   def self.absolute?(pth)
-    FasterPathname.allocate.send(:absolute?, pth)
+    FasterPathname::Public.allocate.send(:absolute?, pth)
   end
 
   def self.add_trailing_separator(pth)
-    FasterPathname.allocate.send(:add_trailing_separator, pth)
+    FasterPathname::Public.allocate.send(:add_trailing_separator, pth)
   end
 
   def self.blank?(str)
@@ -45,40 +49,40 @@ module FasterPath
   end
 
   def self.basename(pth, ext="")
-    FasterPathname.allocate.send(:basename, pth, ext)
+    FasterPathname::Public.allocate.send(:basename, pth, ext)
   end
 
   def self.chop_basename(pth)
-    result = FasterPathname.allocate.send(:chop_basename, pth)
+    result = FasterPathname::Public.allocate.send(:chop_basename, pth)
     result unless result.empty?
   end
 
   def self.directory?(pth)
-    FasterPathname.allocate.send(:directory?, pth)
+    FasterPathname::Public.allocate.send(:directory?, pth)
   end
 
   def self.dirname(pth)
-    FasterPathname.allocate.send(:dirname, pth)
+    FasterPathname::Public.allocate.send(:dirname, pth)
   end
 
   def self.entries(pth)
-    FasterPathname.allocate.send(:entries, pth)
+    FasterPathname::Public.allocate.send(:entries, pth)
   end
 
   def self.extname(pth)
-    FasterPathname.allocate.send(:extname, pth)
+    FasterPathname::Public.allocate.send(:extname, pth)
   end
 
   def self.has_trailing_separator?(pth)
-    FasterPathname.allocate.send(:has_trailing_separator?, pth)
+    FasterPathname::Public.allocate.send(:has_trailing_separator?, pth)
   end
 
   def self.plus(pth, pth2)
-    FasterPathname.allocate.send(:plus, pth, pth2)
+    FasterPathname::Public.allocate.send(:plus, pth, pth2)
   end
 
   def self.relative?(pth)
-    FasterPathname.allocate.send(:relative?, pth)
+    FasterPathname::Public.allocate.send(:relative?, pth)
   end
 
   module Rust
