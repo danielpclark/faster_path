@@ -142,6 +142,7 @@ Current methods implemented:
 |---|---|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 88.5% |
 | `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 31.1% |
+| `FasterPath.children` | `Pathname#children` | 13.6% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 55.8% |
 | `FasterPath.directory?` | `Pathname#directory?` | 12.7% |
 | `FasterPath.entries` | `Pathname#entries` | 7.7% |

@@ -9,6 +9,7 @@ extern crate ruru;
 
 class!(FasterPathname);
 
+mod pathname;
 mod basename;
 mod chop_basename;
 mod dirname;
@@ -18,126 +19,151 @@ pub mod rust_arch_bits;
 mod path_parsing;
 
 use ruru::{Class, Object, RString, Boolean, Array};
-use std::path::{MAIN_SEPARATOR,Path};
-use std::fs;
 
+// r_ methods are on the core class and may evaluate instance variables or self
+// pub_ methods must take all values as parameters
 methods!(
   FasterPathname,
   _itself,
 
-  fn r_add_trailing_separator(pth: RString) -> RString {
-    let p = pth.ok().unwrap();
-    let x = format!("{}{}", p.to_str(), "a");
-    match x.rsplit_terminator(MAIN_SEPARATOR).next() {
-      Some("a") => p,
-      _ => RString::new(format!("{}{}", p.to_str(), MAIN_SEPARATOR).as_str())
-    }
+  // TOPATH = :to_path
+
+  // SAME_PATHS = if File::FNM_SYSCASE.nonzero?
+  //   # Avoid #zero? here because #casecmp can return nil.
+  //   proc {|a, b| a.casecmp(b) == 0}
+  // else
+  //   proc {|a, b| a == b}
+  // end
+
+  // if File::ALT_SEPARATOR
+  //   SEPARATOR_LIST = "#{Regexp.quote File::ALT_SEPARATOR}#{Regexp.quote File::SEPARATOR}"
+  //   SEPARATOR_PAT = /[#{SEPARATOR_LIST}]/
+  // else
+  //   SEPARATOR_LIST = "#{Regexp.quote File::SEPARATOR}"
+  //   SEPARATOR_PAT = /#{Regexp.quote File::SEPARATOR}/
+  // end
+
+  fn pub_add_trailing_separator(pth: RString) -> RString {
+    pathname::pn_add_trailing_separator(pth)
   }
 
-  fn r_is_absolute(pth: RString) -> Boolean {
-    Boolean::new(match pth.ok().unwrap_or(RString::new("")).to_str().chars().next() {
-      Some(c) => c == MAIN_SEPARATOR,
-      None => false
-    })
+  fn pub_is_absolute(pth: RString) -> Boolean {
+    pathname::pn_is_absolute(pth)
   }
 
-  fn r_basename(pth: RString, ext: RString) -> RString {
-    RString::new(
-      &basename::basename(
-        pth.ok().unwrap_or(RString::new("")).to_str(),
-        ext.ok().unwrap_or(RString::new("")).to_str()
-      )[..]
-    )
+  // fn r_ascend(){}
+
+  fn pub_basename(pth: RString, ext: RString) -> RString {
+    pathname::pn_basename(pth, ext)
   }
 
-  fn r_chop_basename(pth: RString) -> Array {
-    let mut arr = Array::with_capacity(2);
-    let results = chop_basename::chop_basename(pth.ok().unwrap_or(RString::new("")).to_str());
-    match results {
-      Some((dirname, basename)) => {
-        arr.push(RString::new(&dirname[..]));
-        arr.push(RString::new(&basename[..]));
-        arr
-      },
-      None => arr
-    }
+  fn pub_children(pth: RString, with_dir: Boolean) -> Array {
+    pathname::pn_children(pth, with_dir)
   }
 
-  fn r_is_directory(pth: RString) -> Boolean {
-    Boolean::new(
-      Path::new(
-        pth.ok().unwrap_or(RString::new("")).to_str()
-      ).is_dir()
-    )
+  fn pub_chop_basename(pth: RString) -> Array {
+    pathname::pn_chop_basename(pth)
   }
 
-  fn r_dirname(pth: RString) -> RString {
-    RString::new(
-      &dirname::dirname(
-        pth.ok().unwrap_or(RString::new("")).to_str()
-      )[..]
-    )
+  // fn r_cleanpath(){ pub_cleanpath(r_to_path()) }
+  // fn pub_cleanpath(pth: RString){}
+
+  // fn r_cleanpath_aggressive(pth: RString){}
+
+  // fn r_cleanpath_conservative(pth: RString){}
+
+  // fn r_del_trailing_separator(pth: RString){}
+
+  // fn r_descend(){}
+
+  fn pub_is_directory(pth: RString) -> Boolean {
+    pathname::pn_is_directory(pth)
   }
 
-  fn r_entries(pth: RString) -> Array {
-    let files = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()).unwrap();
-    let mut arr = Array::new();
-
-    arr.push(RString::new("."));
-    arr.push(RString::new(".."));
-
-    for file in files {
-      let file_name_str = file.unwrap().file_name().into_string().unwrap();
-      arr.push(RString::new(&file_name_str[..]));
-    }
-
-    arr
+  fn pub_dirname(pth: RString) -> RString {
+    pathname::pn_dirname(pth)
   }
 
-  fn r_extname(pth: RString) -> RString {
-    RString::new(
-      &extname::extname(pth.ok().unwrap_or(RString::new("")).to_str())[..]
-    )
+  // fn r_each_child(){}
+  // fn pub_each_child(){}
+
+  // fn pub_each_filename(pth: RString) -> NilClass {
+  //   pathname::pn_each_filename(pth)
+  // }
+
+  fn pub_entries(pth: RString) -> Array {
+    pathname::pn_entries(pth)
   }
 
-  fn r_has_trailing_separator(pth: RString) -> Boolean {
-    let v = pth.ok().unwrap_or(RString::new(""));
-    match chop_basename::chop_basename(v.to_str()) {
-      Some((a,b)) => {
-        Boolean::new(a.len() + b.len() < v.to_str().len())
-      },
-      _ => Boolean::new(false)
-    }
+  fn pub_extname(pth: RString) -> RString {
+    pathname::pn_extname(pth)
   }
 
-  fn r_plus(pth1: RString, pth2: RString) -> RString {
-    RString::new(&plus::plus_paths(pth1.ok().unwrap().to_str(), pth2.ok().unwrap().to_str())[..])
+  // fn r_find(ignore_error: Boolean){}
+  // fn pub_find(pth: RString ,ignore_error: Boolean){}
+  
+  fn pub_has_trailing_separator(pth: RString) -> Boolean {
+    pathname::pn_has_trailing_separator(pth)
   }
 
-  fn r_is_relative(pth: RString) -> Boolean {
-    Boolean::new(
-      match pth.ok().unwrap_or(RString::new(&MAIN_SEPARATOR.to_string()[..])).to_str().chars().next() {
-        Some(c) => c != MAIN_SEPARATOR,
-        None => true
-      }
-    )
+  // fn r_join(args: Array){}
+
+  // fn pub_mkpath(pth: RString) -> NilClass {
+  //   pathname::pn_mkpath(pth)
+  // }
+
+  // fn r_is_mountpoint(){ pub_is_mountpount(r_to_path()) }
+  // fn pub_is_mountpoint(pth: RString){}
+
+  // fn r_parent(){ pub_parent(r_to_path()) }
+  // fn pub_parent(pth: RString){}
+
+  // also need impl +
+  fn pub_plus(pth1: RString, pth2: RString) -> RString {
+    pathname::pn_plus(pth1, pth2)
   }
+
+  // fn r_prepend_prefix(prefix: RString, relpath: RString){}
+
+  fn pub_is_relative(pth: RString) -> Boolean {
+    pathname::pn_is_relative(pth)
+  }
+
+  // fn r_root(){ pub_root(r_to_path()) }
+  // fn pub_root(pth: RString){}
+
+  // fn r_split_names(pth: RString){}
+
+  // fn r_relative_path_from(){}
+  // fn pub_relative_path_from(){}
+
+  // fn pub_rmtree(pth: RString) -> NilClass {
+  //   pathname::pn_rmtree(pth)
+  // }
 );
 
 #[allow(non_snake_case)]
 #[no_mangle]
 pub extern "C" fn Init_faster_pathname(){
   Class::new("FasterPathname", None).define(|itself| {
-    itself.def("absolute?", r_is_absolute);
-    itself.def("add_trailing_separator", r_add_trailing_separator);
-    itself.def("basename", r_basename);
-    itself.def("chop_basename", r_chop_basename);
-    itself.def("directory?", r_is_directory);
-    itself.def("dirname", r_dirname);
-    itself.def("entries", r_entries);
-    itself.def("extname", r_extname);
-    itself.def("has_trailing_separator?", r_has_trailing_separator);
-    itself.def("plus", r_plus);
-    itself.def("relative?", r_is_relative);
+    itself.define_nested_class("Public", None);
+  });
+
+  // Public methods
+  // * methods for refinements, monkeypatching
+  // * methods that need all values as parameters
+  Class::from_existing("FasterPathname").get_nested_class("Public").define(|itself| {
+    itself.def("absolute?", pub_is_absolute);
+    itself.def("add_trailing_separator", pub_add_trailing_separator);
+    itself.def("basename", pub_basename);
+    itself.def("children", pub_children);
+    itself.def("chop_basename", pub_chop_basename);
+    itself.def("directory?", pub_is_directory);
+    itself.def("dirname", pub_dirname);
+    itself.def("entries", pub_entries);
+    itself.def("extname", pub_extname);
+    itself.def("has_trailing_separator?", pub_has_trailing_separator);
+    itself.def("plus", pub_plus);
+    itself.def("relative?", pub_is_relative);
   });
 }
