@@ -9,6 +9,7 @@ extern crate ruru;
 
 class!(FasterPathname);
 
+mod helpers;
 mod pathname;
 mod basename;
 mod chop_basename;
@@ -26,23 +27,6 @@ methods!(
   FasterPathname,
   _itself,
 
-  // TOPATH = :to_path
-
-  // SAME_PATHS = if File::FNM_SYSCASE.nonzero?
-  //   # Avoid #zero? here because #casecmp can return nil.
-  //   proc {|a, b| a.casecmp(b) == 0}
-  // else
-  //   proc {|a, b| a == b}
-  // end
-
-  // if File::ALT_SEPARATOR
-  //   SEPARATOR_LIST = "#{Regexp.quote File::ALT_SEPARATOR}#{Regexp.quote File::SEPARATOR}"
-  //   SEPARATOR_PAT = /[#{SEPARATOR_LIST}]/
-  // else
-  //   SEPARATOR_LIST = "#{Regexp.quote File::SEPARATOR}"
-  //   SEPARATOR_PAT = /#{Regexp.quote File::SEPARATOR}/
-  // end
-
   fn pub_add_trailing_separator(pth: RString) -> RString {
     pathname::pn_add_trailing_separator(pth)
   }
@@ -59,6 +43,10 @@ methods!(
 
   fn pub_children(pth: RString, with_dir: Boolean) -> Array {
     pathname::pn_children(pth, with_dir)
+  }
+
+  fn pub_children_compat(pth: RString, with_dir: Boolean) -> Array {
+    pathname::pn_children_compat(pth, with_dir)
   }
 
   fn pub_chop_basename(pth: RString) -> Array {
@@ -91,8 +79,14 @@ methods!(
   //   pathname::pn_each_filename(pth)
   // }
 
+  // pub_entries returns an array of String objects
   fn pub_entries(pth: RString) -> Array {
     pathname::pn_entries(pth)
+  }
+
+  // pub_entries_compat returns an array of Pathname objects
+  fn pub_entries_compat(pth: RString) -> Array {
+    pathname::pn_entries_compat(pth)
   }
 
   fn pub_extname(pth: RString) -> RString {
@@ -157,10 +151,12 @@ pub extern "C" fn Init_faster_pathname(){
     itself.def("add_trailing_separator", pub_add_trailing_separator);
     itself.def("basename", pub_basename);
     itself.def("children", pub_children);
+    itself.def("children_compat", pub_children_compat);
     itself.def("chop_basename", pub_chop_basename);
     itself.def("directory?", pub_is_directory);
     itself.def("dirname", pub_dirname);
     itself.def("entries", pub_entries);
+    itself.def("entries_compat", pub_entries_compat);
     itself.def("extname", pub_extname);
     itself.def("has_trailing_separator?", pub_has_trailing_separator);
     itself.def("plus", pub_plus);

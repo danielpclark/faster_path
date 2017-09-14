@@ -19,10 +19,12 @@ module FasterPath
     private :add_trailing_separator
     private :basename
     private :children
+    private :children_compat
     private :chop_basename
     private :directory?
     private :dirname
     private :entries
+    private :entries_compat
     private :extname
     private :has_trailing_separator?
     private :plus
