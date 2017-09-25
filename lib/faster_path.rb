@@ -18,11 +18,13 @@ module FasterPath
     private :absolute?
     private :add_trailing_separator
     private :basename
-    private :children
+    private :children # String results
+    private :children_compat # wrap Pathname on each
     private :chop_basename
     private :directory?
     private :dirname
-    private :entries
+    private :entries # String results
+    private :entries_compat # wrap Pathname on each
     private :extname
     private :has_trailing_separator?
     private :plus

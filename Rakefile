@@ -98,7 +98,7 @@ Rake::TestTask.new(minitest: :build_lib) do |t|
   t.test_files = FileList['test/**/*_test.rb']
 end
 
-task test: [:cargo, :minitest, :lint] do |_t|
+task test: [:cargo, :minitest, :lint, :pbench] do |_t|
   exec 'spec/mspec/bin/mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname'
 end
 
