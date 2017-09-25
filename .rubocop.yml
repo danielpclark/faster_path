@@ -883,7 +883,7 @@ Style/OneLineConditional:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#ternary-operator'
   Enabled: true
 
-Naming/BinaryOperatorParameter:
+Naming/BinaryOperatorParameterName:
   Description: 'When defining binary operators, name the argument other.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#other-arg'
   Enabled: true

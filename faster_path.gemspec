@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "bundler", "~> 1.12"
   spec.add_dependency "rake", "~> 12.0"
   spec.add_dependency "ffi", "~> 1.9"
-  spec.add_development_dependency "method_source", "~> 0.8.2"
+  spec.add_development_dependency "read_source", "~> 0.2.6"
   spec.add_development_dependency "minitest", "~> 5.10"
   spec.add_development_dependency "minitest-reporters", "~> 1.1"
   spec.add_development_dependency "color_pound_spec_reporter", "~> 0.0.9"
