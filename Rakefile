@@ -26,8 +26,9 @@ end
 
 desc "Generate Contriburs.md Manifest"
 task :contrib do
-  sh 'printf "# Contributors\n\n" > Contributors.md'
-  sh "git shortlog -s -n -e | sed 's/^.......//' >> Contributors.md"
+  puts "Generating Contriburs.md Manifest"
+  exec "printf '# Contributors\n
+' > Contributors.md;git shortlog -s -n -e | sed 's/^......./- /' >> Contributors.md"
 end
 
 desc "Add libruby to deps"
