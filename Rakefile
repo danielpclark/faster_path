@@ -24,6 +24,12 @@ task :sysinfo do
   end
 end
 
+desc "Generate Contriburs.md Manifest"
+task :contrib do
+  sh 'printf "# Contributors\n\n" > Contributors.md'
+  sh "git shortlog -s -n -e | sed 's/^.......//' >> Contributors.md"
+end
+
 desc "Add libruby to deps"
 task :libruby_release do
   filename = RbConfig::CONFIG["LIBRUBY_ALIASES"].split(" ").first
