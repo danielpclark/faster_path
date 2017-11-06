@@ -4,10 +4,7 @@ use self::array_tool::string::Squeeze;
 
 pub fn basename(pth: &str, ext: &str) -> String {
   // Known edge case
-  match &pth.squeeze("/")[..] {
-    "/" => { return "/".to_string() }
-    _ => {}
-  }
+  if &pth.squeeze("/")[..] == "/" { return "/".to_string(); }
 
   let mut name = extract_last_path_segment(pth);
 

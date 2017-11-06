@@ -1,4 +1,9 @@
-[root]
+[[package]]
+name = "array_tool"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "faster_path"
 version = "0.0.1"
 dependencies = [
@@ -6,11 +11,6 @@ dependencies = [
  "ruby-sys 0.2.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruru 0.9.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "array_tool"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "lazy_static"
