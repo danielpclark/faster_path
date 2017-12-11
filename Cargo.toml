@@ -13,6 +13,5 @@ name = "faster_path"
 crate-type = ["dylib"]
 
 [dependencies]
-ruby-sys = "0.2.20"
 ruru = "0.9.3"
 array_tool = "0.4.1"
