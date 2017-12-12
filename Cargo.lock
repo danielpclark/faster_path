@@ -8,7 +8,6 @@ name = "faster_path"
 version = "0.0.1"
 dependencies = [
  "array_tool 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "ruby-sys 0.2.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruru 0.9.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
