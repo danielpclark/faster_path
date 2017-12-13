@@ -25,7 +25,7 @@ class EntriesTest < Minitest::Test
   def test_entries_returns_similar_string_results_to_pathname_entries
     ['.', 'lib', 'src'].each do |pth|
       assert_equal Pathname.new(pth).entries.sort.map(&:to_s),
-        FasterPathname::Public.allocate.send(:entries, pth).sort
+        FasterPathname::Public.send(:entries, pth).sort
     end
   end
 end

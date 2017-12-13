@@ -25,7 +25,7 @@ class ChildrenTest < Minitest::Test
   def test_children_returns_similar_string_results_to_pathname_children
     [".", "/", "../"].each do |pth|
       assert_equal Pathname.new(pth).children.map(&:to_s),
-        FasterPathname::Public.allocate.send(:children, pth)
+        FasterPathname::Public.send(:children, pth)
     end
   end
 end

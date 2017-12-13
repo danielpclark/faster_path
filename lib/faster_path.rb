@@ -15,20 +15,20 @@ module FasterPath
     call
 
   FasterPathname::Public.class_eval do
-    private :absolute?
-    private :add_trailing_separator
-    private :basename
-    private :children # String results
-    private :children_compat # wrap Pathname on each
-    private :chop_basename
-    private :directory?
-    private :dirname
-    private :entries # String results
-    private :entries_compat # wrap Pathname on each
-    private :extname
-    private :has_trailing_separator?
-    private :plus
-    private :relative?
+    private_class_method :absolute?
+    private_class_method :add_trailing_separator
+    private_class_method :basename
+    private_class_method :children # String results
+    private_class_method :children_compat # wrap Pathname on each
+    private_class_method :chop_basename
+    private_class_method :directory?
+    private_class_method :dirname
+    private_class_method :entries # String results
+    private_class_method :entries_compat # wrap Pathname on each
+    private_class_method :extname
+    private_class_method :has_trailing_separator?
+    private_class_method :plus
+    private_class_method :relative?
   end
 
   FasterPathname.class_eval do
@@ -60,11 +60,11 @@ module FasterPath
   end
 
   def self.absolute?(pth)
-    FasterPathname::Public.allocate.send(:absolute?, pth)
+    FasterPathname::Public.send(:absolute?, pth)
   end
 
   def self.add_trailing_separator(pth)
-    FasterPathname::Public.allocate.send(:add_trailing_separator, pth)
+    FasterPathname::Public.send(:add_trailing_separator, pth)
   end
 
   def self.blank?(str)
@@ -72,44 +72,44 @@ module FasterPath
   end
 
   def self.basename(pth, ext="")
-    FasterPathname::Public.allocate.send(:basename, pth, ext)
+    FasterPathname::Public.send(:basename, pth, ext)
   end
 
   def self.children(pth, with_directory=true)
-    FasterPathname::Public.allocate.send(:children, pth, with_directory)
+    FasterPathname::Public.send(:children, pth, with_directory)
   end
 
   def self.chop_basename(pth)
-    result = FasterPathname::Public.allocate.send(:chop_basename, pth)
+    result = FasterPathname::Public.send(:chop_basename, pth)
     result unless result.empty?
   end
 
   def self.directory?(pth)
-    FasterPathname::Public.allocate.send(:directory?, pth)
+    FasterPathname::Public.send(:directory?, pth)
   end
 
   def self.dirname(pth)
-    FasterPathname::Public.allocate.send(:dirname, pth)
+    FasterPathname::Public.send(:dirname, pth)
   end
 
   def self.entries(pth)
-    FasterPathname::Public.allocate.send(:entries, pth)
+    FasterPathname::Public.send(:entries, pth)
   end
 
   def self.extname(pth)
-    FasterPathname::Public.allocate.send(:extname, pth)
+    FasterPathname::Public.send(:extname, pth)
   end
 
   def self.has_trailing_separator?(pth)
-    FasterPathname::Public.allocate.send(:has_trailing_separator?, pth)
+    FasterPathname::Public.send(:has_trailing_separator?, pth)
   end
 
   def self.plus(pth, pth2)
-    FasterPathname::Public.allocate.send(:plus, pth, pth2)
+    FasterPathname::Public.send(:plus, pth, pth2)
   end
 
   def self.relative?(pth)
-    FasterPathname::Public.allocate.send(:relative?, pth)
+    FasterPathname::Public.send(:relative?, pth)
   end
 
   module Rust

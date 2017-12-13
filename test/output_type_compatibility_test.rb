@@ -65,12 +65,12 @@ class OutputTypeCompatibilityTest < Minitest::Test
 
     def test_children
       refute_equal Pathname.new(pth).children.first.class,
-        FasterPathname::Public.allocate.send(:children, pth).first.class
+        FasterPathname::Public.send(:children, pth).first.class
     end
 
     def test_entries
       refute_equal Pathname.new(pth).entries.first.class,
-        FasterPathname::Public.allocate.send(:entries, pth).first.class
+        FasterPathname::Public.send(:entries, pth).first.class
     end
   end
 end
