@@ -33,10 +33,10 @@ pub fn pn_is_absolute(pth: MaybeString) -> Boolean {
 
 pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
   RString::new(
-    &basename::basename(
+    basename::basename(
       pth.ok().unwrap_or(RString::new("")).to_str(),
       ext.ok().unwrap_or(RString::new("")).to_str()
-    )[..]
+    )
   )
 }
 
