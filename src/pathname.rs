@@ -133,9 +133,9 @@ pub fn pn_is_directory(pth: MaybeString) -> Boolean {
 
 pub fn pn_dirname(pth: MaybeString) -> RString {
   RString::new(
-    &dirname::dirname(
+    dirname::dirname(
       pth.ok().unwrap_or(RString::new("")).to_str()
-    )[..]
+    )
   )
 }
 
