@@ -1,6 +1,9 @@
 use std::path::MAIN_SEPARATOR;
+use std::str;
 
-static SEP: u8 = MAIN_SEPARATOR as u8;
+pub const SEP: u8 = MAIN_SEPARATOR as u8;
+// TODO: Do not hard-code "/". How can we convert MAIN_SEPARATOR char to a static string here?
+pub static SEP_STR: &'static str = "/";
 
 pub fn extract_last_path_segment(path: &str) -> &str {
   // Works with bytes directly because MAIN_SEPARATOR is always in the ASCII 7-bit range so we can
@@ -39,17 +42,4 @@ pub fn last_non_sep_i_before(path: &str, end: isize) -> isize {
     i -= 1;
   }
   i
-}
-
-// Returns the byte offset of the last MAIN_SEPARATOR before the given end offset.
-pub fn last_sep_i(path: &str, end: isize) -> isize {
-  let ptr = path.as_ptr();
-  let mut i = end - 1;
-  while i >= 0 {
-    if unsafe { *ptr.offset(i) } == SEP {
-      return i;
-    };
-    i -= 1;
-  }
-  -1
 }
