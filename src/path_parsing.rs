@@ -4,8 +4,9 @@ use std::path::MAIN_SEPARATOR;
 use std::str;
 
 pub const SEP: u8 = MAIN_SEPARATOR as u8;
-// TODO: Do not hard-code "/". How can we convert MAIN_SEPARATOR char to a static string here?
-pub static SEP_STR: &'static str = "/";
+lazy_static! {
+  pub static ref SEP_STR: &'static str = str::from_utf8(&[SEP]).unwrap();
+}
 
 pub fn extract_last_path_segment(path: &str) -> &str {
   let end = (last_non_sep_i(path) + 1) as usize;

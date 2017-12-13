@@ -7,6 +7,9 @@
 #[macro_use]
 extern crate ruru;
 
+#[macro_use]
+extern crate lazy_static;
+
 class!(FasterPathname);
 
 mod helpers;
@@ -95,7 +98,7 @@ methods!(
 
   // fn r_find(ignore_error: Boolean){}
   // fn pub_find(pth: RString ,ignore_error: Boolean){}
-  
+
   fn pub_has_trailing_separator(pth: RString) -> Boolean {
     pathname::pn_has_trailing_separator(pth)
   }
