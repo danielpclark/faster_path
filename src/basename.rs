@@ -1,13 +1,14 @@
 use std::path::MAIN_SEPARATOR;
-use path_parsing::extract_last_path_segment;
+use path_parsing::{last_non_sep_i, last_sep_i};
 
 pub fn basename(pth: &str, ext: &str) -> String {
-  // Known edge case
-  if !pth.is_empty() && pth.bytes().all(|b| b == (MAIN_SEPARATOR as u8)) {
+  let name_end = (last_non_sep_i(pth) + 1) as usize;
+  // Known edge case, all '/'.
+  if !pth.is_empty() && name_end == 0 {
     return MAIN_SEPARATOR.to_string();
   }
 
-  let mut name = extract_last_path_segment(pth);
+  let mut name = &pth[(last_sep_i(pth, name_end as isize) + 1) as usize..name_end];
 
   if ext == ".*" {
     if let Some(dot_i) = name.rfind('.') {
