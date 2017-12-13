@@ -1,10 +1,11 @@
-extern crate array_tool;
+use std::path::MAIN_SEPARATOR;
 use path_parsing::extract_last_path_segment;
-use self::array_tool::string::Squeeze;
 
 pub fn basename(pth: &str, ext: &str) -> String {
   // Known edge case
-  if &pth.squeeze("/")[..] == "/" { return "/".to_string(); }
+  if !pth.is_empty() && pth.bytes().all(|b| b == (MAIN_SEPARATOR as u8)) {
+    return MAIN_SEPARATOR.to_string();
+  }
 
   let mut name = extract_last_path_segment(pth);
 
@@ -18,3 +19,7 @@ pub fn basename(pth: &str, ext: &str) -> String {
   name.to_string()
 }
 
+#[test]
+fn edge_case_all_seps() {
+  assert_eq!("/", basename("///", ".*"));
+}
