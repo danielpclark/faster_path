@@ -177,7 +177,7 @@ pub fn pn_entries_compat(pth: MaybeString) -> Array {
 
 pub fn pn_extname(pth: MaybeString) -> RString {
   RString::new(
-    &extname::extname(pth.ok().unwrap_or(RString::new("")).to_str())[..]
+    extname::extname(pth.ok().unwrap_or(RString::new("")).to_str())
   )
 }
 
@@ -228,4 +228,3 @@ pub fn pn_is_relative(pth: MaybeString) -> Boolean {
 // pub fn pn_rmtree(pth: MaybeString) -> NilClass {
 //   NilClass::new()
 // }
-
