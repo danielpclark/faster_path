@@ -1,3 +1,5 @@
+extern crate memchr;
+use self::memchr::memrchr;
 use std::path::MAIN_SEPARATOR;
 use std::str;
 
@@ -6,27 +8,9 @@ pub const SEP: u8 = MAIN_SEPARATOR as u8;
 pub static SEP_STR: &'static str = "/";
 
 pub fn extract_last_path_segment(path: &str) -> &str {
-  // Works with bytes directly because MAIN_SEPARATOR is always in the ASCII 7-bit range so we can
-  // avoid the overhead of full UTF-8 processing.
-  // See src/benches/path_parsing.rs for benchmarks of different approaches.
-  let ptr = path.as_ptr();
-  let mut i = path.len() as isize - 1;
-  while i >= 0 {
-    let c = unsafe { *ptr.offset(i) };
-    if c != SEP { break; };
-    i -= 1;
-  }
-  let end = (i + 1) as usize;
-  while i >= 0 {
-    let c = unsafe { *ptr.offset(i) };
-    if c == SEP {
-      return &path[(i + 1) as usize..end];
-    };
-    i -= 1;
-  }
-  &path[..end]
+  let end = (last_non_sep_i(path) + 1) as usize;
+  &path[memrchr(SEP, &path.as_bytes()[..end]).unwrap_or(0)..end]
 }
-
 
 // Returns the byte offset of the last byte preceding a MAIN_SEPARATOR.
 pub fn last_non_sep_i(path: &str) -> isize {
@@ -35,6 +19,8 @@ pub fn last_non_sep_i(path: &str) -> isize {
 
 // Returns the byte offset of the last byte preceding a MAIN_SEPARATOR before the given end offset.
 pub fn last_non_sep_i_before(path: &str, end: isize) -> isize {
+  // Works with bytes directly because MAIN_SEPARATOR is always in the ASCII 7-bit range so we can
+  // avoid the overhead of full UTF-8 processing.
   let ptr = path.as_ptr();
   let mut i = end;
   while i >= 0 {
