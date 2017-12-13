@@ -8,7 +8,10 @@ pub fn basename<'a>(pth: &'a str, ext: &str) -> &'a str {
   if !pth.is_empty() && name_end == 0 {
     return &pth[..1];
   }
-  let name_start = memrchr(SEP, &pth.as_bytes()[..name_end]).unwrap_or(0);
+  let name_start = match memrchr(SEP, &pth.as_bytes()[..name_end]) {
+    Some(i) => i + 1,
+    _ => 0
+  };
   let mut name = &pth[name_start..name_end];
   if ext == ".*" {
     if let Some(dot_i) = memrchr('.' as u8, name.as_bytes()) {
