@@ -7,6 +7,9 @@
 #[macro_use]
 extern crate ruru;
 
+#[macro_use]
+extern crate lazy_static;
+
 class!(FasterPathname);
 
 mod helpers;

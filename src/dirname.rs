@@ -1,27 +1,22 @@
-use std::path::MAIN_SEPARATOR;
-use path_parsing::{last_sep_i, last_non_sep_i, last_non_sep_i_before};
+extern crate memchr;
+use self::memchr::memrchr;
+use path_parsing::{SEP, SEP_STR, last_non_sep_i, last_non_sep_i_before};
 
-pub fn dirname(path: &str) -> String {
-  let r_str = path;
-  if r_str.is_empty() {
-    return ".".to_string();
-  }
-  let non_sep_i = last_non_sep_i(r_str);
-  if non_sep_i == -1 {
-    return MAIN_SEPARATOR.to_string();
-  }
-  let sep_i = last_sep_i(r_str, non_sep_i);
-  if sep_i == -1 {
-    return ".".to_string();
-  }
-  if sep_i == 0 {
-    return MAIN_SEPARATOR.to_string();
-  }
-  let non_sep_i2 = last_non_sep_i_before(r_str, sep_i);
-  if non_sep_i2 != -1 {
-    return r_str[..(non_sep_i2 + 1) as usize].to_string();
-  } else {
-    return MAIN_SEPARATOR.to_string();
+pub fn dirname(path: &str) -> &str {
+  if path.is_empty() { return "."; }
+  let non_sep_i = last_non_sep_i(path);
+  if non_sep_i == -1 { return *SEP_STR; }
+  return match memrchr(SEP, &path.as_bytes()[..non_sep_i as usize]) {
+    None => ".",
+    Some(0) => *SEP_STR,
+    Some(sep_i) => {
+      let non_sep_i2 = last_non_sep_i_before(path, sep_i as isize);
+      if non_sep_i2 != -1 {
+        &path[..(non_sep_i2 + 1) as usize]
+      } else {
+        *SEP_STR
+      }
+    }
   }
 }
 

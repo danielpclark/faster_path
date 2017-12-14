@@ -15,3 +15,5 @@ crate-type = ["dylib"]
 [dependencies]
 ruru = "0.9.3"
 array_tool = "0.4.1"
+lazy_static = "1.0"
+memchr = "2.0.1"

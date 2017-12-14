@@ -73,7 +73,7 @@ pub fn plus_paths(path1: &str, path2: &str) -> String {
     if r1 {
       result = prefix1.to_string();
     } else {
-      result = dirname(&prefix1[..]);
+      result = dirname(&prefix1[..]).to_string();
     }
   }
 
