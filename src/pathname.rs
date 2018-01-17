@@ -33,10 +33,10 @@ pub fn pn_is_absolute(pth: MaybeString) -> Boolean {
 
 pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
   RString::new(
-    &basename::basename(
+    basename::basename(
       pth.ok().unwrap_or(RString::new("")).to_str(),
       ext.ok().unwrap_or(RString::new("")).to_str()
-    )[..]
+    )
   )
 }
 
@@ -133,9 +133,9 @@ pub fn pn_is_directory(pth: MaybeString) -> Boolean {
 
 pub fn pn_dirname(pth: MaybeString) -> RString {
   RString::new(
-    &dirname::dirname(
+    dirname::dirname(
       pth.ok().unwrap_or(RString::new("")).to_str()
-    )[..]
+    )
   )
 }
 
@@ -177,7 +177,7 @@ pub fn pn_entries_compat(pth: MaybeString) -> Array {
 
 pub fn pn_extname(pth: MaybeString) -> RString {
   RString::new(
-    &extname::extname(pth.ok().unwrap_or(RString::new("")).to_str())[..]
+    extname::extname(pth.ok().unwrap_or(RString::new("")).to_str())
   )
 }
 
@@ -228,4 +228,3 @@ pub fn pn_is_relative(pth: MaybeString) -> Boolean {
 // pub fn pn_rmtree(pth: MaybeString) -> NilClass {
 //   NilClass::new()
 // }
-

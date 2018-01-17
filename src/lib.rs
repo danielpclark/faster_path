@@ -7,6 +7,9 @@
 #[macro_use]
 extern crate ruru;
 
+#[macro_use]
+extern crate lazy_static;
+
 class!(FasterPathname);
 
 mod helpers;
@@ -95,7 +98,7 @@ methods!(
 
   // fn r_find(ignore_error: Boolean){}
   // fn pub_find(pth: RString ,ignore_error: Boolean){}
-  
+
   fn pub_has_trailing_separator(pth: RString) -> Boolean {
     pathname::pn_has_trailing_separator(pth)
   }
@@ -147,19 +150,19 @@ pub extern "C" fn Init_faster_pathname(){
   // * methods for refinements, monkeypatching
   // * methods that need all values as parameters
   Class::from_existing("FasterPathname").get_nested_class("Public").define(|itself| {
-    itself.def("absolute?", pub_is_absolute);
-    itself.def("add_trailing_separator", pub_add_trailing_separator);
-    itself.def("basename", pub_basename);
-    itself.def("children", pub_children);
-    itself.def("children_compat", pub_children_compat);
-    itself.def("chop_basename", pub_chop_basename);
-    itself.def("directory?", pub_is_directory);
-    itself.def("dirname", pub_dirname);
-    itself.def("entries", pub_entries);
-    itself.def("entries_compat", pub_entries_compat);
-    itself.def("extname", pub_extname);
-    itself.def("has_trailing_separator?", pub_has_trailing_separator);
-    itself.def("plus", pub_plus);
-    itself.def("relative?", pub_is_relative);
+    itself.def_self("absolute?", pub_is_absolute);
+    itself.def_self("add_trailing_separator", pub_add_trailing_separator);
+    itself.def_self("basename", pub_basename);
+    itself.def_self("children", pub_children);
+    itself.def_self("children_compat", pub_children_compat);
+    itself.def_self("chop_basename", pub_chop_basename);
+    itself.def_self("directory?", pub_is_directory);
+    itself.def_self("dirname", pub_dirname);
+    itself.def_self("entries", pub_entries);
+    itself.def_self("entries_compat", pub_entries_compat);
+    itself.def_self("extname", pub_extname);
+    itself.def_self("has_trailing_separator?", pub_has_trailing_separator);
+    itself.def_self("plus", pub_plus);
+    itself.def_self("relative?", pub_is_relative);
   });
 }
