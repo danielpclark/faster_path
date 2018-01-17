@@ -108,6 +108,7 @@ end
 task :init_mspec do |_t|
   if Dir.open('spec/mspec').entries.-([".", ".."]).empty?
     `git submodule init`
+    `git submodule update`
   end
 end
 
