@@ -106,7 +106,7 @@ Rake::TestTask.new(minitest: :build_lib) do |t|
 end
 
 task :init_mspec do |_t|
-  if Dir.open('spec/mspec').entries.-([".",".."]).empty?
+  if Dir.open('spec/mspec').entries.-([".", ".."]).empty?
     `git submodule init`
   end
 end
