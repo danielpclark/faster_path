@@ -105,17 +105,23 @@ Rake::TestTask.new(minitest: :build_lib) do |t|
   t.test_files = FileList['test/**/*_test.rb']
 end
 
-task test: [:cargo, :minitest, :lint, :pbench] do |_t|
+task :init_mspec do |_t|
+  if Dir.open('spec/mspec').entries.-([".",".."]).empty?
+    `git submodule init`
+  end
+end
+
+task test: [:cargo, :minitest, :lint, :pbench, :init_mspec] do |_t|
   exec 'spec/mspec/bin/mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname'
 end
 
 desc "Full mspec results w/o encoding"
-task :mspec_full do
+task mspec_full: :init_mspec do
   exec %(bash -c "TEST_MONKEYPATCHES=true WITH_REGRESSION=true spec/mspec/bin/mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname")
 end
 
 desc "Full mspec results w/ encoding"
-task :mspec_encoding_full do
+task mspec_encoding_full: :init_mspec do
   exec %(bash -c "ENCODING=1 TEST_MONKEYPATCHES=true WITH_REGRESSION=true mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname")
 end
 
