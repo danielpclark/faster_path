@@ -3,12 +3,11 @@ require "minitest/benchmark"
 require 'fileutils'
 require 'stop_watch'
 if ENV['GRAPH']
- require 'gruff'
- puts "Generating graphs..."
+  require 'gruff'
+  puts "Generating graphs..."
 else
   puts "Not generating graphs.\nSet GRAPH environment variable if you wish to generate graphs."
 end
-
 
 class BenchmarkHelper < Minitest::Benchmark
   def self.bench_range
