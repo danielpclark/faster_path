@@ -127,6 +127,9 @@ task mspec_encoding_full: :init_mspec do
 end
 
 Rake::TestTask.new(bench: :build_lib) do |t|
+  if ENV['GRAPH']
+    `bundle install`
+  end
   t.libs = %w[lib test]
   t.pattern = 'test/**/*_benchmark.rb'
 end

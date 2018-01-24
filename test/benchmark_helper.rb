@@ -2,7 +2,13 @@ require "test_helper"
 require "minitest/benchmark"
 require 'fileutils'
 require 'stop_watch'
-require 'gruff'
+if ENV['GRAPH']
+ require 'gruff'
+ puts "Generating graphs..."
+else
+  puts "Not generating graphs.\nSet GRAPH environment variable if you wish to generate graphs."
+end
+
 
 class BenchmarkHelper < Minitest::Benchmark
   def self.bench_range
@@ -20,7 +26,7 @@ class BenchmarkHelper < Minitest::Benchmark
   end
 
   def graph_benchmarks
-    if rust.time? && ruby.time?
+    if rust.time? && ruby.time? && ENV['GRAPH']
       g = Gruff::Line.new
       g.title = graph_title
       g.labels = generate_benchmark_range_labels
