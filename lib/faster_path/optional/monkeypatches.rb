@@ -25,6 +25,8 @@ module FasterPath
         end
       end
     end
+
+    # rubocop:disable Metrics/MethodLength
     def self._ruby_library_pathname!
       ::Pathname.class_eval do
         def absolute?
@@ -45,6 +47,11 @@ module FasterPath
           FasterPath.chop_basename(pth)
         end
         private :chop_basename
+
+        def cleanpath_aggressive
+          Pathname.new(FasterPath.cleanpath_aggressive(@path))
+        end
+        private :cleanpath_aggressive
 
         def directory?
           FasterPath.directory?(@path)

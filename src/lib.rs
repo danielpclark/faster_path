@@ -16,9 +16,11 @@ mod helpers;
 mod pathname;
 mod basename;
 mod chop_basename;
+mod cleanpath_aggressive;
 mod dirname;
 mod extname;
 mod plus;
+mod prepend_prefix;
 pub mod rust_arch_bits;
 mod path_parsing;
 
@@ -59,7 +61,9 @@ methods!(
   // fn r_cleanpath(){ pub_cleanpath(r_to_path()) }
   // fn pub_cleanpath(pth: RString){}
 
-  // fn r_cleanpath_aggressive(pth: RString){}
+  fn pub_cleanpath_aggressive(pth: RString) -> RString {
+    pathname::pn_cleanpath_aggressive(pth)
+  }
 
   // fn r_cleanpath_conservative(pth: RString){}
 
@@ -156,6 +160,7 @@ pub extern "C" fn Init_faster_pathname(){
     itself.def_self("children", pub_children);
     itself.def_self("children_compat", pub_children_compat);
     itself.def_self("chop_basename", pub_chop_basename);
+    itself.def_self("cleanpath_aggressive", pub_cleanpath_aggressive);
     itself.def_self("directory?", pub_is_directory);
     itself.def_self("dirname", pub_dirname);
     itself.def_self("entries", pub_entries);
