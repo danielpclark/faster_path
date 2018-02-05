@@ -3,7 +3,7 @@
 [![TravisCI Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/10ul0gk3cwhlt2lj/branch/master?svg=true)](https://ci.appveyor.com/project/danielpclark/faster-path/branch/master)
 [![Latest Tag](https://img.shields.io/github/tag/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/tags)
-[![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.2.1.svg)](https://github.com/danielpclark/faster_path/pulse)
+[![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.2.3.svg)](https://github.com/danielpclark/faster_path/pulse)
 [![Binary Release](https://img.shields.io/github/release/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/releases)
 [![Coverage Status](https://coveralls.io/repos/github/danielpclark/faster_path/badge.svg)](https://coveralls.io/github/danielpclark/faster_path)
 [![Inline docs](http://inch-ci.org/github/danielpclark/faster_path.svg?branch=master)](http://inch-ci.org/github/danielpclark/faster_path)
@@ -113,7 +113,7 @@ curl -sSf https://static.rust-lang.org/rustup.sh | sh
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path', '~> 0.1.13'
+gem 'faster_path', '~> 0.2.3'
 ```
 
 And then execute:
@@ -123,8 +123,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install faster_path
-
-**MAC USERS:** At the moment Mac users need to install the extension manualy.  Go to the gem directory and run `cargo build --release` .  There is an issue opened for this and I'm looking for people who have Macs to help on this.
 
 ## Visual Benchmarks
 
@@ -142,12 +140,13 @@ Current methods implemented:
 |---|---|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 88.5% |
 | `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 31.1% |
-| `FasterPath.children` | `Pathname#children` | 13.6% |
-| `FasterPath.chop_basename` | `Pathname#chop_basename` | 55.8% |
+| `FasterPath.children` | `Pathname#children` | 14.6% |
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 56.7% |
+| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 69.8% |
 | `FasterPath.directory?` | `Pathname#directory?` | 12.7% |
 | `FasterPath.entries` | `Pathname#entries` | 7.7% |
 | `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 59.2% |
-| `FasterPath.plus` | `Pathname#plus` | 77.5% |
+| `FasterPath.plus` | `Pathname#plus` | 77.9% |
 | `FasterPath.relative?` | `Pathname#relative?` | 83.1% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
