@@ -44,6 +44,11 @@ module FasterPath
       end
       private :chop_basename
 
+      def cleanpath_aggressive
+        Pathname.new(FasterPath.cleanpath_aggressive(@path))
+      end
+      private :cleanpath_aggressive
+
       def directory?
         FasterPath.directory?(@path)
       end

@@ -21,6 +21,7 @@ module FasterPath
     private_class_method :children # String results
     private_class_method :children_compat # wrap Pathname on each
     private_class_method :chop_basename
+    private_class_method :cleanpath_aggressive
     private_class_method :directory?
     private_class_method :dirname
     private_class_method :entries # String results
@@ -82,6 +83,10 @@ module FasterPath
   def self.chop_basename(pth)
     result = FasterPathname::Public.send(:chop_basename, pth)
     result unless result.empty?
+  end
+
+  def self.cleanpath_aggressive(pth)
+    FasterPathname::Public.send(:cleanpath_aggressive, pth)
   end
 
   def self.directory?(pth)

@@ -1,6 +1,7 @@
 use helpers::*;
 use basename;
 use chop_basename;
+use cleanpath_aggressive;
 use dirname;
 use extname;
 use plus;
@@ -115,7 +116,13 @@ pub fn pn_chop_basename(pth: MaybeString) -> Array {
 
 // pub fn pn_cleanpath(pth: MaybeString){}
 
-// pub fn pn_cleanpath_aggressive(pth: MaybeString){}
+pub fn pn_cleanpath_aggressive(pth: MaybeString) -> RString {
+  let path = cleanpath_aggressive::cleanpath_aggressive(
+    pth.ok().unwrap_or(RString::new("")).to_str()
+  );
+
+  RString::new(&path)
+}
 
 // pub fn pn_cleanpath_conservative(pth: MaybeString){}
 
