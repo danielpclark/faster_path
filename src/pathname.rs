@@ -7,7 +7,7 @@ use extname;
 use plus;
 
 use ruru;
-use ruru::{RString, Boolean, Array};
+use ruru::{RString, Boolean, Array, Object};
 use std::path::{MAIN_SEPARATOR,Path};
 use std::fs;
 
@@ -81,16 +81,36 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
     for entry in entries {
       if with_directory {
         match entry {
-          Ok(v) => { arr.push(
-              class_new("Pathname", Some(&vec![str_to_any_obj(v.path().to_str().unwrap())]))
+          Ok(v) => {
+            arr.push(
+              class_new(
+                "Pathname",
+                Some(
+                  &vec![
+                    RString::new(
+                      v.path().to_str().unwrap()
+                    ).to_any_object()
+                  ]
+                )
+              )
             );
           },
           _ => {}
         };
       } else {
         match entry {
-          Ok(v) => { arr.push(
-              class_new("Pathname", Some(&vec![str_to_any_obj(v.file_name().to_str().unwrap())]))
+          Ok(v) => {
+            arr.push(
+              class_new(
+                "Pathname",
+                Some(
+                  &vec![
+                    RString::new(
+                      v.path().to_str().unwrap()
+                    ).to_any_object()
+                  ]
+                )
+              )
             );
           },
           _ => {}
@@ -171,12 +191,39 @@ pub fn pn_entries_compat(pth: MaybeString) -> Array {
   let files = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()).unwrap();
   let mut arr = Array::new();
 
-  arr.push(class_new("Pathname", Some(&vec![str_to_any_obj(&"."[..])])));
-  arr.push(class_new("Pathname", Some(&vec![str_to_any_obj(&".."[..])])));
+  arr.push(
+    class_new(
+      "Pathname",
+      Some(
+        &vec![
+          RString::new(".").to_any_object()
+        ]
+      )
+    )
+  );
+  arr.push(
+    class_new(
+      "Pathname",
+      Some(
+        &vec![
+          RString::new("..").to_any_object()
+        ]
+      )
+    )
+  );
 
   for file in files {
     let file_name_str = file.unwrap().file_name().into_string().unwrap();
-    arr.push(class_new("Pathname", Some(&vec![str_to_any_obj(&file_name_str[..])])));
+    arr.push(
+      class_new(
+        "Pathname",
+        Some(
+          &vec![
+            RString::from(file_name_str).to_any_object()
+          ]
+        )
+      )
+    );
   }
 
   arr

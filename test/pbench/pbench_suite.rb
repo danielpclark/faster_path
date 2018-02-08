@@ -83,11 +83,11 @@ PBENCHES[:children] = {
     end
   end
 }
-# Do NOT remove; waiting for fix in ruru
+# Waiting for ruru fix PR #75
 # PBENCHES[:children_compat] = {
 #  new: lambda do |x|
 #    (x/5).times do
-#      FasterPathname::Public.allocate.send(:children_compat, '.')
+#      FasterPathname::Public.send(:children_compat, '.')
 #    end
 #  end,
 #  old: lambda do |x|
@@ -170,12 +170,12 @@ PBENCHES[:entries] = {
     end
   end
 }
-# Do NOT remove; waiting for fix in ruru
+# Waiting for ruru fix PR #75
 # PBENCHES[:entries_compat] = {
 #   new: lambda do |x|
 #     (x/5).times do
-#       FasterPathname::Public.allocate.send(:entries_compat, "./")
-#       FasterPathname::Public.allocate.send(:entries_compat, "./src")
+#       FasterPathname::Public.send(:entries_compat, "./")
+#       FasterPathname::Public.send(:entries_compat, "./src")
 #     end
 #   end,
 #   old: lambda do |x|
