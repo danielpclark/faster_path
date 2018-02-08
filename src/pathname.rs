@@ -82,7 +82,7 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
       if with_directory {
         match entry {
           Ok(v) => { arr.push(
-              class_new("Pathname", vec![str_to_any_obj(v.path().to_str().unwrap())])
+              class_new("Pathname", Some(&vec![str_to_any_obj(v.path().to_str().unwrap())]))
             );
           },
           _ => {}
@@ -90,7 +90,7 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
       } else {
         match entry {
           Ok(v) => { arr.push(
-              class_new("Pathname", vec![str_to_any_obj(v.file_name().to_str().unwrap())])
+              class_new("Pathname", Some(&vec![str_to_any_obj(v.file_name().to_str().unwrap())]))
             );
           },
           _ => {}
@@ -171,12 +171,12 @@ pub fn pn_entries_compat(pth: MaybeString) -> Array {
   let files = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()).unwrap();
   let mut arr = Array::new();
 
-  arr.push(class_new("Pathname", vec![str_to_any_obj(&"."[..])]));
-  arr.push(class_new("Pathname", vec![str_to_any_obj(&".."[..])]));
+  arr.push(class_new("Pathname", Some(&vec![str_to_any_obj(&"."[..])])));
+  arr.push(class_new("Pathname", Some(&vec![str_to_any_obj(&".."[..])])));
 
   for file in files {
     let file_name_str = file.unwrap().file_name().into_string().unwrap();
-    arr.push(class_new("Pathname", vec![str_to_any_obj(&file_name_str[..])]));
+    arr.push(class_new("Pathname", Some(&vec![str_to_any_obj(&file_name_str[..])])));
   }
 
   arr
