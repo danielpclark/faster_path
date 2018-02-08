@@ -12,6 +12,7 @@ extern crate lazy_static;
 
 class!(FasterPathname);
 
+mod helpers;
 mod pathname;
 mod basename;
 mod chop_basename;

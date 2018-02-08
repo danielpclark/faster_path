@@ -83,19 +83,18 @@ PBENCHES[:children] = {
     end
   end
 }
-# Waiting for ruru fix PR #75
-# PBENCHES[:children_compat] = {
-#  new: lambda do |x|
-#    (x/5).times do
-#      FasterPathname::Public.send(:children_compat, '.')
-#    end
-#  end,
-#  old: lambda do |x|
-#    (x/5).times do
-#      Pathname.new('.').children
-#    end
-#  end
-# }
+PBENCHES[:children_compat] = {
+ new: lambda do |x|
+   (x/5).times do
+     FasterPathname::Public.send(:children_compat, '.')
+   end
+ end,
+ old: lambda do |x|
+   (x/5).times do
+     Pathname.new('.').children
+   end
+ end
+}
 PBENCHES[:chop_basename] = {
   new: lambda do |x|
     x.times do
@@ -170,21 +169,20 @@ PBENCHES[:entries] = {
     end
   end
 }
-# Waiting for ruru fix PR #75
-# PBENCHES[:entries_compat] = {
-#   new: lambda do |x|
-#     (x/5).times do
-#       FasterPathname::Public.send(:entries_compat, "./")
-#       FasterPathname::Public.send(:entries_compat, "./src")
-#     end
-#   end,
-#   old: lambda do |x|
-#     (x/5).times do
-#       Pathname.new("./").entries
-#       Pathname.new("./src").entries
-#     end
-#   end
-# }
+PBENCHES[:entries_compat] = {
+  new: lambda do |x|
+    (x/5).times do
+      FasterPathname::Public.send(:entries_compat, "./")
+      FasterPathname::Public.send(:entries_compat, "./src")
+    end
+  end,
+  old: lambda do |x|
+    (x/5).times do
+      Pathname.new("./").entries
+      Pathname.new("./src").entries
+    end
+  end
+}
 PBENCHES[:extname] = {
   new: lambda do |x|
     x.times do

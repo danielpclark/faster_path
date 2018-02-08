@@ -9,18 +9,16 @@ class EntriesTest < Minitest::Test
     assert_kind_of String, FasterPath.entries('.').first
   end
 
-  # Do NOT remove; waiting for fix in ruru
-  # def test_entries_compat_returns_pathname_objects
-  #   assert_kind_of Pathname, FasterPathname::Public.allocate.send(:entries_compat, '.').first
-  # end
+  def test_entries_compat_returns_pathname_objects
+    assert_kind_of Pathname, FasterPathname::Public.send(:entries_compat, '.').first
+  end
 
-  # Do NOT remove; waiting for fix in ruru
-  # def test_entries_compat_returns_similar_results_to_pathname_entries
-  #   ['.', 'lib', 'src'].each do |pth|
-  #     assert_equal Pathname.new(pth).entries.sort,
-  #       FasterPathname::Public.allocate.send(:entries_compat, pth).sort
-  #   end
-  # end
+  def test_entries_compat_returns_similar_results_to_pathname_entries
+    ['.', 'lib', 'src'].each do |pth|
+      assert_equal Pathname.new(pth).entries.sort,
+        FasterPathname::Public.send(:entries_compat, pth).sort
+    end
+  end
 
   def test_entries_returns_similar_string_results_to_pathname_entries
     ['.', 'lib', 'src'].each do |pth|

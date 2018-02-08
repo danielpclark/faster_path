@@ -1,3 +1,4 @@
+use helpers::new_pathname_instance;
 use basename;
 use chop_basename;
 use cleanpath_aggressive;
@@ -6,7 +7,7 @@ use extname;
 use plus;
 
 use ruru;
-use ruru::{RString, Boolean, Array, Object, Class};
+use ruru::{RString, Boolean, Array};
 use std::path::{MAIN_SEPARATOR,Path};
 use std::fs;
 
@@ -79,26 +80,12 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
   if let Ok(entries) = fs::read_dir(val) {
     for entry in entries {
       if with_directory {
-        match entry {
-          Ok(v) => {
-            arr.push(
-              Class::from_existing("Pathname").new_instance(
-                Some(&vec![RString::new(v.path().to_str().unwrap()).to_any_object()])
-              )
-            );
-          },
-          _ => {}
+        if let Ok(v) = entry {
+          arr.push(new_pathname_instance(v.path().to_str().unwrap()));
         };
       } else {
-        match entry {
-          Ok(v) => {
-            arr.push(
-              Class::from_existing("Pathname").new_instance(
-                Some(&vec![RString::new(v.file_name().to_str().unwrap()).to_any_object()])
-              )
-            );
-          },
-          _ => {}
+        if let Ok(v) = entry {
+          arr.push(new_pathname_instance(v.file_name().to_str().unwrap()));
         };
       }
     }
@@ -176,36 +163,12 @@ pub fn pn_entries_compat(pth: MaybeString) -> Array {
   let files = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()).unwrap();
   let mut arr = Array::new();
 
-  arr.push(
-    Class::from_existing("Pathname").new_instance(
-      Some(
-        &vec![
-          RString::new(".").to_any_object()
-        ]
-      )
-    )
-  );
-  arr.push(
-    Class::from_existing("Pathname").new_instance(
-      Some(
-        &vec![
-          RString::new("..").to_any_object()
-        ]
-      )
-    )
-  );
+  arr.push(new_pathname_instance("."));
+  arr.push(new_pathname_instance(".."));
 
   for file in files {
     let file_name_str = file.unwrap().file_name().into_string().unwrap();
-    arr.push(
-      Class::from_existing("Pathname").new_instance(
-        Some(
-          &vec![
-            RString::from(file_name_str).to_any_object()
-          ]
-        )
-      )
-    );
+    arr.push(new_pathname_instance(&file_name_str));
   }
 
   arr
@@ -264,3 +227,4 @@ pub fn pn_is_relative(pth: MaybeString) -> Boolean {
 // pub fn pn_rmtree(pth: MaybeString) -> NilClass {
 //   NilClass::new()
 // }
+//

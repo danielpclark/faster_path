@@ -34,10 +34,9 @@ module FasterPath
       end
       private :add_trailing_separator
 
-      # Waiting for ruru fix PR #75
-      # def children(with_dir=true)
-      #   FasterPathname::Public.send(:children_compat, @path, with_dir)
-      # end if !!ENV['WITH_REGRESSION']
+      def children(with_dir=true)
+        FasterPathname::Public.send(:children_compat, @path, with_dir)
+      end if !!ENV['WITH_REGRESSION']
 
       def chop_basename(pth)
         FasterPath.chop_basename(pth)
@@ -53,10 +52,9 @@ module FasterPath
         FasterPath.directory?(@path)
       end
 
-      # Waiting for ruru fix PR #75
-      # def entries
-      #   FasterPathname::Public.send(:entries_compat, @path)
-      # end if !!ENV['WITH_REGRESSION']
+      def entries
+        FasterPathname::Public.send(:entries_compat, @path)
+      end if !!ENV['WITH_REGRESSION']
 
       def has_trailing_separator?(pth)
         FasterPath.has_trailing_separator?(pth)
