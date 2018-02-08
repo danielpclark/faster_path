@@ -1,4 +1,3 @@
-use helpers::*;
 use basename;
 use chop_basename;
 use cleanpath_aggressive;
@@ -7,7 +6,7 @@ use extname;
 use plus;
 
 use ruru;
-use ruru::{RString, Boolean, Array, Object};
+use ruru::{RString, Boolean, Array, Object, Class};
 use std::path::{MAIN_SEPARATOR,Path};
 use std::fs;
 
@@ -83,15 +82,8 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
         match entry {
           Ok(v) => {
             arr.push(
-              class_new(
-                "Pathname",
-                Some(
-                  &vec![
-                    RString::new(
-                      v.path().to_str().unwrap()
-                    ).to_any_object()
-                  ]
-                )
+              Class::from_existing("Pathname").new_instance(
+                Some(&vec![RString::new(v.path().to_str().unwrap()).to_any_object()])
               )
             );
           },
@@ -101,15 +93,8 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
         match entry {
           Ok(v) => {
             arr.push(
-              class_new(
-                "Pathname",
-                Some(
-                  &vec![
-                    RString::new(
-                      v.path().to_str().unwrap()
-                    ).to_any_object()
-                  ]
-                )
+              Class::from_existing("Pathname").new_instance(
+                Some(&vec![RString::new(v.file_name().to_str().unwrap()).to_any_object()])
               )
             );
           },
@@ -192,8 +177,7 @@ pub fn pn_entries_compat(pth: MaybeString) -> Array {
   let mut arr = Array::new();
 
   arr.push(
-    class_new(
-      "Pathname",
+    Class::from_existing("Pathname").new_instance(
       Some(
         &vec![
           RString::new(".").to_any_object()
@@ -202,8 +186,7 @@ pub fn pn_entries_compat(pth: MaybeString) -> Array {
     )
   );
   arr.push(
-    class_new(
-      "Pathname",
+    Class::from_existing("Pathname").new_instance(
       Some(
         &vec![
           RString::new("..").to_any_object()
@@ -215,8 +198,7 @@ pub fn pn_entries_compat(pth: MaybeString) -> Array {
   for file in files {
     let file_name_str = file.unwrap().file_name().into_string().unwrap();
     arr.push(
-      class_new(
-        "Pathname",
+      Class::from_existing("Pathname").new_instance(
         Some(
           &vec![
             RString::from(file_name_str).to_any_object()
