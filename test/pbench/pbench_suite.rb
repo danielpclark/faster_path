@@ -86,7 +86,7 @@ PBENCHES[:children] = {
 PBENCHES[:children_compat] = {
  new: lambda do |x|
    (x/5).times do
-     FasterPathname::Public.send(:children_compat, '.')
+     FasterPath.children_compat('.')
    end
  end,
  old: lambda do |x|
@@ -172,8 +172,8 @@ PBENCHES[:entries] = {
 PBENCHES[:entries_compat] = {
   new: lambda do |x|
     (x/5).times do
-      FasterPathname::Public.send(:entries_compat, "./")
-      FasterPathname::Public.send(:entries_compat, "./src")
+      FasterPath.entries_compat("./")
+      FasterPath.entries_compat("./src")
     end
   end,
   old: lambda do |x|

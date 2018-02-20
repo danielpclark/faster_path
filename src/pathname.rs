@@ -7,7 +7,7 @@ use extname;
 use plus;
 
 use ruru;
-use ruru::{RString, Boolean, Array};
+use ruru::{RString, Boolean, Array, AnyObject, NilClass, Object};
 use std::path::{MAIN_SEPARATOR,Path};
 use std::fs;
 
@@ -41,16 +41,17 @@ pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
   )
 }
 
-pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
-  let rstring = pth.ok().unwrap_or(RString::new("."));
-  let val = rstring.to_str();
-  let mut with_directory = with_dir.ok().unwrap_or(Boolean::new(true)).to_bool();
-  if val == "." {
-    with_directory = false;
-  }
+pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
   let mut arr = Array::new();
+  let val = pth.ok().unwrap_or(RString::new("."));
+  let val = val.to_str();
 
   if let Ok(entries) = fs::read_dir(val) {
+    let mut with_directory = with_dir.ok().unwrap_or(Boolean::new(true)).to_bool();
+    if val == "." {
+      with_directory = false;
+    }
+
     for entry in entries {
       if with_directory {
         match entry {
@@ -64,20 +65,26 @@ pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
         };
       }
     }
+
+    arr.to_any_object()
+  } else {
+    // TODO: When ruru exceptions are available switch the exception logic
+    // from the Ruby side to the Rust side
+    NilClass::new().to_any_object()
   }
-  arr
 }
 
-pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
-  let rstring = pth.ok().unwrap_or(RString::new("."));
-  let val = rstring.to_str();
-  let mut with_directory = with_dir.ok().unwrap_or(Boolean::new(true)).to_bool();
-  if val == "." {
-    with_directory = false;
-  }
+pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
   let mut arr = Array::new();
+  let val = pth.ok().unwrap_or(RString::new("."));
+  let val = val.to_str();
 
   if let Ok(entries) = fs::read_dir(val) {
+    let mut with_directory = with_dir.ok().unwrap_or(Boolean::new(true)).to_bool();
+    if val == "." {
+      with_directory = false;
+    }
+
     for entry in entries {
       if with_directory {
         if let Ok(v) = entry {
@@ -89,8 +96,13 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Array {
         };
       }
     }
+
+    arr.to_any_object()
+  } else {
+    // TODO: When ruru exceptions are available switch the exception logic
+    // from the Ruby side to the Rust side
+    NilClass::new().to_any_object()
   }
-  arr
 }
 
 pub fn pn_chop_basename(pth: MaybeString) -> Array {
@@ -144,34 +156,44 @@ pub fn pn_dirname(pth: MaybeString) -> RString {
 //   NilClass::new()
 // }
 
-pub fn pn_entries(pth: MaybeString) -> Array {
-  let files = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()).unwrap();
+pub fn pn_entries(pth: MaybeString) -> AnyObject {
   let mut arr = Array::new();
 
-  arr.push(RString::new("."));
-  arr.push(RString::new(".."));
+  if let Ok(files) = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()) {
+    arr.push(RString::new("."));
+    arr.push(RString::new(".."));
 
-  for file in files {
-    let file_name_str = file.unwrap().file_name().into_string().unwrap();
-    arr.push(RString::new(&file_name_str[..]));
+    for file in files {
+      let file_name_str = file.unwrap().file_name().into_string().unwrap();
+      arr.push(RString::new(&file_name_str[..]));
+    }
+
+    arr.to_any_object()
+  } else {
+    // TODO: When ruru exceptions are available switch the exception logic
+    // from the Ruby side to the Rust side
+    NilClass::new().to_any_object()
   }
-
-  arr
 }
 
-pub fn pn_entries_compat(pth: MaybeString) -> Array {
-  let files = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()).unwrap();
+pub fn pn_entries_compat(pth: MaybeString) -> AnyObject {
   let mut arr = Array::new();
 
-  arr.push(new_pathname_instance("."));
-  arr.push(new_pathname_instance(".."));
+  if let Ok(files) = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()) {
+    arr.push(new_pathname_instance("."));
+    arr.push(new_pathname_instance(".."));
 
-  for file in files {
-    let file_name_str = file.unwrap().file_name().into_string().unwrap();
-    arr.push(new_pathname_instance(&file_name_str));
+    for file in files {
+      let file_name_str = file.unwrap().file_name().into_string().unwrap();
+      arr.push(new_pathname_instance(&file_name_str));
+    }
+
+    arr.to_any_object()
+  } else {
+    // TODO: When ruru exceptions are available switch the exception logic
+    // from the Ruby side to the Rust side
+    NilClass::new().to_any_object()
   }
-
-  arr
 }
 
 pub fn pn_extname(pth: MaybeString) -> RString {
@@ -204,7 +226,12 @@ pub fn pn_has_trailing_separator(pth: MaybeString) -> Boolean {
 
 // also need impl +
 pub fn pn_plus(pth1: MaybeString, pth2: MaybeString) -> RString {
-  RString::new(&plus::plus_paths(pth1.ok().unwrap().to_str(), pth2.ok().unwrap().to_str())[..])
+  RString::new(
+    &plus::plus_paths(
+      pth1.ok().unwrap_or(RString::new("")).to_str(),
+      pth2.ok().unwrap_or(RString::new("")).to_str()
+    )[..]
+  )
 }
 
 // pub fn pn_prepend_prefix(prefix: MaybeString, relpath: MaybeString){}

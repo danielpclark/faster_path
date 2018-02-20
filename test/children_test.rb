@@ -10,20 +10,20 @@ class ChildrenTest < Minitest::Test
   end
 
   def test_children_compat_returns_pathname_objects
-    assert_kind_of Pathname, FasterPathname::Public.send(:children_compat, '.').first
+    assert_kind_of Pathname, FasterPath.children_compat('.').first
   end
 
   def test_children_compat_returns_similar_results_to_pathname_children
     [".", "/", "../"].each do |pth|
       assert_equal Pathname.new(pth).children,
-        FasterPathname::Public.send(:children_compat, pth)
+        FasterPath.children_compat(pth)
     end
   end
 
   def test_children_returns_similar_string_results_to_pathname_children
     [".", "/", "../"].each do |pth|
       assert_equal Pathname.new(pth).children.map(&:to_s),
-        FasterPathname::Public.send(:children, pth)
+        FasterPath.children(pth)
     end
   end
 end

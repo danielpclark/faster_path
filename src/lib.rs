@@ -10,7 +10,7 @@ extern crate ruru;
 #[macro_use]
 extern crate lazy_static;
 
-class!(FasterPathname);
+module!(FasterPath);
 
 mod helpers;
 mod pathname;
@@ -24,12 +24,12 @@ mod prepend_prefix;
 pub mod rust_arch_bits;
 mod path_parsing;
 
-use ruru::{Class, Object, RString, Boolean, Array};
+use ruru::{Module, Object, RString, Boolean, Array, AnyObject};
 
 // r_ methods are on the core class and may evaluate instance variables or self
 // pub_ methods must take all values as parameters
 methods!(
-  FasterPathname,
+  FasterPath,
   _itself,
 
   fn pub_add_trailing_separator(pth: RString) -> RString {
@@ -46,11 +46,11 @@ methods!(
     pathname::pn_basename(pth, ext)
   }
 
-  fn pub_children(pth: RString, with_dir: Boolean) -> Array {
+  fn pub_children(pth: RString, with_dir: Boolean) -> AnyObject {
     pathname::pn_children(pth, with_dir)
   }
 
-  fn pub_children_compat(pth: RString, with_dir: Boolean) -> Array {
+  fn pub_children_compat(pth: RString, with_dir: Boolean) -> AnyObject {
     pathname::pn_children_compat(pth, with_dir)
   }
 
@@ -87,12 +87,12 @@ methods!(
   // }
 
   // pub_entries returns an array of String objects
-  fn pub_entries(pth: RString) -> Array {
+  fn pub_entries(pth: RString) -> AnyObject {
     pathname::pn_entries(pth)
   }
 
   // pub_entries_compat returns an array of Pathname objects
-  fn pub_entries_compat(pth: RString) -> Array {
+  fn pub_entries_compat(pth: RString) -> AnyObject {
     pathname::pn_entries_compat(pth)
   }
 
@@ -146,28 +146,26 @@ methods!(
 #[allow(non_snake_case)]
 #[no_mangle]
 pub extern "C" fn Init_faster_pathname(){
-  Class::new("FasterPathname", None).define(|itself| {
-    itself.define_nested_class("Public", None);
-  });
-
-  // Public methods
-  // * methods for refinements, monkeypatching
-  // * methods that need all values as parameters
-  Class::from_existing("FasterPathname").get_nested_class("Public").define(|itself| {
+  Module::from_existing("FasterPath").define(|itself| {
     itself.def_self("absolute?", pub_is_absolute);
     itself.def_self("add_trailing_separator", pub_add_trailing_separator);
-    itself.def_self("basename", pub_basename);
-    itself.def_self("children", pub_children);
-    itself.def_self("children_compat", pub_children_compat);
-    itself.def_self("chop_basename", pub_chop_basename);
     itself.def_self("cleanpath_aggressive", pub_cleanpath_aggressive);
     itself.def_self("directory?", pub_is_directory);
     itself.def_self("dirname", pub_dirname);
-    itself.def_self("entries", pub_entries);
-    itself.def_self("entries_compat", pub_entries_compat);
     itself.def_self("extname", pub_extname);
     itself.def_self("has_trailing_separator?", pub_has_trailing_separator);
     itself.def_self("plus", pub_plus);
     itself.def_self("relative?", pub_is_relative);
+    itself.define_nested_class("Public", None);
+  });
+
+  // For methods requiring addition Ruby-side behavior
+  Module::from_existing("FasterPath").get_nested_class("Public").define(|itself| {
+    itself.def_self("basename", pub_basename);
+    itself.def_self("children", pub_children);
+    itself.def_self("children_compat", pub_children_compat);
+    itself.def_self("chop_basename", pub_chop_basename);
+    itself.def_self("entries", pub_entries);
+    itself.def_self("entries_compat", pub_entries_compat);
   });
 }

@@ -35,7 +35,7 @@ module FasterPath
       private :add_trailing_separator
 
       def children(with_dir=true)
-        FasterPathname::Public.send(:children_compat, @path, with_dir)
+        FasterPath.children_compat(@path, with_dir)
       end if !!ENV['WITH_REGRESSION']
 
       def chop_basename(pth)
@@ -53,7 +53,7 @@ module FasterPath
       end
 
       def entries
-        FasterPathname::Public.send(:entries_compat, @path)
+        FasterPath.entries_compat(@path)
       end if !!ENV['WITH_REGRESSION']
 
       def has_trailing_separator?(pth)
