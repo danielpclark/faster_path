@@ -1,17 +1,15 @@
 require "faster_path/version"
 require 'pathname'
-require "ffi"
+require 'faster_path/platform'
 require 'faster_path/asset_resolution'
+require 'fiddle'
+require 'fiddle/import'
 
 module FasterPath
-  FFI_LIBRARY = begin
-    prefix = Gem.win_platform? ? "" : "lib"
-    "#{File.expand_path("../target/release/", __dir__)}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
-  end
-  require 'fiddle'
-  library = Fiddle.dlopen(FFI_LIBRARY)
+  FFI_LIBRARY = FasterPath::Platform.ffi_library()
+
   Fiddle::Function.
-    new(library['Init_faster_pathname'], [], Fiddle::TYPE_VOIDP).
+    new(Fiddle.dlopen(FFI_LIBRARY)['Init_faster_pathname'], [], Fiddle::TYPE_VOIDP).
     call
 
   FasterPathname::Public.class_eval do
@@ -118,10 +116,9 @@ module FasterPath
   end
 
   module Rust
-    extend FFI::Library
-    ffi_lib ::FasterPath::FFI_LIBRARY
-
-    attach_function :rust_arch_bits, [], :int32
+    extend Fiddle::Importer
+    dlload FFI_LIBRARY
+    extern 'int rust_arch_bits()'
   end
   private_constant :Rust
 end

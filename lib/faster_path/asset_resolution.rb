@@ -2,6 +2,8 @@
 # If the asset is not available and we can't compile it from this code then FAIL
 # on require of 'faster_path' with a very clear message as to why."
 
+require_relative './platform'
+
 module FasterPath
   module AssetResolution # BREAK IN CASE OF EMERGENCY ;-)
     class << self
@@ -50,8 +52,7 @@ module FasterPath
       end
 
       def lib_file
-        prefix = Gem.win_platform? ? "" : "lib"
-        "#{lib_dir}/#{prefix}faster_path.#{FFI::Platform::LIBSUFFIX}"
+        Platform.ffi_library()
       end
     end
   end
