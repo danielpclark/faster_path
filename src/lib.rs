@@ -107,7 +107,9 @@ methods!(
     pathname::pn_has_trailing_separator(pth)
   }
 
-  // fn r_join(args: Array){}
+  fn r_join(args: Array) -> Class {
+    pathname::pn_join(args)
+  }
 
   // fn pub_mkpath(pth: RString) -> NilClass {
   //   pathname::pn_mkpath(pth)

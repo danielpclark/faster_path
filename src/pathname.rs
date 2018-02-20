@@ -14,6 +14,14 @@ use std::fs;
 type MaybeString = Result<ruru::RString, ruru::result::Error>;
 type MaybeBoolean = Result<ruru::Boolean, ruru::result::Error>;
 
+fn maybe_pathname_to_string(item: AnyObject) -> String {
+  if let Ok(result) = item.try_convert_to::<Class>() {
+    if Class::from_existing("Pathname").case_equals(result) {
+    } else {
+    }
+  }
+}
+
 pub fn pn_add_trailing_separator(pth: MaybeString) -> RString {
   let p = pth.ok().unwrap();
   let x = format!("{}{}", p.to_str(), "a");
@@ -42,7 +50,6 @@ pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
 }
 
 pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
-  let mut arr = Array::new();
   let val = pth.ok().unwrap_or(RString::new("."));
   let val = val.to_str();
 
@@ -52,6 +59,7 @@ pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
       with_directory = false;
     }
 
+    let mut arr = Array::new();
     for entry in entries {
       if with_directory {
         match entry {
@@ -75,7 +83,6 @@ pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
 }
 
 pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
-  let mut arr = Array::new();
   let val = pth.ok().unwrap_or(RString::new("."));
   let val = val.to_str();
 
@@ -85,6 +92,7 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject
       with_directory = false;
     }
 
+    let mut arr = Array::new();
     for entry in entries {
       if with_directory {
         if let Ok(v) = entry {
@@ -157,9 +165,9 @@ pub fn pn_dirname(pth: MaybeString) -> RString {
 // }
 
 pub fn pn_entries(pth: MaybeString) -> AnyObject {
-  let mut arr = Array::new();
-
   if let Ok(files) = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()) {
+    let mut arr = Array::new();
+
     arr.push(RString::new("."));
     arr.push(RString::new(".."));
 
@@ -177,9 +185,9 @@ pub fn pn_entries(pth: MaybeString) -> AnyObject {
 }
 
 pub fn pn_entries_compat(pth: MaybeString) -> AnyObject {
-  let mut arr = Array::new();
-
   if let Ok(files) = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()) {
+    let mut arr = Array::new();
+
     arr.push(new_pathname_instance("."));
     arr.push(new_pathname_instance(".."));
 
@@ -214,7 +222,23 @@ pub fn pn_has_trailing_separator(pth: MaybeString) -> Boolean {
   }
 }
 
-// pub fn pn_join(args: Array){}
+pub fn pn_join(path_self: AnyObject, args: Array) -> AnyObject {
+  let length = args.length();
+  if length == 0 {
+    return path_self
+  }
+  
+  let path_self = path_self.ok().unwrap_or(RString::new(""));
+  let mut return_object = Class::from_existing("Pathname").allocate();
+  
+  if length == 0 {
+    return_object.instance_variable_set("@path", value);
+    return return_object
+  }
+
+  let result = String::new();
+  
+}
 
 // pub fn pn_mkpath(pth: MaybeString) -> NilClass {
 //   NilClass::new()
