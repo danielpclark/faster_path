@@ -1,4 +1,4 @@
-use helpers::new_pathname_instance;
+use helpers::*;
 use basename;
 use chop_basename;
 use cleanpath_aggressive;
@@ -11,16 +11,10 @@ use ruru::{RString, Boolean, Array, AnyObject, NilClass, Object};
 use std::path::{MAIN_SEPARATOR,Path};
 use std::fs;
 
+type MaybeAnyObject = Result<ruru::AnyObject, ruru::result::Error>;
+type MaybeArray = Result<ruru::Array, ruru::result::Error>;
 type MaybeString = Result<ruru::RString, ruru::result::Error>;
 type MaybeBoolean = Result<ruru::Boolean, ruru::result::Error>;
-
-fn maybe_pathname_to_string(item: AnyObject) -> String {
-  if let Ok(result) = item.try_convert_to::<Class>() {
-    if Class::from_existing("Pathname").case_equals(result) {
-    } else {
-    }
-  }
-}
 
 pub fn pn_add_trailing_separator(pth: MaybeString) -> RString {
   let p = pth.ok().unwrap();
@@ -210,7 +204,7 @@ pub fn pn_extname(pth: MaybeString) -> RString {
   )
 }
 
-// pub fn pn_find(pth: MaybeString ,ignore_error: Boolean){}
+// pub fn pn_find(pth: MaybeString, ignore_error: Boolean){}
 
 pub fn pn_has_trailing_separator(pth: MaybeString) -> Boolean {
   let v = pth.ok().unwrap_or(RString::new(""));
@@ -222,22 +216,32 @@ pub fn pn_has_trailing_separator(pth: MaybeString) -> Boolean {
   }
 }
 
-pub fn pn_join(path_self: AnyObject, args: Array) -> AnyObject {
+pub fn pn_join(path_self: MaybeAnyObject, args: MaybeArray) -> AnyObject {
+  let args = args.unwrap(); //_or(Array::new());
+  let path_self = path_self.unwrap_or(RString::new("").to_any_object());
   let length = args.length();
   if length == 0 {
-    return path_self
-  }
-  
-  let path_self = path_self.ok().unwrap_or(RString::new(""));
-  let mut return_object = Class::from_existing("Pathname").allocate();
-  
-  if length == 0 {
-    return_object.instance_variable_set("@path", value);
-    return return_object
+    return into_pathname(path_self).unwrap();
   }
 
-  let result = String::new();
-  
+  let mut result = String::new();
+  for idx in 0..(length as usize) {
+    let index = length - idx;
+    let item = args.at(index as i64);
+    result = plus::plus_paths(&anyobject_to_string(item), &result);
+    if result.chars().next() == Some(MAIN_SEPARATOR) {
+      return new_pathname_instance(&result).to_any_object()
+    }
+  }
+
+  let build = into_pathname(path_self).unwrap();
+  let path = build.
+    instance_variable_get("@path").
+    try_convert_to::<RString>().
+    unwrap_or(RString::new("")).
+    to_string();
+
+  new_pathname_instance(&plus::plus_paths(&path, &result)).to_any_object()
 }
 
 // pub fn pn_mkpath(pth: MaybeString) -> NilClass {
@@ -248,7 +252,6 @@ pub fn pn_join(path_self: AnyObject, args: Array) -> AnyObject {
 
 // pub fn pn_parent(pth: MaybeString){}
 
-// also need impl +
 pub fn pn_plus(pth1: MaybeString, pth2: MaybeString) -> RString {
   RString::new(
     &plus::plus_paths(

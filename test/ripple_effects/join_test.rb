@@ -2,8 +2,8 @@ require 'test_helper'
 require 'faster_path/optional/refinements'
 
 class RefinedPathname
-  using FasterPath::RefinePathname
-  using FasterPath::RefineFile
+#  using FasterPath::RefinePathname
+#  using FasterPath::RefineFile
   def join(*args)
     a, *rest = args
     Pathname(a).join(*rest)
