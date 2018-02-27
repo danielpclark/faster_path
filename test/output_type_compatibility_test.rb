@@ -54,47 +54,74 @@ class OutputTypeCompatibilityTest < Minitest::Test
           "Output kind not equal for method '#{mthd}':\nExpected: #{pth.inspect}\nGot: #{fpth.inspect}"
       end
     end
-  end
 
-  describe "test output types are the same" do
-    def test_direct_method_calls
-      # not
-      # * basename
-      # * dirname
-      # * extname
-      # because of their definition belonging to `File`
-      mthds = %i[
-        absolute?
-        add_trailing_separator
-        chop_basename
-        directory?
-        has_trailing_separator?
-        plus
-        relative?
-      ]
-
-      mthds.each do |m|
-        assert_same_output_kind(m)
-      end
-
-      mthds.each do |m|
-        assert_same_output_kind(m, (), false)
-      end
+    def assert_happy_path(m)
+      assert_same_output_kind(m)
     end
 
-    def test_compat_methods
-      mthds = [
-        [:children, :children_compat],
-        [:entries, :entries_compat]
-      ]
+    def assert_unhappy_path(m)
+      assert_same_output_kind(m, (), false)
+    end
 
-      mthds.each do |m|
-        assert_same_output_kind(*m)
-      end
+    def assert_happy_compat_path(m, c)
+      assert_same_output_kind(m, c)
+    end
 
-      mthds.each do |m|
-        assert_same_output_kind(*m, false)
-      end
+    def assert_unhappy_compat_path(m, c)
+      assert_same_output_kind(m, c, false)
+    end
+
+  end
+
+  describe "TestForIdenticalOutput" do
+    def test_absolute?
+      assert_happy_path :absolute?
+      assert_unhappy_path :absolute?
+    end
+
+    def test_add_trailing_separator
+      assert_happy_path :add_trailing_separator
+      assert_unhappy_path :add_trailing_separator
+    end
+
+    def test_chop_basename
+      assert_happy_path :chop_basename
+      assert_unhappy_path :chop_basename
+    end
+
+    def test_directory?
+      assert_happy_path :directory?
+      assert_unhappy_path :directory?
+    end
+
+    def test_has_trailing_separator?
+      assert_happy_path :has_trailing_separator?
+      assert_unhappy_path :has_trailing_separator?
+    end
+
+    def test_join
+      assert_happy_path :join
+      assert_unhappy_path :join
+    end
+
+    def test_plus
+      assert_happy_path :plus
+      assert_unhappy_path :plus
+    end
+
+    def test_relative?
+      assert_happy_path :relative?
+      assert_unhappy_path :relative?
+    end
+
+    def test_children_compat
+      assert_happy_compat_path :children, :children_compat
+      assert_unhappy_compat_path :children, :children_compat
+    end
+
+    def test_entries_compat
+      assert_happy_compat_path :entries, :entries_compat
+      assert_unhappy_compat_path :entries, :entries_compat
     end
   end
 

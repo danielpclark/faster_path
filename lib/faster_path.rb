@@ -1,7 +1,6 @@
 require "faster_path/version"
 require 'pathname'
 require 'faster_path/platform'
-require 'faster_path/asset_resolution'
 require 'fiddle'
 require 'fiddle/import'
 
