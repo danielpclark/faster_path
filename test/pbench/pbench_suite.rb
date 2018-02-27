@@ -136,6 +136,20 @@ PBENCHES[:cleanpath_aggressive] = {
     end
   end
 }
+PBENCHES[:cleanpath_conservative] = {
+  new: lambda do |x|
+    x.times do
+      Pathname.new(FasterPath.cleanpath_conservative '/../.././../a')
+      Pathname.new(FasterPath.cleanpath_conservative 'a/b/../../../../c/../d')
+    end
+  end,
+  old: lambda do |x|
+    x.times do
+      PATHNAME_CA1.send :cleanpath_conservative
+      PATHNAME_CA2.send :cleanpath_conservative
+    end
+  end
+}
 PBENCHES[:"directory?"] = {
   new: lambda do |x|
     x.times do

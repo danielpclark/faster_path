@@ -143,6 +143,7 @@ Current methods implemented:
 | `FasterPath.children` | `Pathname#children` | 13.2% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 54.5% |
 | `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 73.8% |
+| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 70.7% |
 | `FasterPath.directory?` | `Pathname#directory?` | 11.3% |
 | `FasterPath.entries` | `Pathname#entries` | 8.4% |
 | `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 67.6% |
