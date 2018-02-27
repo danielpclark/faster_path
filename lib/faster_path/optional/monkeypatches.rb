@@ -65,6 +65,10 @@ module FasterPath
         end
         private :has_trailing_separator?
 
+        def join(*args)
+          FasterPath.join(self, *args)
+        end
+
         def plus(pth, pth2)
           FasterPath.plus(pth, pth2)
         end

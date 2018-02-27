@@ -19,6 +19,7 @@ mod chop_basename;
 mod cleanpath_aggressive;
 mod dirname;
 mod extname;
+mod pathname_sys;
 mod plus;
 mod prepend_prefix;
 pub mod rust_arch_bits;
@@ -26,8 +27,8 @@ mod path_parsing;
 
 use ruru::{Module, Object, RString, Boolean, Array, AnyObject};
 
-// r_ methods are on the core class and may evaluate instance variables or self
-// pub_ methods must take all values as parameters
+use pathname_sys::*;
+
 methods!(
   FasterPath,
   _itself,
@@ -107,8 +108,6 @@ methods!(
     pathname::pn_has_trailing_separator(pth)
   }
 
-  // fn r_join(args: Array){}
-
   // fn pub_mkpath(pth: RString) -> NilClass {
   //   pathname::pn_mkpath(pth)
   // }
@@ -154,6 +153,8 @@ pub extern "C" fn Init_faster_pathname(){
     itself.def_self("dirname", pub_dirname);
     itself.def_self("extname", pub_extname);
     itself.def_self("has_trailing_separator?", pub_has_trailing_separator);
+    //itself.def_self("join", pub_join);
+    pathname_sys::define_singleton_method(itself.value(), "join", pub_join);
     itself.def_self("plus", pub_plus);
     itself.def_self("relative?", pub_is_relative);
     itself.define_nested_class("Public", None);

@@ -1,4 +1,4 @@
-use helpers::new_pathname_instance;
+use helpers::*;
 use basename;
 use chop_basename;
 use cleanpath_aggressive;
@@ -11,6 +11,7 @@ use ruru::{RString, Boolean, Array, AnyObject, NilClass, Object};
 use std::path::{MAIN_SEPARATOR,Path};
 use std::fs;
 
+type MaybeArray = Result<ruru::Array, ruru::result::Error>;
 type MaybeString = Result<ruru::RString, ruru::result::Error>;
 type MaybeBoolean = Result<ruru::Boolean, ruru::result::Error>;
 
@@ -42,7 +43,6 @@ pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
 }
 
 pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
-  let mut arr = Array::new();
   let val = pth.ok().unwrap_or(RString::new("."));
   let val = val.to_str();
 
@@ -52,6 +52,7 @@ pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
       with_directory = false;
     }
 
+    let mut arr = Array::new();
     for entry in entries {
       if with_directory {
         match entry {
@@ -75,7 +76,6 @@ pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
 }
 
 pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
-  let mut arr = Array::new();
   let val = pth.ok().unwrap_or(RString::new("."));
   let val = val.to_str();
 
@@ -85,6 +85,7 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject
       with_directory = false;
     }
 
+    let mut arr = Array::new();
     for entry in entries {
       if with_directory {
         if let Ok(v) = entry {
@@ -157,9 +158,9 @@ pub fn pn_dirname(pth: MaybeString) -> RString {
 // }
 
 pub fn pn_entries(pth: MaybeString) -> AnyObject {
-  let mut arr = Array::new();
-
   if let Ok(files) = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()) {
+    let mut arr = Array::new();
+
     arr.push(RString::new("."));
     arr.push(RString::new(".."));
 
@@ -177,9 +178,9 @@ pub fn pn_entries(pth: MaybeString) -> AnyObject {
 }
 
 pub fn pn_entries_compat(pth: MaybeString) -> AnyObject {
-  let mut arr = Array::new();
-
   if let Ok(files) = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()) {
+    let mut arr = Array::new();
+
     arr.push(new_pathname_instance("."));
     arr.push(new_pathname_instance(".."));
 
@@ -202,7 +203,7 @@ pub fn pn_extname(pth: MaybeString) -> RString {
   )
 }
 
-// pub fn pn_find(pth: MaybeString ,ignore_error: Boolean){}
+// pub fn pn_find(pth: MaybeString, ignore_error: Boolean){}
 
 pub fn pn_has_trailing_separator(pth: MaybeString) -> Boolean {
   let v = pth.ok().unwrap_or(RString::new(""));
@@ -214,7 +215,32 @@ pub fn pn_has_trailing_separator(pth: MaybeString) -> Boolean {
   }
 }
 
-// pub fn pn_join(args: Array){}
+pub fn pn_join(args: MaybeArray) -> AnyObject {
+  let mut args = args.unwrap();
+  let path_self = anyobject_to_string(args.shift()).unwrap();
+  let mut qty = args.length();
+  if qty <= 0 {
+    return new_pathname_instance(&path_self).to_any_object();
+  }
+
+  let mut result = String::new();
+
+  loop {
+    if qty == 0 { break; }
+
+    let item = args.pop();
+    result = plus::plus_paths(&anyobject_to_string(item).unwrap(), &result);
+    if result.chars().next() == Some(MAIN_SEPARATOR) {
+      return new_pathname_instance(&result).to_any_object()
+    }
+
+    qty -= 1;
+  }
+  
+  let result = plus::plus_paths(&path_self, &result);
+
+  new_pathname_instance(&result).to_any_object()
+}
 
 // pub fn pn_mkpath(pth: MaybeString) -> NilClass {
 //   NilClass::new()
@@ -224,7 +250,6 @@ pub fn pn_has_trailing_separator(pth: MaybeString) -> Boolean {
 
 // pub fn pn_parent(pth: MaybeString){}
 
-// also need impl +
 pub fn pn_plus(pth1: MaybeString, pth2: MaybeString) -> RString {
   RString::new(
     &plus::plus_paths(
