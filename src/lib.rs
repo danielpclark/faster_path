@@ -29,8 +29,6 @@ use ruru::{Module, Object, RString, Boolean, Array, AnyObject};
 
 use pathname_sys::*;
 
-// r_ methods are on the core class and may evaluate instance variables or self
-// pub_ methods must take all values as parameters
 methods!(
   FasterPath,
   _itself,

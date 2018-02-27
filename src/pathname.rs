@@ -5,7 +5,6 @@ use cleanpath_aggressive;
 use dirname;
 use extname;
 use plus;
-// use helpers::RubyDebugInfo;
 
 use ruru;
 use ruru::{RString, Boolean, Array, AnyObject, NilClass, Object};
