@@ -1,4 +1,4 @@
-use ruru::{RString, Object, Class, AnyObject, Fixnum};
+use ruru::{RString, Object, Class, AnyObject};
 
 #[inline]
 pub fn new_pathname_instance(path: &str) -> Class {
@@ -8,30 +8,31 @@ pub fn new_pathname_instance(path: &str) -> Class {
   instance
 }
 
-pub fn anyobject_to_string(item: AnyObject) -> String {
-  if let Ok(result) = item.try_convert_to::<Class>() {
-    let result = &result;
-    if Class::from_existing("String").case_equals(result) {
-      RString::from(result.value()).to_string()
-    } else if Class::from_existing("Pathname").case_equals(result) {
-      result.instance_variable_get("@path").
-        try_convert_to::<RString>().
-        unwrap_or(RString::new("")).
-        to_string()
-    } else if result.respond_to ("to_path") {
-      Class::from(result.send("to_path", None).value()).
-        instance_variable_get("@path").
-        try_convert_to::<RString>().
-        unwrap_or(RString::new("")).
-        to_string()
-    } else {
-      RString::from(result.send("to_s", None).value()).to_string()
-    }
-  } else {
-    "".to_string()
+pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
+  let result = &item;
+  if Class::from_existing("String").case_equals(result) {
+    return Ok(RString::from(result.value()).to_string())
   }
+  
+  if Class::from_existing("Pathname").case_equals(result) {
+    return Ok(result.instance_variable_get("@path").
+      try_convert_to::<RString>().
+      unwrap_or(RString::new("")).
+      to_string())
+  }
+  
+  if result.respond_to("to_path") {
+    return Ok(Class::from(result.send("to_path", None).value()).
+      instance_variable_get("@path").
+      try_convert_to::<RString>().
+      unwrap_or(RString::new("")).
+      to_string())
+  }
+
+  Ok(RString::from(result.send("to_s", None).value()).to_string())
 }
 
+#[allow(dead_code)]
 pub fn into_pathname(itself: AnyObject) -> Result<AnyObject, RubyDebugInfo> {
   if Class::from_existing("String").case_equals(&itself) {
     Ok(new_pathname_instance(
@@ -46,15 +47,15 @@ pub fn into_pathname(itself: AnyObject) -> Result<AnyObject, RubyDebugInfo> {
 
 #[derive(Debug)]
 pub struct RubyDebugInfo {
-  object_id: i64,
+  object_id: String,
   class: String,
   inspect: String,
 }
 
 impl From<AnyObject> for RubyDebugInfo {
   fn from(ao: AnyObject) -> Self {
-    let object_id = ao.send("object_id", None).
-      try_convert_to::<Fixnum>().unwrap_or(Fixnum::new(0)).to_i64();
+    let object_id = ao.send("object_id", None).send("to_s", None).
+      try_convert_to::<RString>().unwrap_or(RString::new("Failed to get object_id!")).to_string();
     let class = ao.send("class", None).send("to_s", None).
       try_convert_to::<RString>().unwrap_or(RString::new("Failed to get class!")).to_string();
     let inspect = ao.send("inspect", None).
