@@ -2,6 +2,7 @@ use helpers::*;
 use basename;
 use chop_basename;
 use cleanpath_aggressive;
+use cleanpath_conservative;
 use dirname;
 use extname;
 use plus;
@@ -129,7 +130,13 @@ pub fn pn_cleanpath_aggressive(pth: MaybeString) -> RString {
   RString::new(&path)
 }
 
-// pub fn pn_cleanpath_conservative(pth: MaybeString){}
+pub fn pn_cleanpath_conservative(pth: MaybeString) -> RString {
+  let path = cleanpath_conservative::cleanpath_conservative(
+    pth.ok().unwrap_or(RString::new("")).to_str()
+  );
+
+  RString::new(&path)
+}
 
 // pub fn pn_del_trailing_separator(pth: MaybeString){}
 

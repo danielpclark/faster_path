@@ -17,6 +17,7 @@ mod pathname;
 mod basename;
 mod chop_basename;
 mod cleanpath_aggressive;
+mod cleanpath_conservative;
 mod dirname;
 mod extname;
 mod pathname_sys;
@@ -66,7 +67,9 @@ methods!(
     pathname::pn_cleanpath_aggressive(pth)
   }
 
-  // fn r_cleanpath_conservative(pth: RString){}
+  fn pub_cleanpath_conservative(pth: RString) -> RString {
+    pathname::pn_cleanpath_conservative(pth)
+  }
 
   // fn r_del_trailing_separator(pth: RString){}
 
