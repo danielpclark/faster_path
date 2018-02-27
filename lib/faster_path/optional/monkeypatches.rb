@@ -52,6 +52,11 @@ module FasterPath
         end
         private :cleanpath_aggressive
 
+        def cleanpath_conservative
+          Pathname.new(FasterPath.cleanpath_conservative(@path))
+        end
+        private :cleanpath_conservative
+
         def directory?
           FasterPath.directory?(@path)
         end

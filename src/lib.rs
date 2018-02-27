@@ -17,6 +17,7 @@ mod pathname;
 mod basename;
 mod chop_basename;
 mod cleanpath_aggressive;
+mod cleanpath_conservative;
 mod dirname;
 mod extname;
 mod pathname_sys;
@@ -66,7 +67,9 @@ methods!(
     pathname::pn_cleanpath_aggressive(pth)
   }
 
-  // fn r_cleanpath_conservative(pth: RString){}
+  fn pub_cleanpath_conservative(pth: RString) -> RString {
+    pathname::pn_cleanpath_conservative(pth)
+  }
 
   // fn r_del_trailing_separator(pth: RString){}
 
@@ -149,6 +152,7 @@ pub extern "C" fn Init_faster_pathname(){
     itself.def_self("absolute?", pub_is_absolute);
     itself.def_self("add_trailing_separator", pub_add_trailing_separator);
     itself.def_self("cleanpath_aggressive", pub_cleanpath_aggressive);
+    itself.def_self("cleanpath_conservative", pub_cleanpath_conservative);
     itself.def_self("directory?", pub_is_directory);
     itself.def_self("dirname", pub_dirname);
     itself.def_self("extname", pub_extname);
