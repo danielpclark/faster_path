@@ -136,7 +136,7 @@ improvement result  for the `chop_basename` method.
 
 Current methods implemented:
 
-|FasterPath Rust Implementation|Ruby 2.3.4 Implementation|Time Shaved Off|
+|FasterPath Rust Implementation|Ruby 2.5.0 Implementation|Time Shaved Off|
 |---|---|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 91.9% |
 | `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 31.2% |
@@ -144,6 +144,7 @@ Current methods implemented:
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 54.5% |
 | `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 73.8% |
 | `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 70.7% |
+| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 80.6% |
 | `FasterPath.directory?` | `Pathname#directory?` | 11.3% |
 | `FasterPath.entries` | `Pathname#entries` | 8.4% |
 | `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 67.6% |
