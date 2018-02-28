@@ -53,6 +53,11 @@ module FasterPath
       end
       private :cleanpath_conservative
 
+      def del_trailing_separator(pth)
+        FasterPath.del_trailing_separator(pth)
+      end
+      private :del_trailing_separator
+
       def directory?
         FasterPath.directory?(@path)
       end
