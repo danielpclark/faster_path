@@ -8,13 +8,55 @@ use extname;
 use plus;
 
 use ruru;
-use ruru::{RString, Boolean, Array, AnyObject, NilClass, Object};
+use ruru::{RString, Boolean, Array, AnyObject, NilClass, Object, Class, VerifiedObject};
+use ruru::types::{Value, ValueType};
 use std::path::{MAIN_SEPARATOR,Path};
 use std::fs;
 
 type MaybeArray = Result<ruru::Array, ruru::result::Error>;
 type MaybeString = Result<ruru::RString, ruru::result::Error>;
 type MaybeBoolean = Result<ruru::Boolean, ruru::result::Error>;
+
+pub struct Pathname {
+  value: Value
+}
+
+impl Pathname {
+  pub fn new(path: &str) -> Pathname {
+    let mut instance = Class::from_existing("Pathname").allocate();
+    instance.instance_variable_set("@path", RString::new(path).to_any_object());
+    
+    Pathname { value: instance.value() }
+  }
+
+  pub fn to_any_object(&self) -> AnyObject {
+    AnyObject::from(self.value())
+  }
+}
+
+impl From<Value> for Pathname {
+  fn from(value: Value) -> Self {
+    Pathname { value: value }
+  }
+}
+
+impl Object for Pathname {
+  #[inline]
+  fn value(&self) -> Value {
+    self.value
+  }
+}
+
+impl VerifiedObject for Pathname {
+  fn is_correct_type<T: Object>(object: &T) -> bool {
+    object.value().ty() == ValueType::Class &&
+      Class::from_existing("Pathname").case_equals(object)
+  }
+
+  fn error_message() -> &'static str {
+    "Error converting to Pathname"
+  }
+}
 
 pub fn pn_add_trailing_separator(pth: MaybeString) -> RString {
   let p = pth.ok().unwrap();
@@ -90,11 +132,11 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject
     for entry in entries {
       if with_directory {
         if let Ok(v) = entry {
-          arr.push(new_pathname_instance(v.path().to_str().unwrap()));
+          arr.push(Pathname::new(v.path().to_str().unwrap()));
         };
       } else {
         if let Ok(v) = entry {
-          arr.push(new_pathname_instance(v.file_name().to_str().unwrap()));
+          arr.push(Pathname::new(v.file_name().to_str().unwrap()));
         };
       }
     }
@@ -138,7 +180,25 @@ pub fn pn_cleanpath_conservative(pth: MaybeString) -> RString {
   RString::new(&path)
 }
 
-// pub fn pn_del_trailing_separator(pth: MaybeString){}
+pub fn pn_del_trailing_separator(pth: MaybeString) -> RString {
+  if let &Ok(ref path) = &pth {
+    let path = path.to_str();
+
+    if !path.is_empty() {
+      let path = path.trim_right_matches('/');
+
+      if path.is_empty() {
+        return RString::new("/");
+      } else {
+        return RString::new(path);
+      }
+    }
+  } else {
+    return RString::new("");
+  }
+
+  pth.unwrap()
+}
 
 // pub fn pn_descend(){}
 
@@ -188,12 +248,12 @@ pub fn pn_entries_compat(pth: MaybeString) -> AnyObject {
   if let Ok(files) = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()) {
     let mut arr = Array::new();
 
-    arr.push(new_pathname_instance("."));
-    arr.push(new_pathname_instance(".."));
+    arr.push(Pathname::new("."));
+    arr.push(Pathname::new(".."));
 
     for file in files {
       let file_name_str = file.unwrap().file_name().into_string().unwrap();
-      arr.push(new_pathname_instance(&file_name_str));
+      arr.push(Pathname::new(&file_name_str));
     }
 
     arr.to_any_object()
@@ -227,7 +287,7 @@ pub fn pn_join(args: MaybeArray) -> AnyObject {
   let path_self = anyobject_to_string(args.shift()).unwrap();
   let mut qty = args.length();
   if qty <= 0 {
-    return new_pathname_instance(&path_self).to_any_object();
+    return Pathname::new(&path_self).to_any_object();
   }
 
   let mut result = String::new();
@@ -238,7 +298,7 @@ pub fn pn_join(args: MaybeArray) -> AnyObject {
     let item = args.pop();
     result = plus::plus_paths(&anyobject_to_string(item).unwrap(), &result);
     if result.chars().next() == Some(MAIN_SEPARATOR) {
-      return new_pathname_instance(&result).to_any_object()
+      return Pathname::new(&result).to_any_object()
     }
 
     qty -= 1;
@@ -246,7 +306,7 @@ pub fn pn_join(args: MaybeArray) -> AnyObject {
   
   let result = plus::plus_paths(&path_self, &result);
 
-  new_pathname_instance(&result).to_any_object()
+  Pathname::new(&result).to_any_object()
 }
 
 // pub fn pn_mkpath(pth: MaybeString) -> NilClass {

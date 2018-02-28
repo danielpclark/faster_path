@@ -150,6 +150,20 @@ PBENCHES[:cleanpath_conservative] = {
     end
   end
 }
+PBENCHES[:del_trailing_separator] = {
+  new: lambda do |x|
+    x.times do
+      FasterPath.del_trailing_separator('/hello/world')
+      FasterPath.del_trailing_separator('/hello/world/')
+    end
+  end,
+  old: lambda do |x|
+    x.times do
+      PATHNAME_DOT.send(:del_trailing_separator, '/hello/world')
+      PATHNAME_DOT.send(:del_trailing_separator, '/hello/world/')
+    end
+  end
+}
 PBENCHES[:"directory?"] = {
   new: lambda do |x|
     x.times do

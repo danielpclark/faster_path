@@ -71,7 +71,9 @@ methods!(
     pathname::pn_cleanpath_conservative(pth)
   }
 
-  // fn r_del_trailing_separator(pth: RString){}
+  fn pub_del_trailing_separator(pth: RString) -> RString {
+    pathname::pn_del_trailing_separator(pth)
+  }
 
   // fn r_descend(){}
 
@@ -151,6 +153,7 @@ pub extern "C" fn Init_faster_pathname(){
   Module::from_existing("FasterPath").define(|itself| {
     itself.def_self("absolute?", pub_is_absolute);
     itself.def_self("add_trailing_separator", pub_add_trailing_separator);
+    itself.def_self("del_trailing_separator", pub_del_trailing_separator);
     itself.def_self("cleanpath_aggressive", pub_cleanpath_aggressive);
     itself.def_self("cleanpath_conservative", pub_cleanpath_conservative);
     itself.def_self("directory?", pub_is_directory);

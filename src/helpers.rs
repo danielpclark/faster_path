@@ -1,12 +1,5 @@
 use ruru::{RString, Object, Class, AnyObject};
-
-#[inline]
-pub fn new_pathname_instance(path: &str) -> Class {
-  let mut instance = Class::from_existing("Pathname").allocate();
-  instance.instance_variable_set("@path", RString::new(path).to_any_object());
-
-  instance
-}
+use pathname::Pathname;
 
 pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
   let result = &item;
@@ -35,7 +28,7 @@ pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
 #[allow(dead_code)]
 pub fn into_pathname(itself: AnyObject) -> Result<AnyObject, RubyDebugInfo> {
   if Class::from_existing("String").case_equals(&itself) {
-    Ok(new_pathname_instance(
+    Ok(Pathname::new(
         &RString::from(itself.value()).to_string()
     ).to_any_object())
   } else if Class::from_existing("Pathname").case_equals(&itself) {
