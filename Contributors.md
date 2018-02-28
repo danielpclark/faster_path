@@ -3,6 +3,7 @@
 - Daniel P. Clark <6ftdan@gmail.com>
 - Matt Blewitt <blewitt.matt@gmail.com>
 - Gleb Mazovetskiy <glex.spb@gmail.com>
+- Dmitry Gritsay <unseductable@gmail.com>
 - Mark Lee <rust.ruby@lazymalevolence.com>
 - Florian Gilcher <florian.gilcher@asquera.de>
 - igor <igor@igor.ru>
