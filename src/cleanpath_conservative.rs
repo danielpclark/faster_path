@@ -11,7 +11,7 @@ pub fn cleanpath_conservative(path: &str) -> String {
   let mut names: Vec<String> = vec![];
   let mut pre = path.to_string();
   loop {
-    match chop_basename(&pre) {
+    match chop_basename(&pre.clone()) {
       Some((ref p, ref base)) => {
         pre = p.to_string();
         match base.as_ref() {
@@ -90,7 +90,7 @@ fn it_conservatively_cleans_the_path() {
   assert_eq!(cleanpath_conservative("a/../."),   "a/..");
   assert_eq!(cleanpath_conservative("/../.././../a"),     "/a");
   assert_eq!(cleanpath_conservative("a/b/../../../../c/../d"), "a/b/../../../../c/../d");
-;
+
 // Future Windows Support
 //
 // DOSISH = File::ALT_SEPARATOR != nil

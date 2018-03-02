@@ -13,10 +13,10 @@ pub fn plus_paths(path1: &str, path2: &str) -> String {
   let mut basename_list2: Vec<String> = vec![];
 
   loop {
-    match chop_basename(&prefix2[..]) {
+    match chop_basename(&prefix2.clone()[..]) {
       None => { break },
       Some((pfx2, basename2)) => {
-        prefix2 = pfx2.clone();
+        prefix2 = pfx2.to_string();
         index_list2.unshift(pfx2.len());
         basename_list2.unshift(basename2.to_owned());
       },
@@ -33,10 +33,10 @@ pub fn plus_paths(path1: &str, path2: &str) -> String {
       index_list2.shift();
       basename_list2.shift();
     }
-    match chop_basename(&prefix1[..]) {
+    match chop_basename(&prefix1.clone()[..]) {
       None => { break },
       Some((pfx1, basename1)) => {
-        prefix1 = pfx1.clone();
+        prefix1 = pfx1.to_string();
         if basename1 == "." { continue };
         if basename1 == ".." || basename_list2.is_empty() || basename_list2.first().unwrap() != ".." {
           prefix1.push_str(&basename1);

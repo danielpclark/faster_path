@@ -1,6 +1,15 @@
 use ruru::{RString, Object, Class, AnyObject};
 use pathname::Pathname;
 
+#[inline]
+pub fn is_same_path(a: &str, b: &str) -> bool {
+  if cfg!(windows) {
+    a.to_uppercase() == b.to_uppercase()
+  } else {
+    a == b
+  }
+}
+
 pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
   let result = &item;
   if Class::from_existing("String").case_equals(result) {

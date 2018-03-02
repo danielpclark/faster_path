@@ -26,6 +26,9 @@ mod prepend_prefix;
 pub mod rust_arch_bits;
 mod path_parsing;
 
+use pathname::Pathname;
+use pathname_sys::raise;
+
 use ruru::{Module, Object, RString, Boolean, Array, AnyObject};
 
 use pathname_sys::*;
@@ -139,8 +142,11 @@ methods!(
 
   // fn r_split_names(pth: RString){}
 
-  // fn r_relative_path_from(){}
-  // fn pub_relative_path_from(){}
+  fn pub_relative_path_from(itself: RString, base_directory: RString) -> Pathname {
+    pathname::pn_relative_path_from(itself, base_directory).map_err(|e| {
+      raise(e);
+    }).unwrap()
+  }
 
   // fn pub_rmtree(pth: RString) -> NilClass {
   //   pathname::pn_rmtree(pth)
@@ -149,7 +155,7 @@ methods!(
 
 #[allow(non_snake_case)]
 #[no_mangle]
-pub extern "C" fn Init_faster_pathname(){
+pub extern "C" fn Init_faster_pathname() {
   Module::from_existing("FasterPath").define(|itself| {
     itself.def_self("absolute?", pub_is_absolute);
     itself.def_self("add_trailing_separator", pub_add_trailing_separator);
@@ -164,6 +170,7 @@ pub extern "C" fn Init_faster_pathname(){
     pathname_sys::define_singleton_method(itself.value(), "join", pub_join);
     itself.def_self("plus", pub_plus);
     itself.def_self("relative?", pub_is_relative);
+    itself.def_self("relative_path_from", pub_relative_path_from);
     itself.define_nested_class("Public", None);
   });
 
