@@ -1,5 +1,4 @@
 require 'faster_path/version'
-require 'ffi'
 require 'pathname'
 require 'thermite/config'
 require 'faster_path/platform'
