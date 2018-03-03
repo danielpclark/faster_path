@@ -298,4 +298,20 @@ PBENCHES[:"relative?"] = {
     end
   end
 }
+PATHNAME_AB = Pathname("/a/b")
+PATHNAME_ABCD = Pathname("/a/b/c/d")
+PBENCHES[:relative_path_from] = {
+  new: lambda do |x|
+    x.times do
+      FasterPath.relative_path_from "/a/b/c/d", "/a/b"
+      FasterPath.relative_path_from "/a/b", "/a/b/c/d"
+    end
+  end,
+  old: lambda do |x|
+    x.times do
+      PATHNAME_ABCD.relative_path_from PATHNAME_AB
+      PATHNAME_AB.relative_path_from PATHNAME_ABCD
+    end
+  end
+}
 Pbench.new(nil).run(PBENCHES)

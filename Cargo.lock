@@ -1,13 +1,13 @@
 [[package]]
 name = "array_tool"
-version = "0.4.1"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "faster_path"
 version = "0.0.1"
 dependencies = [
- "array_tool 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "array_tool 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "memchr 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruby-sys 0.3.0 (git+https://github.com/danielpclark/ruby-sys?branch=playground)",
@@ -55,7 +55,7 @@ dependencies = [
 ]
 
 [metadata]
-"checksum array_tool 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "1a07ccb27c611e5cda99e498e99ba71b3ecdb7db5df02096cef42a3df5b84542"
+"checksum array_tool 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "7894b81e06d8a2376f015b34dd89770c549932ff90bba6427f7cd83243bb629b"
 "checksum lazy_static 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)" = "76f033c7ad61445c5b347c7382dd1237847eb1bce590fe50365dcb33d546be73"
 "checksum lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c8f31047daa365f19be14b47c29df4f7c3b581832407daabe6ae77397619237d"
 "checksum libc 0.2.37 (registry+https://github.com/rust-lang/crates.io-index)" = "56aebce561378d99a0bb578f8cb15b6114d2a1814a6c7949bbe646d968bb4fa9"

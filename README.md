@@ -151,6 +151,7 @@ Current methods implemented:
 | `FasterPath.plus` | `Pathname#join` | 66.4% |
 | `FasterPath.plus` | `Pathname#plus` | 81.4% |
 | `FasterPath.relative?` | `Pathname#relative?` | 84.1% |
+| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 69.8% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch

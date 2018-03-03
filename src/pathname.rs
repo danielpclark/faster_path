@@ -7,6 +7,8 @@ use dirname;
 use extname;
 use plus;
 use relative_path_from;
+use debug;
+use std::convert::TryFrom;
 
 use ruru;
 use ruru::{
@@ -48,6 +50,19 @@ impl Pathname {
 impl From<Value> for Pathname {
   fn from(value: Value) -> Self {
     Pathname { value: value }
+  }
+}
+
+impl TryFrom<AnyObject> for Pathname {
+  type Error = debug::RubyDebugInfo;
+  fn try_from(obj: AnyObject) -> Result<Pathname, Self::Error> {
+    if Class::from_existing("String").case_equals(&obj) {
+      Ok(Pathname::new(&RString::from(obj.value()).to_string()))
+    } else if Class::from_existing("Pathname").case_equals(&obj) {
+      Ok(Pathname::from(obj.value()))
+    } else {
+      Err(Self::Error::from(obj))
+    }
   }
 }
 
