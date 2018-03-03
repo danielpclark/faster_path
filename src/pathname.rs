@@ -6,9 +6,22 @@ use cleanpath_conservative;
 use dirname;
 use extname;
 use plus;
+use relative_path_from;
+use debug;
+use std::convert::TryFrom;
 
 use ruru;
-use ruru::{RString, Boolean, Array, AnyObject, NilClass, Object, Class, VerifiedObject};
+use ruru::{
+  RString,
+  Boolean,
+  Array,
+  AnyObject,
+  NilClass,
+  Object,
+  Class,
+  VerifiedObject,
+  AnyException as Exception
+};
 use ruru::types::{Value, ValueType};
 use std::path::{MAIN_SEPARATOR,Path};
 use std::fs;
@@ -37,6 +50,19 @@ impl Pathname {
 impl From<Value> for Pathname {
   fn from(value: Value) -> Self {
     Pathname { value: value }
+  }
+}
+
+impl TryFrom<AnyObject> for Pathname {
+  type Error = debug::RubyDebugInfo;
+  fn try_from(obj: AnyObject) -> Result<Pathname, Self::Error> {
+    if Class::from_existing("String").case_equals(&obj) {
+      Ok(Pathname::new(&RString::from(obj.value()).to_string()))
+    } else if Class::from_existing("Pathname").case_equals(&obj) {
+      Ok(Pathname::from(obj.value()))
+    } else {
+      Err(Self::Error::from(obj))
+    }
   }
 }
 
@@ -151,7 +177,8 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject
 
 pub fn pn_chop_basename(pth: MaybeString) -> Array {
   let mut arr = Array::with_capacity(2);
-  let results = chop_basename::chop_basename(pth.ok().unwrap_or(RString::new("")).to_str());
+  let pth = pth.ok().unwrap_or(RString::new(""));
+  let results = chop_basename::chop_basename(pth.to_str());
   match results {
     Some((dirname, basename)) => {
       arr.push(RString::new(&dirname[..]));
@@ -341,7 +368,9 @@ pub fn pn_is_relative(pth: MaybeString) -> Boolean {
 
 // pub fn pn_split_names(pth: MaybeString){}
 
-// pub fn pn_relative_path_from(){}
+pub fn pn_relative_path_from(itself: MaybeString, base_directory: MaybeString) -> Result<Pathname, Exception> {
+  relative_path_from::relative_path_from(itself, base_directory)
+}
 
 // pub fn pn_rmtree(pth: MaybeString) -> NilClass {
 //   NilClass::new()

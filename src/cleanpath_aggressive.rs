@@ -10,7 +10,7 @@ pub fn cleanpath_aggressive(path: &str) -> String {
   let mut names: Vec<String> = vec![];
   let mut pre = path.to_string();
   loop {
-    match chop_basename(&pre) {
+    match chop_basename(&pre.clone()) {
       Some((ref p, ref base)) => {
         pre = p.to_string();
         match base.as_ref() {

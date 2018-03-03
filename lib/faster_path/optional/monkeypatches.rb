@@ -87,6 +87,10 @@ module FasterPath
         def relative?
           FasterPath.relative?(@path)
         end
+
+        def relative_path_from(other)
+          FasterPath.relative_path_from(@path, other)
+        end
       end
     end
   end
