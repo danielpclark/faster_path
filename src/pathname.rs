@@ -6,9 +6,7 @@ use cleanpath_conservative;
 use dirname;
 use extname;
 use plus;
-use path_parsing::SEP_STR;
-extern crate array_tool;
-use self::array_tool::vec::{Shift, Join};
+use relative_path_from;
 
 use ruru;
 use ruru::{
@@ -20,7 +18,6 @@ use ruru::{
   Object,
   Class,
   VerifiedObject,
-  Exception as Exc,
   AnyException as Exception
 };
 use ruru::types::{Value, ValueType};
@@ -357,72 +354,7 @@ pub fn pn_is_relative(pth: MaybeString) -> Boolean {
 // pub fn pn_split_names(pth: MaybeString){}
 
 pub fn pn_relative_path_from(itself: MaybeString, base_directory: MaybeString) -> Result<Pathname, Exception> {
-  let dest_directory = pn_cleanpath_aggressive(itself).to_string();
-  let base_directory = pn_cleanpath_aggressive(base_directory).to_string();
-
-  let mut dest_prefix = dest_directory.clone();
-  let mut dest_names: Vec<String> = vec![];
-  loop {
-    match chop_basename::chop_basename(&dest_prefix.clone()) {
-      Some((ref dest, ref basename)) => {
-        dest_prefix = dest.to_string();
-        if basename != &"." {
-          dest_names.unshift(basename.to_string())
-        }
-      },
-      None => break,
-    }
-  }
-
-  let mut base_prefix = base_directory.clone();
-  let mut base_names: Vec<String> = vec![];
-  loop {
-    match chop_basename::chop_basename(&base_prefix.clone()) {
-      Some((ref base, ref basename)) => {
-        base_prefix = base.to_string();
-        if basename != &"." {
-          base_names.unshift(basename.to_string())
-        }
-      },
-      None => break,
-    }
-  }
-
-  if !is_same_path(&dest_prefix, &base_prefix) {
-    return Err(
-      Exception::new(
-        "ArgumentError",
-        Some(&format!("different prefix: {} and {}", dest_prefix, base_prefix)[..])
-      )
-    );
-  }
-
-  let (dest_names, base_names): (Vec<String>, Vec<String>) = dest_names.
-    iter().
-    zip(base_names.iter()).
-    skip_while(|&(a, b)| is_same_path(a,b) ).
-    fold((vec![], vec![]), |mut acc, (a, b)| {
-      acc.0.push(a.to_string());
-      acc.1.push(b.to_string());
-      acc
-    });
-
-  if base_names.contains(&"..".to_string()) {
-    return Err(
-      Exception::new(
-        "ArgumentError",
-        Some(&format!("base_directory has ..: {}", base_directory)[..])
-      )
-    );
-  }
-
-  let base_names: Vec<String> = base_names.into_iter().map(|_| "..".to_string()).collect();
-
-  if base_names.is_empty() && dest_names.is_empty() {
-    Ok(Pathname::new("."))
-  } else {
-    Ok(Pathname::new(&base_names.iter().chain(dest_names.iter()).collect::<Vec<&String>>().join(&SEP_STR)))
-  }
+  relative_path_from::relative_path_from(itself, base_directory)
 }
 
 // pub fn pn_rmtree(pth: MaybeString) -> NilClass {

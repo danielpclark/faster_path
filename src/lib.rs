@@ -25,6 +25,7 @@ mod plus;
 mod prepend_prefix;
 pub mod rust_arch_bits;
 mod path_parsing;
+mod relative_path_from;
 
 use pathname::Pathname;
 use pathname_sys::raise;
