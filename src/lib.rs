@@ -146,10 +146,11 @@ methods!(
 
   // fn r_split_names(pth: RString){}
 
-  fn pub_relative_path_from(itself: RString, base_directory: RString) -> Pathname {
-    pathname::pn_relative_path_from(itself, base_directory).map_err(|e| {
-      raise(e);
-    }).unwrap()
+  fn pub_relative_path_from(itself: RString, base_directory: AnyObject) -> Pathname {
+    let to_string = |i: AnyObject| { RString::from(i.send("to_s", None).value()) };
+
+    pathname::pn_relative_path_from(itself, base_directory.map(to_string)).
+      map_err(|e| raise(e) ).unwrap()
   }
 
   // fn pub_rmtree(pth: RString) -> NilClass {

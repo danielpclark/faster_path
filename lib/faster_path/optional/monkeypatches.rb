@@ -89,7 +89,7 @@ module FasterPath
         end
 
         def relative_path_from(other)
-          FasterPath.relative_path_from(@path, Pathname(other))
+          FasterPath.relative_path_from(@path, other)
         end
       end
     end
