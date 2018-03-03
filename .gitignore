@@ -17,3 +17,5 @@ mkmf.log
 *.dll
 *.dylib
 *.so
+.ruby-version
+/tags

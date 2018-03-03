@@ -1,10 +1,27 @@
 require 'faster_path/version'
 require 'ffi'
 require 'pathname'
-require 'faster_path/asset_resolution'
 require 'thermite/config'
+require 'faster_path/platform'
+require 'fiddle'
+require 'fiddle/import'
 
 module FasterPath
+  FFI_LIBRARY = FasterPath::Platform.ffi_library()
+
+  Fiddle::Function.
+    new(Fiddle.dlopen(FFI_LIBRARY)['Init_faster_pathname'], [], Fiddle::TYPE_VOIDP).
+    call
+
+  Public.class_eval do
+    private_class_method :basename
+    private_class_method :children
+    private_class_method :children_compat
+    private_class_method :chop_basename
+    private_class_method :entries
+    private_class_method :entries_compat
+  end
+
   def self.rust_arch_bits
     Rust.rust_arch_bits
   end
@@ -13,99 +30,47 @@ module FasterPath
     1.size * 8
   end
 
-  # Spec to Pathname#absolute?
-  def self.absolute?(pth)
-    Rust.is_absolute(pth)
-  end
-
-  # Spec to Pathname#directory?
-  def self.directory?(pth)
-    Rust.is_directory(pth)
-  end
-
-  # Spec to Pathname#relative?
-  def self.relative?(pth)
-    Rust.is_relative(pth)
-  end
-
-  def self.dirname(pth)
-    Rust.dirname(pth)
-  end
-
-  # Spec to Pathname#chop_basename
-  # WARNING! Pathname#chop_basename in STDLIB doesn't handle blank strings correctly!
-  # This implementation correctly handles blank strings just as Pathname had intended
-  # to handle non-path strings.
-  def self.chop_basename(pth)
-    d = Rust.dirname_for_chop(pth)
-    b = Rust.basename_for_chop(pth)
-    [d, b] unless Rust.both_are_blank(d, b)
-  end
-
   def self.blank?(str)
-    Rust.is_blank(str)
+    "#{str}".strip.empty?
   end
 
   def self.basename(pth, ext="")
-    Rust.basename(pth, ext)
+    Public.send(:basename, pth, ext)
   end
 
-  def self.add_trailing_separator(pth)
-    Rust.add_trailing_separator(pth)
+  def self.children(pth, with_directory=true)
+    result = Public.send(:children, pth, with_directory)
+    return result if result
+    raise Errno::NOENT, "No such file or directory @ dir_initialize - #{pth}"
   end
 
-  def self.has_trailing_separator?(pth)
-    Rust.has_trailing_separator(pth)
+  def self.children_compat(pth, with_directory=true)
+    result = Public.send(:children_compat, pth, with_directory)
+    return result if result
+    raise Errno::NOENT, "No such file or directory @ dir_initialize - #{pth}"
   end
 
-  def self.extname(pth)
-    Rust.extname(pth)
+  def self.chop_basename(pth)
+    result = Public.send(:chop_basename, pth)
+    result unless result.empty?
   end
 
   def self.entries(pth)
-    Array(Rust.entries(pth))
+    result = Public.send(:entries, pth)
+    return result if result
+    raise Errno::NOENT, "No such file or directory @ dir_initialize - #{pth}"
   end
 
-  # EXAMPLE
-  # def self.one_and_two
-  #  Rust.one_and_two.to_a
-  # end
+  def self.entries_compat(pth)
+    result = Public.send(:entries_compat, pth)
+    return result if result
+    raise Errno::NOENT, "No such file or directory @ dir_initialize - #{pth}"
+  end
 
   module Rust
-    extend FFI::Library
-    ffi_lib begin
-      toplevel_dir = File.dirname(File.dirname(__FILE__))
-      config = Thermite::Config.new(cargo_project_path: toplevel_dir,
-                                    ruby_project_path: toplevel_dir)
-      config.ruby_extension_path
-    end
-
-    class FromRustArray < FFI::Struct
-      layout :len,    :size_t, # dynamic array layout
-             :data,   :pointer #
-
-      def to_a
-        self[:data].get_array_of_string(0, self[:len]).compact
-      end
-    end
-
-    attach_function :rust_arch_bits, [], :int32
-    attach_function :is_absolute, [ :string ], :bool
-    attach_function :is_directory, [ :string ], :bool
-    attach_function :is_relative, [ :string ], :bool
-    attach_function :is_blank, [ :string ], :bool
-    attach_function :both_are_blank, [ :string, :string ], :bool
-    attach_function :basename, [ :string, :string ], :string
-    attach_function :dirname, [ :string ], :string
-    attach_function :basename_for_chop, [ :string ], :string # decoupling behavior
-    attach_function :dirname_for_chop, [ :string ], :string # decoupling behavior
-    attach_function :add_trailing_separator, [ :string ], :string
-    attach_function :has_trailing_separator, [ :string ], :bool
-    attach_function :extname, [ :string ], :string
-    attach_function :entries, [ :string ], FromRustArray.by_value
-
-    # EXAMPLE
-    # attach_function :one_and_two, [], FromRustArray.by_value
+    extend Fiddle::Importer
+    dlload FFI_LIBRARY
+    extern 'int rust_arch_bits()'
   end
   private_constant :Rust
 end

@@ -1,14 +1,6 @@
 require 'test_helper'
 
 class BasenameTest < Minitest::Test
-  def test_nil_inputs
-    assert_nil FasterPath.basename(nil, nil)
-    assert_equal FasterPath.basename('', nil), ""
-    assert_nil FasterPath.basename(nil, '')
-    assert_equal FasterPath.basename('asdf', nil), "asdf"
-    assert_nil FasterPath.basename(nil, 'asdf')
-  end
-
   # Tests copied from https://searchcode.com/codesearch/view/12785140/
   def test_it_creates_basename_correctly
     assert_equal FasterPath.basename('/home/gumby/work/ruby.rb'),        'ruby.rb'
@@ -33,6 +25,18 @@ class BasenameTest < Minitest::Test
     assert_equal FasterPath.basename('//'),             '/'
     assert_equal FasterPath.basename('//dir///base//'), 'base'
     assert_equal FasterPath.basename('.x', '.x'), '.x'
+
+    # returns the basename for unix suffix
+    assert_equal FasterPath.basename("bar.c", ".c"), "bar"
+    assert_equal FasterPath.basename("bar.txt", ".txt"), "bar"
+    assert_equal FasterPath.basename("/bar.txt", ".txt"), "bar"
+    assert_equal FasterPath.basename("/foo/bar.txt", ".txt"), "bar"
+    assert_equal FasterPath.basename("bar.txt", ".exe"), "bar.txt"
+    assert_equal FasterPath.basename("bar.txt.exe", ".exe"), "bar.txt"
+    assert_equal FasterPath.basename("bar.txt.exe", ".txt"), "bar.txt.exe"
+    assert_equal FasterPath.basename("bar.txt", ".*"), "bar"
+    assert_equal FasterPath.basename("bar.txt.exe", ".*"), "bar.txt"
+    assert_equal FasterPath.basename("bar.txt.exe", ".txt.exe"), "bar"
   end
 
   def test_it_does_the_same_as_file_basename

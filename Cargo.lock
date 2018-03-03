@@ -1,14 +1,64 @@
-[root]
+[[package]]
+name = "array_tool"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "faster_path"
 version = "0.0.1"
 dependencies = [
- "libc 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "array_tool 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "memchr 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ruby-sys 0.3.0 (git+https://github.com/danielpclark/ruby-sys?branch=playground)",
+ "ruru 0.9.3 (git+https://github.com/danielpclark/ruru?branch=playground)",
 ]
 
 [[package]]
-name = "libc"
+name = "lazy_static"
 version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
+[[package]]
+name = "lazy_static"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "libc"
+version = "0.2.37"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "memchr"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.2.37 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "ruby-sys"
+version = "0.3.0"
+source = "git+https://github.com/danielpclark/ruby-sys?branch=playground#184a3cd3bd39b525ff956f7cba1770bbf1522d8b"
+dependencies = [
+ "libc 0.2.37 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "ruru"
+version = "0.9.3"
+source = "git+https://github.com/danielpclark/ruru?branch=playground#c9b59118ebcf034874d491a0c1f3b57ef05c183a"
+dependencies = [
+ "lazy_static 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ruby-sys 0.3.0 (git+https://github.com/danielpclark/ruby-sys?branch=playground)",
+]
+
 [metadata]
-"checksum libc 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)" = "c96061f0c8a2dc27482e394d82e23073569de41d73cd736672ccd3e5c7471bfd"
+"checksum array_tool 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "7894b81e06d8a2376f015b34dd89770c549932ff90bba6427f7cd83243bb629b"
+"checksum lazy_static 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)" = "76f033c7ad61445c5b347c7382dd1237847eb1bce590fe50365dcb33d546be73"
+"checksum lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c8f31047daa365f19be14b47c29df4f7c3b581832407daabe6ae77397619237d"
+"checksum libc 0.2.37 (registry+https://github.com/rust-lang/crates.io-index)" = "56aebce561378d99a0bb578f8cb15b6114d2a1814a6c7949bbe646d968bb4fa9"
+"checksum memchr 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "796fba70e76612589ed2ce7f45282f5af869e0fdd7cc6199fa1aa1f1d591ba9d"
+"checksum ruby-sys 0.3.0 (git+https://github.com/danielpclark/ruby-sys?branch=playground)" = "<none>"
+"checksum ruru 0.9.3 (git+https://github.com/danielpclark/ruru?branch=playground)" = "<none>"

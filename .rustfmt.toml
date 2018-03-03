@@ -1,0 +1,25 @@
+# Style ***
+
+control_style = "Legacy"
+chain_indent = "Visual"
+fn_brace_style = "PreferSameLine"
+fn_args_layout = "Visual"
+fn_args_density = "CompressedIfEmpty"
+where_layout = "HorizontalVertical"
+where_pred_indent = "Visual"
+where_style = "Legacy"
+use_try_shorthand = true
+
+# Tabs ***
+
+tab_spaces = 2
+hard_tabs = false
+
+# Spaces ***
+
+space_before_bound = false
+space_after_bound_colon = true
+space_before_type_annotation = false
+space_after_type_annotation_colon = true
+space_after_struct_lit_field_colon = true
+space_before_struct_lit_field_colon = false

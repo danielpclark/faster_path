@@ -1,7 +1,6 @@
 require "benchmark_helper"
 
 class ExtnameBenchmark < BenchmarkHelper
-
   def setup
     @file ||= __FILE__
   end
@@ -12,24 +11,24 @@ class ExtnameBenchmark < BenchmarkHelper
   end
 
   def cases
-    %w(
+    %w[
       verylongfilename_verylongfilename_verylongfilename_verylongfilename.rb
       /very/long/path/name/very/long/path/name/very/long/path/name/file.rb
       /ext/mail.rb
       lots/of/trailing/slashes.rb/////////////////////
       .hiddenfile
       very_long_extension_verylongextensionverylongextensionverylongextensionverylongextension.rb
-    ) + ['']
+    ] + ['']
   end
 
   def bench_rust_extname
-    benchmark_graph :rust do
+    benchmark :rust do
       cases.each { |path| FasterPath.extname(path) }
     end
   end
 
   def bench_ruby_extname
-    benchmark_graph :ruby do
+    benchmark :ruby do
       cases.each { |path| File.extname(path) }
     end
   end

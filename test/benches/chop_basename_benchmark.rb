@@ -1,7 +1,6 @@
 require "benchmark_helper"
 
 class ChopBasenameBenchmark < BenchmarkHelper
-
   def setup
     @file ||= __FILE__
   end
@@ -12,7 +11,7 @@ class ChopBasenameBenchmark < BenchmarkHelper
   end
 
   def bench_rust_chop_basename
-    benchmark_graph :rust do
+    benchmark :rust do
       FasterPath.chop_basename "/hello/world.txt"
       FasterPath.chop_basename "world.txt"
       FasterPath.chop_basename ""
@@ -20,7 +19,7 @@ class ChopBasenameBenchmark < BenchmarkHelper
   end
 
   def bench_ruby_chop_basename
-    benchmark_graph :ruby do
+    benchmark :ruby do
       Pathname.new("").send :chop_basename, "/hello/world.txt"
       Pathname.new("").send :chop_basename, "world.txt"
       Pathname.new("").send :chop_basename, ""

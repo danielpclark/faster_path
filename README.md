@@ -3,7 +3,7 @@
 [![TravisCI Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/10ul0gk3cwhlt2lj/branch/master?svg=true)](https://ci.appveyor.com/project/danielpclark/faster-path/branch/master)
 [![Latest Tag](https://img.shields.io/github/tag/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/tags)
-[![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.1.11.svg)](https://github.com/danielpclark/faster_path/pulse)
+[![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.2.6.svg)](https://github.com/danielpclark/faster_path/pulse)
 [![Binary Release](https://img.shields.io/github/release/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/releases)
 [![Coverage Status](https://coveralls.io/repos/github/danielpclark/faster_path/badge.svg)](https://coveralls.io/github/danielpclark/faster_path)
 [![Inline docs](http://inch-ci.org/github/danielpclark/faster_path.svg?branch=master)](http://inch-ci.org/github/danielpclark/faster_path)
@@ -113,7 +113,7 @@ curl -sSf https://static.rust-lang.org/rustup.sh | sh
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path', '~> 0.1.0'
+gem 'faster_path', '~> 0.2.3'
 ```
 
 And then execute:
@@ -123,8 +123,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install faster_path
-
-**MAC USERS:** At the moment Mac users need to install the extension manualy.  Go to the gem directory and run `cargo build --release` .  There is an issue opened for this and I'm looking for people who have Macs to help on this.
 
 ## Visual Benchmarks
 
@@ -138,22 +136,26 @@ improvement result  for the `chop_basename` method.
 
 Current methods implemented:
 
-|FasterPath Rust Implementation|Ruby 2.3.1 Implementation|Performance Improvement|
+|FasterPath Rust Implementation|Ruby 2.5.0 Implementation|Time Shaved Off|
 |---|---|:---:|
-| `FasterPath.absolute?` | `Pathname#absolute?` | 93.9% |
-| `FasterPath.chop_basename` | `Pathname#chop_basename` | 50.6% |
-| `FasterPath.relative?` | `Pathname#relative?` | 93.2% |
-| `FasterPath.blank?` | | |
-| `FasterPath.directory?` | `Pathname#directory?` | 25.5% |
-| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 46.8% |
-| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 61.2% |
+| `FasterPath.absolute?` | `Pathname#absolute?` | 91.9% |
+| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 31.2% |
+| `FasterPath.children` | `Pathname#children` | 13.2% |
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 54.5% |
+| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 73.8% |
+| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 70.7% |
+| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 80.6% |
+| `FasterPath.directory?` | `Pathname#directory?` | 11.3% |
+| `FasterPath.entries` | `Pathname#entries` | 8.4% |
+| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 67.6% |
+| `FasterPath.plus` | `Pathname#join` | 66.4% |
+| `FasterPath.plus` | `Pathname#plus` | 81.4% |
+| `FasterPath.relative?` | `Pathname#relative?` | 84.1% |
+| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 69.8% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch
 everything everywhere.
-
-**Note:** `Pathname#chop_basename` in Ruby STDLIB has a bug with blank strings, that is the
-only difference in behavior against FasterPath's implementation.
 
 For the scoped **refinements** you will need to
 
@@ -169,9 +171,11 @@ require "faster_path/optional/monkeypatches"
 FasterPath.sledgehammer_everything!
 ```
 
-## Unstable optional bits
+## Optional Rust implementations
 
-**Optional methods which ~~have regressions.~~ are unstable.**  These will **not** be included by default in monkey-patches.  Be cautious when using the `FasterPath::RefineFile` refinement.  To try them anyways use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
+**These are stable, not performant, and not included in `File` by default.**
+
+These will **not** be included by default in monkey-patches.  Be cautious when using the `FasterPath::RefineFile` refinement.  To try them with monkeypatching use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
 
 |FasterPath Implementation|Ruby Implementation|
 |---|---|
@@ -180,9 +184,7 @@ FasterPath.sledgehammer_everything!
 | `FasterPath.extname` | `File.extname` |
 
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
-performance seems to vary based on CPU cache on possibly 64bit/32bit system environmnets.
-
-**Developers for FasterPath:** Most of these need to be rewritten, please use `WITH_REGRESSION=true TEST_MONKEYPATCHES=true` in your testing.  You can see the resulting failures currently on TravisCI under "Allow Failures".
+performance seems to vary based on CPU cache on possibly 64bit/32bit system environmnets.  When these methods were initially written, and somewhat simplistic, they were faster than the C implementations on `File`.  After the implementations have been perfected to match the behavior in Ruby they don't perform as well and are therefore not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.  If you don't want to pass the `WITH_REGRESSION` environment variable you can put any turthy parameter on the monkey patch method to include it.
 
 ## Getting Started with Development
 

@@ -11,6 +11,15 @@ require 'pbench'
 #  end
 # }
 
+# SOME DEFAULTS
+PATHNAME_A = Pathname.new('a').freeze
+PATHNAME_DOT = Pathname.new('.').freeze
+PATHNAME_PWD = Pathname.new('./').freeze
+PATHNAME_SRC = Pathname.new('./src').freeze
+PATHNAME_ABC = Pathname.new('a//b/c').freeze
+PATHNAME_ABS = Pathname.new('/hello').freeze
+PATHNAME_REL = Pathname.new('goodbye').freeze
+
 PBENCHES = {}
 PBENCHES[:"allocate, instead of new,"] = {
   # The allocate test is both for demonstration and as a baseline for comparing
@@ -36,8 +45,8 @@ PBENCHES[:"absolute?"] = {
   end,
   old: lambda do |x|
     x.times do
-      Pathname.new("/hello").absolute?
-      Pathname.new("goodbye").absolute?
+      PATHNAME_ABC.absolute?
+      PATHNAME_REL.absolute?
     end
   end,
 }
@@ -50,8 +59,8 @@ PBENCHES[:add_trailing_separator] = {
   end,
   old: lambda do |x|
     x.times do
-      Pathname.allocate.send(:add_trailing_separator, '/hello/world')
-      Pathname.allocate.send(:add_trailing_separator, '/hello/world/')
+      PATHNAME_DOT.send(:add_trailing_separator, '/hello/world')
+      PATHNAME_DOT.send(:add_trailing_separator, '/hello/world/')
     end
   end
 }
@@ -71,6 +80,30 @@ PBENCHES[:basename] = {
     end
   end
 }
+PBENCHES[:children] = {
+  new: lambda do |x|
+    (x/5).times do
+      FasterPath.children(".")
+    end
+  end,
+  old: lambda do |x|
+    (x/5).times do
+      PATHNAME_DOT.children
+    end
+  end
+}
+PBENCHES[:children_compat] = {
+ new: lambda do |x|
+   (x/5).times do
+     FasterPath.children_compat('.')
+   end
+ end,
+ old: lambda do |x|
+   (x/5).times do
+     PATHNAME_DOT.children
+   end
+ end
+}
 PBENCHES[:chop_basename] = {
   new: lambda do |x|
     x.times do
@@ -81,9 +114,53 @@ PBENCHES[:chop_basename] = {
   end,
   old: lambda do |x|
     x.times do
-      Pathname.allocate.send :chop_basename, "/hello/world.txt"
-      Pathname.allocate.send :chop_basename, "world.txt"
-      Pathname.allocate.send :chop_basename, ""
+      PATHNAME_DOT.send :chop_basename, "/hello/world.txt"
+      PATHNAME_DOT.send :chop_basename, "world.txt"
+      PATHNAME_DOT.send :chop_basename, ""
+    end
+  end
+}
+PATHNAME_CA1 = Pathname.new('/../.././../a').freeze
+PATHNAME_CA2 = Pathname.new('a/b/../../../../c/../d').freeze
+PBENCHES[:cleanpath_aggressive] = {
+  new: lambda do |x|
+    x.times do
+      Pathname.new(FasterPath.cleanpath_aggressive '/../.././../a')
+      Pathname.new(FasterPath.cleanpath_aggressive 'a/b/../../../../c/../d')
+    end
+  end,
+  old: lambda do |x|
+    x.times do
+      PATHNAME_CA1.send :cleanpath_aggressive
+      PATHNAME_CA2.send :cleanpath_aggressive
+    end
+  end
+}
+PBENCHES[:cleanpath_conservative] = {
+  new: lambda do |x|
+    x.times do
+      Pathname.new(FasterPath.cleanpath_conservative '/../.././../a')
+      Pathname.new(FasterPath.cleanpath_conservative 'a/b/../../../../c/../d')
+    end
+  end,
+  old: lambda do |x|
+    x.times do
+      PATHNAME_CA1.send :cleanpath_conservative
+      PATHNAME_CA2.send :cleanpath_conservative
+    end
+  end
+}
+PBENCHES[:del_trailing_separator] = {
+  new: lambda do |x|
+    x.times do
+      FasterPath.del_trailing_separator('/hello/world')
+      FasterPath.del_trailing_separator('/hello/world/')
+    end
+  end,
+  old: lambda do |x|
+    x.times do
+      PATHNAME_DOT.send(:del_trailing_separator, '/hello/world')
+      PATHNAME_DOT.send(:del_trailing_separator, '/hello/world/')
     end
   end
 }
@@ -96,8 +173,8 @@ PBENCHES[:"directory?"] = {
   end,
   old: lambda do |x|
     x.times do
-      Pathname.new("/hello").directory?
-      Pathname.new("goodbye").directory?
+      PATHNAME_ABS.directory?
+      PATHNAME_REL.directory?
     end
   end
 }
@@ -119,15 +196,29 @@ PBENCHES[:dirname] = {
 }
 PBENCHES[:entries] = {
   new: lambda do |x|
-    x.times do
+    (x/5).times do
       FasterPath.entries("./")
       FasterPath.entries("./src")
     end
   end,
   old: lambda do |x|
-    x.times do
-      Pathname.new("./").entries
-      Pathname.new("./src").entries
+    (x/5).times do
+      PATHNAME_PWD.entries
+      PATHNAME_SRC.entries
+    end
+  end
+}
+PBENCHES[:entries_compat] = {
+  new: lambda do |x|
+    (x/5).times do
+      FasterPath.entries_compat("./")
+      FasterPath.entries_compat("./src")
+    end
+  end,
+  old: lambda do |x|
+    (x/5).times do
+      PATHNAME_PWD.entries
+      PATHNAME_SRC.entries
     end
   end
 }
@@ -156,24 +247,40 @@ PBENCHES[:"has_trailing_separator?"] = {
   end,
   old: lambda do |x|
     x.times do
-      Pathname.allocate.send :has_trailing_separator?, '////a//aaa/a//a/aaa////'
-      Pathname.allocate.send :has_trailing_separator?, 'hello/'
+      PATHNAME_DOT.send :has_trailing_separator?, '////a//aaa/a//a/aaa////'
+      PATHNAME_DOT.send :has_trailing_separator?, 'hello/'
     end
   end
 }
-PBENCHES[:"blank? (verses strip.empty?)"] = {
+PBENCHES[:join] = {
   new: lambda do |x|
     x.times do
-      FasterPath.blank? "world.txt"
-      FasterPath.blank? "  "
-      FasterPath.blank? ""
+      FasterPath.join('a', 'b')
+      FasterPath.join('.', 'b')
+      FasterPath.join('a//b/c', '../d//e')
     end
   end,
   old: lambda do |x|
     x.times do
-      "world.txt".strip.empty?
-      "  ".strip.empty?
-      "".strip.empty?
+      PATHNAME_A.send(:join, 'b')
+      PATHNAME_DOT.send(:join, 'b')
+      PATHNAME_ABC.send(:join, '../d//e')
+    end
+  end
+}
+PBENCHES[:plus] = {
+  new: lambda do |x|
+    x.times do
+      FasterPath.plus('a', 'b')
+      FasterPath.plus('.', 'b')
+      FasterPath.plus('a//b/c', '../d//e')
+    end
+  end,
+  old: lambda do |x|
+    x.times do
+      PATHNAME_A.send(:plus, 'a', 'b')
+      PATHNAME_DOT.send(:plus, '.', 'b')
+      PATHNAME_ABC.send(:plus, 'a//b/c', '../d//e')
     end
   end
 }
@@ -186,8 +293,24 @@ PBENCHES[:"relative?"] = {
   end,
   old: lambda do |x|
     x.times do
-      Pathname.new("/hello").relative?
-      Pathname.new("goodbye").relative?
+      PATHNAME_ABS.relative?
+      PATHNAME_REL.relative?
+    end
+  end
+}
+PATHNAME_AB = Pathname("/a/b")
+PATHNAME_ABCD = Pathname("/a/b/c/d")
+PBENCHES[:relative_path_from] = {
+  new: lambda do |x|
+    x.times do
+      FasterPath.relative_path_from "/a/b/c/d", "/a/b"
+      FasterPath.relative_path_from "/a/b", "/a/b/c/d"
+    end
+  end,
+  old: lambda do |x|
+    x.times do
+      PATHNAME_ABCD.relative_path_from PATHNAME_AB
+      PATHNAME_AB.relative_path_from PATHNAME_ABCD
     end
   end
 }
