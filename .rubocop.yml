@@ -2,7 +2,7 @@ AllCops:
   Include:
     - 'Gemfile'
     - 'Rakefile'
-    - 'lib/**/*'
+    - 'lib/**/*.rb'
     - '*.gemspec'
   Exclude:
     - 'assets/**/*'
@@ -672,7 +672,7 @@ Layout/ExtraSpacing:
 Naming/FileName:
   Description: 'Use snake_case for source file names.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#snake-case-files'
-  Enabled: true
+  Enabled: false
 
 Layout/InitialIndentation:
   Description: >-

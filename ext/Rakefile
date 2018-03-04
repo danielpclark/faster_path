@@ -1,0 +1,7 @@
+require 'thermite/tasks'
+
+project_toplevel_dir = File.dirname(File.dirname(__FILE__))
+Thermite::Tasks.new(cargo_project_path: project_toplevel_dir,
+                    ruby_project_path: project_toplevel_dir)
+
+task default: 'thermite:build'

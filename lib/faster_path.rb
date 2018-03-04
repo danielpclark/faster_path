@@ -1,11 +1,16 @@
-require "faster_path/version"
+require 'faster_path/version'
 require 'pathname'
-require 'faster_path/platform'
+require 'thermite/config'
 require 'fiddle'
 require 'fiddle/import'
 
 module FasterPath
-  FFI_LIBRARY = FasterPath::Platform.ffi_library()
+  FFI_LIBRARY = begin
+    toplevel_dir = File.dirname(__dir__)
+    config = Thermite::Config.new(cargo_project_path: toplevel_dir,
+                                  ruby_project_path: toplevel_dir)
+    config.ruby_extension_path
+  end
 
   Fiddle::Function.
     new(Fiddle.dlopen(FFI_LIBRARY)['Init_faster_pathname'], [], Fiddle::TYPE_VOIDP).

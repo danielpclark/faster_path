@@ -1,17 +1,20 @@
-sudo: true
+sudo: false
 language: ruby
 os:
 - linux
 - osx
 cache:
-- bundler
-- cargo
+  bundler: true
+  directories:
+  - $HOME/.cargo
+  - $TRAVIS_BUILD_DIR/target
 rvm:
-- 2.3
-- 2.4
+- 2.3.4
+- 2.4.1
 # - 2.5 # Travis doesn't have this for Mac yet
 env:
   global:
+  - PATH=$PATH:$HOME/.cargo/bin
   - secure: UCarEfq9wDpD6FV0dIdfDMCWfeLoKBAM2PS+xZ82K1uoFBMtwet/UuEuz06OnX6B9k2TwV0aqQpkUuo6o+h9YoHKAGz1/O5iB5uJaHcoII8yL43LH4YUADqupsgbvFzUCdcLuKCvDVG5RD96tt5XX87UdyZMgHvBV41wKOoUF+0ZyIWq8sKFPlItM+oYN55gY+PZ5ZadsOOkWDbTAG/LuxDi1GJxb/ObiYkjk4b93xzKEx1t7H2LSs8/f8dg0w1gnM6bVXQHjdXGuAw8jqy6IoszFh2oKDyttix4yB5l5xxj/NwO/aJNmOLBRNf611WskH6RLKWteCxwyY0gIZnDlC7q+SMYJtDapuffvqqKdlC5ECcVNimw9D3DwuxizP/5IGoC5+X+RIJiWBx/RJgFV2dw22/XvC62rOMttQL1K1dUByMRJL1pjLoauofbTdJgZgdrb1eDxGNyxL+Rg8za2wqs5NtENnXY6RIX4NvSXUPE9vRLdYnmGtH5hLF36hRh5AwvgOZ544xYT2ss6FxUJNo/zphlE7zfZrD+waeUBRUabzi6S5xEBXainj01UjtfVXRDtcjV9vbh5pYYjZsX8lLZAdW8OZeKxhaOv7zQyUtAwMHE/sGfKj1yQSDh2fscY48mepV7xUPVE7jRgUDk1ayt2a+WeGE2DCR3KBv5gkk=
   matrix:
   - WITH_REGRESSION=true
@@ -21,8 +24,15 @@ matrix:
   allow_failures:
   - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
 before_install:
-- gem install bundler --pre
-- git submodule update --init
-- curl -sSf https://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly
-- bundle && bundle exec rake build_src && rake clean_src
-script: bundle exec rake test
+- curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly
+deploy:
+  provider: releases
+  api_key:
+    secure: wflOVYn4aAkhM1LlpqFnUpw7YPrTOumNnfUiQETTBMgOY2IYYPHFo5wgCWeW7/O2galmNFJCVlFQ3GYnepV2GdLyNM8uRl+13XA9V6wE6qCP6NmskxXwR09Nonx8PrdtnuQJvAg5DgSsP5aciWf9bM6xwmspzebJx44s2jiir6ODKNAoGxG+xV6ZT9FVDHNoVgDePTYry8nPLt5XewR8D8CBL3Np//laR4y08hHajGOZXHimJYG+PXoHadZaaIqnlLHkZ9TLkT1q3LCyMa5So3/NmNSIKA01QQA0625XOfSK1ZnhFx7XgPR7eKNzD930x/FP6G46RUMBDh2mG7NgaGeMWerJgfg5rBm0o5eBH92lDpOw8ew47l5bcrPLiMeokE38uPnxUK1/+z7Y4YmamHvwaY48H88JXmmmS2LlxkoeVdFqbgMjdclORF+ktx7FIHGzhkbuPoTSLCs6feKjk3J24Nn/plHbEsYAOVTClPbzawA8JnPJp3lmXHTVhgi0rVBoUYcZs+8m998/Sr5OfYJZl47f6sr2VnenUwSjX8ylLcKRbyOl7y23AMxAbRUomrcDceTjj0fcsUppZZBXPM/6cpjVlQlTyVOhgL/2qhZaAMZ3OtG4ittazfvF0+xclRkfshc1bnqZ5PmmBG6OMtEk072nLwHTVwr0n8ZTxXw=
+  file: faster_path-*.tar.gz
+  file_glob: true
+  skip_cleanup: true
+  on:
+    condition: -z ${TEST_MONKEYPATCHES}
+    repo: danielpclark/faster_path
+    tags: true

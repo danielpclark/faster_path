@@ -1,6 +1,6 @@
-require "bundler/gem_tasks"
-require "rake/testtask"
-require 'fileutils'
+require 'bundler/gem_tasks'
+require 'rake/testtask'
+require 'thermite/tasks'
 
 desc 'System Details'
 task :sysinfo do
@@ -23,6 +23,8 @@ task :sysinfo do
     puts "\nNo Gemfile.lock"
   end
 end
+
+thermite = Thermite::Tasks.new
 
 desc "Generate Contriburs.md Manifest"
 task :contrib do
@@ -61,36 +63,16 @@ task :libruby_debug do
   puts "libruby.so copied."
 end
 
-desc "Build Rust extension"
-task build_src: :libruby_release do
-  puts "Building extension..."
-  sh "cargo build --release"
+desc 'Build + clean up Rust extension'
+task build_lib: 'thermite:build' do
+  thermite.run_cargo 'clean'
 end
 
-desc "Clean up Rust build"
-task :clean_src do
-  puts "Cleaning up build..."
-  # Remove all but library file
-  FileUtils.
-    rm_rf(
-      Dir.
-      glob('target/release/*').
-      keep_if do |f|
-        !f[/\.(?:so|dll|dylib|deps)\z/]
-      end
-  )
-end
-
-desc "Build + clean up Rust extension"
-task build_lib: [:build_src, :clean_src] do
-  puts "Completed build!"
-end
-
-desc "Code Quality Check"
+desc 'Code Quality Check'
 task :lint do
   puts
-  puts "Quality check starting..."
-  sh "rubocop"
+  puts 'Quality check starting...'
+  sh 'rubocop'
   puts
 end
 
@@ -100,9 +82,8 @@ task cargo: :libruby_debug do
 end
 
 Rake::TestTask.new(minitest: :build_lib) do |t|
-  t.libs << "test"
-  t.libs << "lib"
-  t.test_files = FileList['test/**/*_test.rb']
+  t.libs = %w[lib test]
+  t.pattern = 'test/**/*_test.rb'
 end
 
 task :init_mspec do |_t|
