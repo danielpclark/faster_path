@@ -1,39 +1,6 @@
 require 'test_helper'
 
 class BasenameTest < Minitest::Test
-	DRIVE = Dir.pwd[%r'\A(?:[a-z]:|//[^/]+/[^/]+)'i]
-	POSIX = /cygwin|mswin|bccwin|mingw|emx/ !~ RUBY_PLATFORM
-	NTFS = !(/mingw|mswin|bccwin/ !~ RUBY_PLATFORM)
-
-	def regular_file
-		return @file if defined? @file
-		@file = make_tmp_filename("file")
-		make_file("foo", @file)
-		@file
-	end
-
-	def make_tmp_filename(prefix)
-		"#{@dir}/#{prefix}.test"
-	end
-
-  def make_file(content, file)
-    open(file, "w") {|fh| fh << content }
-  end
-
-	def assert_incompatible_encoding
-		d = "\u{3042}\u{3044}".encode("utf-16le")
-		assert_raises(Encoding::CompatibilityError) {yield d}
-		m = Class.new {define_method(:to_path) {d}}
-		assert_raises(Encoding::CompatibilityError) {yield m.new}
-	end
-
-  def utf8_file
-    return @utf8file if defined? @utf8file
-    @utf8file = make_tmp_filename("\u3066\u3059\u3068")
-    make_file("foo", @utf8file)
-    @utf8file
-  end
-
 	def setup
 		@dir = Dir.mktmpdir("rubytest-file")
 		File.chown(-1, Process.gid, @dir)
