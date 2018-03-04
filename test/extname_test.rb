@@ -1,15 +1,15 @@
 require 'test_helper'
 
 class ExtnameTest < Minitest::Test
-	def setup
-		@dir = Dir.mktmpdir("rubytest-file")
-		File.chown(-1, Process.gid, @dir)
-	end
+  def setup
+    @dir = Dir.mktmpdir("rubytest-file")
+    File.chown(-1, Process.gid, @dir)
+  end
 
-	def teardown
-		GC.start
-		FileUtils.remove_entry_secure @dir
-	end
+  def teardown
+    GC.start
+    FileUtils.remove_entry_secure @dir
+  end
 
   def test_extname_official
     assert_equal(".test", FasterPath.extname(regular_file))
@@ -35,7 +35,7 @@ class ExtnameTest < Minitest::Test
     end
     # bug3175 = '[ruby-core:29627]'
     # assert_equal(".rb", FasterPath.extname("/tmp//bla.rb"), bug3175)
-    assert_incompatible_encoding {|d| FasterPath.extname(d)} if ENV['ENCODING'] = true
+    assert_incompatible_encoding {|d| FasterPath.extname(d)} if ENV['ENCODING'] == true
   end
 
   def test_extname
