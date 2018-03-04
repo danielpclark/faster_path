@@ -12,7 +12,7 @@ class RelativeTest < Minitest::Test
     assert FasterPath.relative? 'a'
     assert FasterPath.relative? 'a/b'
 
-    if File.dirname('//') == '//'
+    if DOSISH_UNC
       refute FasterPath.relative? '//'
       refute FasterPath.relative? '//a'
       refute FasterPath.relative? '//a/'
@@ -26,5 +26,5 @@ class RelativeTest < Minitest::Test
     refute FasterPath.relative? 'A:'
     refute FasterPath.relative? 'A:/'
     refute FasterPath.relative? 'A:/a'
-  end if File.dirname("A:") == "A:." # DOSISH_DRIVE_LETTER
+  end if DOSISH_DRIVE_LETTER
 end

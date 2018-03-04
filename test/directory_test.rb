@@ -88,9 +88,4 @@ class DirectoryTest < Minitest::Test
     refute FasterPath.directory?(utf8_file)
     refute FasterPath.directory?(nofile)
   end
-
-  def test_stat_directory_p
-    assert_predicate(File::Stat.new(@dir), :directory?)
-    refute_predicate(File::Stat.new(regular_file), :directory?)
-  end
 end
