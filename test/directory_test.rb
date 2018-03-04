@@ -61,4 +61,13 @@ class DirectoryTest < Minitest::Test
     assert_equal( *result_pair.("foor for thought")         )
     assert_equal( *result_pair.("2gb63b@%TY25GHawefb3/g3qb"))
   end
+
+  def test_directory?
+    with_tmpchdir('rubytest-pathname') do |_dir|
+      open("f", "w") {|f| f.write "abc" }
+      assert_equal(false, FasterPath.directory?("f"))
+      Dir.mkdir("d")
+      assert_equal(true, FasterPath.directory?("d"))
+    end
+  end
 end

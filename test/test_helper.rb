@@ -62,4 +62,13 @@ end
     make_file("foo", @utf8file)
     @utf8file
   end
+
+  def with_tmpchdir(base=nil)
+    Dir.mktmpdir(base) do |d|
+      d = Pathname.new(d).realpath.to_s
+      Dir.chdir(d) do
+        yield d
+      end
+    end
+  end
 end
