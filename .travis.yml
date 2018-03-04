@@ -24,7 +24,7 @@ matrix:
   allow_failures:
   - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
 before_install:
-- curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+- curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly
 deploy:
   provider: releases
   api_key:
