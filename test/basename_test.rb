@@ -131,5 +131,5 @@ class BasenameTest < Minitest::Test
     assert_equal(s, FasterPath.basename(s, "_a"))
     s = "\u4032.\u3024"
     assert_equal(s, FasterPath.basename(s, ".\x95\\".force_encoding("cp932")))
-  end if ENV['ENCODING'].to_s =~ true
+  end if ENV['ENCODING'].to_s['true']
 end

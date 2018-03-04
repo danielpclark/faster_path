@@ -35,7 +35,7 @@ class ExtnameTest < Minitest::Test
     end
     # bug3175 = '[ruby-core:29627]'
     # assert_equal(".rb", FasterPath.extname("/tmp//bla.rb"), bug3175)
-    assert_incompatible_encoding {|d| FasterPath.extname(d)} if ENV['ENCODING'] == true
+    assert_incompatible_encoding {|d| FasterPath.extname(d)} if ENV['ENCODING'].to_s['true']
   end
 
   def test_extname
