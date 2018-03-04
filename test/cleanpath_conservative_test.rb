@@ -37,4 +37,16 @@ class CleanpathConservativeTest < Minitest::Test
     assert_equal FasterPath.cleanpath_conservative("/../.././../a"),          "/a"
     assert_equal FasterPath.cleanpath_conservative("a/b/../../../../c/../d"), "a/b/../../../../c/../d"
   end
+
+  def test_windows_compat
+    if DOSISH
+      assert_equal FasterPath.cleanpath_conservative('c:/foo/bar'), 'c:\\foo\\bar'
+    end
+
+    if DOSISH_UNC
+      assert_equal FasterPath.cleanpath_conservative('//'), '//'
+    else
+      assert_equal FasterPath.cleanpath_conservative('//'), '/'
+    end
+  end
 end
