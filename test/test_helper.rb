@@ -63,6 +63,12 @@ end
     @utf8file
   end
 
+  def nofile
+    return @nofile if defined? @nofile
+    @nofile = make_tmp_filename("nofile")
+    @nofile
+  end
+
   def with_tmpchdir(base=nil)
     Dir.mktmpdir(base) do |d|
       d = Pathname.new(d).realpath.to_s
