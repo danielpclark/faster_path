@@ -83,80 +83,82 @@ class BasenameTest < Minitest::Test
 	end
 
 	def test_it_does_the_same_as_file_basename
-		assert_equal File.basename('/home/gumby/work/ruby.rb'),        'ruby.rb'
-		assert_equal File.basename('/home/gumby/work/ruby.rb', '.rb'), 'ruby'
-		assert_equal File.basename('/home/gumby/work/ruby.rb', '.*'),  'ruby'
-		assert_equal File.basename('ruby.rb',  '.*'),  'ruby'
-		assert_equal File.basename('/ruby.rb', '.*'),  'ruby'
-		assert_equal File.basename('ruby.rbx', '.*'),  'ruby'
-		assert_equal File.basename('ruby.rbx', '.rb'), 'ruby.rbx'
-		assert_equal File.basename('ruby.rb', ''),      'ruby.rb'
-		assert_equal File.basename('ruby.rbx', '.rb*'), 'ruby.rbx'
-		assert_equal File.basename('ruby.rbx'), 'ruby.rbx'
+		assert_equal FasterPath.basename('/home/gumby/work/ruby.rb'),        'ruby.rb'
+		assert_equal FasterPath.basename('/home/gumby/work/ruby.rb', '.rb'), 'ruby'
+		assert_equal FasterPath.basename('/home/gumby/work/ruby.rb', '.*'),  'ruby'
+		assert_equal FasterPath.basename('ruby.rb',  '.*'),  'ruby'
+		assert_equal FasterPath.basename('/ruby.rb', '.*'),  'ruby'
+		assert_equal FasterPath.basename('ruby.rbx', '.*'),  'ruby'
+		assert_equal FasterPath.basename('ruby.rbx', '.rb'), 'ruby.rbx'
+		assert_equal FasterPath.basename('ruby.rb', ''),      'ruby.rb'
+		assert_equal FasterPath.basename('ruby.rbx', '.rb*'), 'ruby.rbx'
+		assert_equal FasterPath.basename('ruby.rbx'), 'ruby.rbx'
 
 		# Try some extensions w/o a '.'
-		assert_equal File.basename('ruby.rbx', 'rbx'), 'ruby.'
-		assert_equal File.basename('ruby.rbx', 'x'),   'ruby.rb'
-		assert_equal File.basename('ruby.rbx', '*'),   'ruby.rbx'
+		assert_equal FasterPath.basename('ruby.rbx', 'rbx'), 'ruby.'
+		assert_equal FasterPath.basename('ruby.rbx', 'x'),   'ruby.rb'
+		assert_equal FasterPath.basename('ruby.rbx', '*'),   'ruby.rbx'
 
 		# A couple of regressions:
-		assert_equal File.basename('', ''),           ''
-		assert_equal File.basename('/'),              '/'
-		assert_equal File.basename('//'),             '/'
-		assert_equal File.basename('//dir///base//'), 'base'
+		assert_equal FasterPath.basename('', ''),           ''
+		assert_equal FasterPath.basename('/'),              '/'
+		assert_equal FasterPath.basename('//'),             '/'
+		assert_equal FasterPath.basename('//dir///base//'), 'base'
 	end
 
 	def test_basename
-		assert_equal(File.basename(regular_file).sub(/\.test$/, ""), File.basename(regular_file, ".test"))
-		assert_equal(File.basename(utf8_file).sub(/\.test$/, ""), File.basename(utf8_file, ".test"))
-		assert_equal("", s = File.basename(""))
+		assert_equal(FasterPath.basename(regular_file).sub(/\.test$/, ""), FasterPath.basename(regular_file, ".test"))
+		assert_equal(FasterPath.basename(utf8_file).sub(/\.test$/, ""), FasterPath.basename(utf8_file, ".test"))
+		assert_equal("", s = FasterPath.basename(""))
 		refute_predicate(s, :frozen?, '[ruby-core:24199]')
-		assert_equal("foo", s = File.basename("foo"))
+		assert_equal("foo", s = FasterPath.basename("foo"))
 		refute_predicate(s, :frozen?, '[ruby-core:24199]')
-		assert_equal("foo", File.basename("foo", ".ext"))
-		assert_equal("foo", File.basename("foo.ext", ".ext"))
-		assert_equal("foo", File.basename("foo.ext", ".*"))
+		assert_equal("foo", FasterPath.basename("foo", ".ext"))
+		assert_equal("foo", FasterPath.basename("foo.ext", ".ext"))
+		assert_equal("foo", FasterPath.basename("foo.ext", ".*"))
 		if NTFS
 			[regular_file, utf8_file].each do |file|
-				basename = File.basename(file)
-				assert_equal(basename, File.basename(file + " "))
-				assert_equal(basename, File.basename(file + "."))
-				assert_equal(basename, File.basename(file + "::$DATA"))
+				basename = FasterPath.basename(file)
+				assert_equal(basename, FasterPath.basename(file + " "))
+				assert_equal(basename, FasterPath.basename(file + "."))
+				assert_equal(basename, FasterPath.basename(file + "::$DATA"))
 				basename.chomp!(".test")
-				assert_equal(basename, File.basename(file + " ", ".test"))
-				assert_equal(basename, File.basename(file + ".", ".test"))
-				assert_equal(basename, File.basename(file + "::$DATA", ".test"))
-				assert_equal(basename, File.basename(file + " ", ".*"))
-				assert_equal(basename, File.basename(file + ".", ".*"))
-				assert_equal(basename, File.basename(file + "::$DATA", ".*"))
+				assert_equal(basename, FasterPath.basename(file + " ", ".test"))
+				assert_equal(basename, FasterPath.basename(file + ".", ".test"))
+				assert_equal(basename, FasterPath.basename(file + "::$DATA", ".test"))
+				assert_equal(basename, FasterPath.basename(file + " ", ".*"))
+				assert_equal(basename, FasterPath.basename(file + ".", ".*"))
+				assert_equal(basename, FasterPath.basename(file + "::$DATA", ".*"))
 			end
 		else
 			[regular_file, utf8_file].each do |file|
-				basename = File.basename(file)
-				assert_equal(basename + " ", File.basename(file + " "))
-				assert_equal(basename + ".", File.basename(file + "."))
-				assert_equal(basename + "::$DATA", File.basename(file + "::$DATA"))
-				assert_equal(basename + " ", File.basename(file + " ", ".test"))
-				assert_equal(basename + ".", File.basename(file + ".", ".test"))
-				assert_equal(basename + "::$DATA", File.basename(file + "::$DATA", ".test"))
-				assert_equal(basename, File.basename(file + ".", ".*"))
+				basename = FasterPath.basename(file)
+				assert_equal(basename + " ", FasterPath.basename(file + " "))
+				assert_equal(basename + ".", FasterPath.basename(file + "."))
+				assert_equal(basename + "::$DATA", FasterPath.basename(file + "::$DATA"))
+				assert_equal(basename + " ", FasterPath.basename(file + " ", ".test"))
+				assert_equal(basename + ".", FasterPath.basename(file + ".", ".test"))
+				assert_equal(basename + "::$DATA", FasterPath.basename(file + "::$DATA", ".test"))
+				assert_equal(basename, FasterPath.basename(file + ".", ".*"))
 				basename.chomp!(".test")
-				assert_equal(basename, File.basename(file + " ", ".*"))
-				assert_equal(basename, File.basename(file + "::$DATA", ".*"))
+				assert_equal(basename, FasterPath.basename(file + " ", ".*"))
+				assert_equal(basename, FasterPath.basename(file + "::$DATA", ".*"))
 			end
 		end
-		if File::ALT_SEPARATOR == '\\'
-			a = "foo/\225\\\\"
-			[%W"cp437 \225", %W"cp932 \225\\"].each do |cp, expected|
-				assert_equal(expected.force_encoding(cp), File.basename(a.dup.force_encoding(cp)), cp)
-			end
-		end
-		assert_incompatible_encoding {|d| File.basename(d)}
-		assert_incompatible_encoding {|d| File.basename(d, ".*")}
-		assert_raises(Encoding::CompatibilityError) {File.basename("foo.ext", ".*".encode("utf-16le"))}
-		s = "foo\x93_a".force_encoding("cp932")
-		assert_equal(s, File.basename(s, "_a"))
-		s = "\u4032.\u3024"
-		assert_equal(s, File.basename(s, ".\x95\\".force_encoding("cp932")))
+    if ENV['ENCODING'].to_s =~ true
+      if File::ALT_SEPARATOR == '\\'
+        a = "foo/\225\\\\"
+        [%W"cp437 \225", %W"cp932 \225\\"].each do |cp, expected|
+          assert_equal(expected.force_encoding(cp), FasterPath.basename(a.dup.force_encoding(cp)), cp)
+        end
+      end
+      assert_incompatible_encoding {|d| FasterPath.basename(d)}
+      assert_incompatible_encoding {|d| FasterPath.basename(d, ".*")}
+      assert_raises(Encoding::CompatibilityError) {FasterPath.basename("foo.ext", ".*".encode("utf-16le"))}
+      s = "foo\x93_a".force_encoding("cp932")
+      assert_equal(s, FasterPath.basename(s, "_a"))
+      s = "\u4032.\u3024"
+      assert_equal(s, FasterPath.basename(s, ".\x95\\".force_encoding("cp932")))
+    end
 	end
 end
