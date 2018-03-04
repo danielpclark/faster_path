@@ -11,7 +11,7 @@ cache:
 rvm:
 - 2.3.4
 - 2.4.1
-# - 2.5 # Travis doesn't have this for Mac yet
+- 2.5.0
 env:
   global:
   - PATH=$PATH:$HOME/.cargo/bin
