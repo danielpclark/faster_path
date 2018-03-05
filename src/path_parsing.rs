@@ -1,16 +1,10 @@
 extern crate memchr;
-use self::memchr::memrchr;
 use std::path::MAIN_SEPARATOR;
 use std::str;
 
 pub const SEP: u8 = MAIN_SEPARATOR as u8;
 lazy_static! {
   pub static ref SEP_STR: &'static str = str::from_utf8(&[SEP]).unwrap();
-}
-
-pub fn extract_last_path_segment(path: &str) -> &str {
-  let end = (last_non_sep_i(path) + 1) as usize;
-  &path[memrchr(SEP, &path.as_bytes()[..end]).unwrap_or(0)..end]
 }
 
 // Returns the byte offset of the last byte preceding a MAIN_SEPARATOR.

@@ -147,6 +147,7 @@ Current methods implemented:
 | `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 80.6% |
 | `FasterPath.directory?` | `Pathname#directory?` | 11.3% |
 | `FasterPath.entries` | `Pathname#entries` | 8.4% |
+| `FasterPath.extname` | `File.extname` | 41.2% |
 | `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 67.6% |
 | `FasterPath.plus` | `Pathname#join` | 66.4% |
 | `FasterPath.plus` | `Pathname#plus` | 81.4% |
@@ -181,7 +182,6 @@ These will **not** be included by default in monkey-patches.  Be cautious when u
 |---|---|
 | `FasterPath.dirname` | `File.dirname` |
 | `FasterPath.basename` | `File.basename` |
-| `FasterPath.extname` | `File.extname` |
 
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
 performance seems to vary based on CPU cache on possibly 64bit/32bit system environmnets.  When these methods were initially written, and somewhat simplistic, they were faster than the C implementations on `File`.  After the implementations have been perfected to match the behavior in Ruby they don't perform as well and are therefore not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.  If you don't want to pass the `WITH_REGRESSION` environment variable you can put any turthy parameter on the monkey patch method to include it.
