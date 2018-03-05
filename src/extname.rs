@@ -55,7 +55,7 @@ pub fn extname(pth: &str) -> &str {
     }
   }
 
-  if !extname.dot || !extname.pred {
+  if !extname.pred {
     return "";
   }
 
