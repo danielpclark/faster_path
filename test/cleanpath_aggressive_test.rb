@@ -38,4 +38,20 @@ class CleanpathAggressiveTest < Minitest::Test
     assert_equal FasterPath.cleanpath_aggressive('/../.././../a'         ), '/a'
     assert_equal FasterPath.cleanpath_aggressive('a/b/../../../../c/../d'), '../../d'
   end
+
+  def test_windows_compat
+    if DOSISH_UNC
+      assert_equal FasterPath.cleanpath_aggressive('//a/b/c/'),     '//a/b/c'
+    else
+      assert_equal FasterPath.cleanpath_aggressive('///'),          '/'
+      assert_equal FasterPath.cleanpath_aggressive('///a'),         '/a'
+      assert_equal FasterPath.cleanpath_aggressive('///..'),        '/'
+      assert_equal FasterPath.cleanpath_aggressive('///.'),         '/'
+      assert_equal FasterPath.cleanpath_aggressive('///a/../..'),   '/'
+    end
+
+    if DOSISH
+      assert_equal FasterPath.cleanpath_aggressive('c:\\foo\\bar'), 'c:/foo/bar'
+    end
+  end
 end

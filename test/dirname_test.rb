@@ -48,4 +48,23 @@ class DirnameTest < Minitest::Test
     assert_equal("/foo/..", FasterPath.dirname("/foo/../."))
     assert_equal("foo", FasterPath.dirname("foo/../"))
   end
+
+  def test_dirname_official
+    @dir = Dir.mktmpdir("rubytest-file")
+    File.chown(-1, Process.gid, @dir)
+
+    assert_equal(@dir, FasterPath.dirname(regular_file))
+    assert_equal(@dir, FasterPath.dirname(utf8_file))
+    assert_equal(".", FasterPath.dirname(""))
+    assert_incompatible_encoding {|d| FasterPath.dirname(d)} if ENV['ENCODING'].to_s['true']
+    if File::ALT_SEPARATOR == '\\'
+      a = "\225\\\\foo"
+      [%W[cp437 \225], %W[cp932 \225\\]].each do |cp, expected|
+        assert_equal(expected.force_encoding(cp), FasterPath.dirname(a.dup.force_encoding(cp)), cp)
+      end
+    end
+
+    GC.start
+    FileUtils.remove_entry_secure @dir
+  end
 end

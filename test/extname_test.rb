@@ -1,6 +1,43 @@
 require 'test_helper'
 
 class ExtnameTest < Minitest::Test
+  def setup
+    @dir = Dir.mktmpdir("rubytest-file")
+    File.chown(-1, Process.gid, @dir)
+  end
+
+  def teardown
+    GC.start
+    FileUtils.remove_entry_secure @dir
+  end
+
+  def test_extname_official
+    assert_equal(".test", FasterPath.extname(regular_file))
+    assert_equal(".test", FasterPath.extname(utf8_file))
+    prefixes = ["", "/", ".", "/.", "bar/.", "/bar/."]
+    infixes = ["", " ", "."]
+    infixes2 = infixes + [".ext "]
+    appendixes = [""]
+    if NTFS
+      appendixes << " " << "." << "::$DATA" << "::$DATA.bar"
+    end
+    prefixes.each do |prefix|
+      appendixes.each do |appendix|
+        infixes.each do |infix|
+          path = "#{prefix}foo#{infix}#{appendix}"
+          assert_equal("", FasterPath.extname(path), "FasterPath.extname(#{path.inspect})")
+        end
+        infixes2.each do |infix|
+          path = "#{prefix}foo#{infix}.ext#{appendix}"
+          assert_equal(".ext", FasterPath.extname(path), "FasterPath.extname(#{path.inspect})")
+        end
+      end
+    end
+    # bug3175 = '[ruby-core:29627]'
+    # assert_equal(".rb", FasterPath.extname("/tmp//bla.rb"), bug3175)
+    assert_incompatible_encoding {|d| FasterPath.extname(d)} if ENV['ENCODING'].to_s['true']
+  end
+
   def test_extname
     assert_equal ".rb", FasterPath.extname("foo.rb")
     assert_equal ".rb", FasterPath.extname("/foo/bar.rb")
@@ -27,8 +64,8 @@ class ExtnameTest < Minitest::Test
   def test_substitutability_of_rust_and_ruby_impls
     result_pair = lambda do |str|
       [
-          File.send(:extname, str),
-          FasterPath.extname(str)
+        File.send(:extname, str),
+        FasterPath.extname(str)
       ]
     end
     assert_equal( *result_pair.("foo.rb")                    )

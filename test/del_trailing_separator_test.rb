@@ -12,7 +12,7 @@ class DelTrailingSeparatorTest < Minitest::Test
     assert_equal FasterPath.del_trailing_separator(".//"),   "."
   end
 
-  if File.dirname("A:") == "A:."
+  if DOSISH_DRIVE_LETTER
     def test_del_trailing_separator_dos_drive_letter
       assert_equal FasterPath.del_trailing_separator("A:"),    "A:"
       assert_equal FasterPath.del_trailing_separator("A:/"),   "A:/"
@@ -24,7 +24,7 @@ class DelTrailingSeparatorTest < Minitest::Test
   end
 
   def test_del_trailing_separator_dos_unc
-    if File.dirname("//") == "//"
+    if DOSISH_UNC
       assert_equal FasterPath.del_trailing_separator("//"),        "//"
       assert_equal FasterPath.del_trailing_separator("//a"),       "//a"
       assert_equal FasterPath.del_trailing_separator("//a/"),      "//a"
@@ -41,7 +41,7 @@ class DelTrailingSeparatorTest < Minitest::Test
     end
   end
 
-  if !File::ALT_SEPARATOR.nil?
+  if DOSISH
     def test_del_trailing_separator_dos
       assert_equal FasterPath.del_trailing_separator("a\\"), "a"
       assert_equal FasterPath.del_trailing_separator("\225\\\\".dup.force_encoding("cp932")), "\225\\".dup.force_encoding("cp932")

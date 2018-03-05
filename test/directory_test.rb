@@ -1,6 +1,16 @@
 require 'test_helper'
 
 class DirectoryTest < Minitest::Test
+  def setup
+    @dir = Dir.mktmpdir("rubytest-file")
+    File.chown(-1, Process.gid, @dir)
+  end
+
+  def teardown
+    GC.start
+    FileUtils.remove_entry_secure @dir
+  end
+
   def test_nil_for_directory?
     refute FasterPath.directory? nil
   end
@@ -60,5 +70,22 @@ class DirectoryTest < Minitest::Test
     assert_equal( *result_pair.("http://www.example.com")   )
     assert_equal( *result_pair.("foor for thought")         )
     assert_equal( *result_pair.("2gb63b@%TY25GHawefb3/g3qb"))
+  end
+
+  def test_directory?
+    with_tmpchdir('rubytest-pathname') do |_dir|
+      open("f", "w") {|f| f.write "abc" }
+      assert_equal(false, FasterPath.directory?("f"))
+      Dir.mkdir("d")
+      assert_equal(true, FasterPath.directory?("d"))
+    end
+  end
+
+  def test_directory_p
+    assert FasterPath.directory?(@dir)
+    refute FasterPath.directory?(@dir+"/...")
+    refute FasterPath.directory?(regular_file)
+    refute FasterPath.directory?(utf8_file)
+    refute FasterPath.directory?(nofile)
   end
 end
