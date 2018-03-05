@@ -1,6 +1,12 @@
 use ruru::{RString, Object, Class, AnyObject};
 use debug::RubyDebugInfo;
 
+pub trait TryFrom<T>: Sized {
+  type Error;
+
+  fn try_from(value: T) -> Result<Self, Self::Error>;
+}
+
 #[inline]
 pub fn is_same_path(a: &str, b: &str) -> bool {
   if cfg!(windows) {
