@@ -36,3 +36,4 @@ deploy:
     condition: -z ${TEST_MONKEYPATCHES}
     repo: danielpclark/faster_path
     tags: true
+after_success: bundle exec rake thermite:tarball
