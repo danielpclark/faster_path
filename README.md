@@ -3,7 +3,7 @@
 [![TravisCI Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/10ul0gk3cwhlt2lj/branch/master?svg=true)](https://ci.appveyor.com/project/danielpclark/faster-path/branch/master)
 [![Latest Tag](https://img.shields.io/github/tag/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/tags)
-[![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.2.6.svg)](https://github.com/danielpclark/faster_path/pulse)
+[![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.3.1.svg)](https://github.com/danielpclark/faster_path/pulse)
 [![Binary Release](https://img.shields.io/github/release/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/releases)
 [![Coverage Status](https://coveralls.io/repos/github/danielpclark/faster_path/badge.svg)](https://coveralls.io/github/danielpclark/faster_path)
 [![Inline docs](http://inch-ci.org/github/danielpclark/faster_path.svg?branch=master)](http://inch-ci.org/github/danielpclark/faster_path)
@@ -55,7 +55,7 @@ Running `stackprof tmp/2016-06-09T00:42:10-04:00-stackprof-cpu-myapp.dump`. Exec
        108   (1.5%)          14   (0.2%)     ActionView::Helpers::AssetUrlHelper#asset_path
 ```
 
-Here are some addtional stats.  From Rails loading to my home page, these methods are called _(not directly, Rails & gems call them)_ this many times.  And the home page has minimal content.
+Here are some additional stats.  From Rails loading to my home page, these methods are called _(not directly, Rails & gems call them)_ this many times.  And the home page has minimal content.
 ```ruby
 Pathname#to_s called 29172 times.
 Pathname#<=> called 24963 times.
@@ -97,8 +97,10 @@ I've said this about Sprockets but this required two other gems to be updated as
 ## Status
 
 * Rust compilation is working
-* Methods are _most likely_ stable
-* Testers and developers are most welcome!
+* Methods are stable
+* Thoroughly tested
+* Testers and developers are most welcome
+* Windows & encoding support is underway!
 
 ## Installation
 
@@ -113,7 +115,7 @@ curl -sSf https://static.rust-lang.org/rustup.sh | sh
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path', '~> 0.2.3'
+gem 'faster_path', '~> 0.3.1'
 ```
 
 And then execute:
@@ -184,7 +186,7 @@ These will **not** be included by default in monkey-patches.  Be cautious when u
 | `FasterPath.basename` | `File.basename` |
 
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
-performance seems to vary based on CPU cache on possibly 64bit/32bit system environmnets.  When these methods were initially written, and somewhat simplistic, they were faster than the C implementations on `File`.  After the implementations have been perfected to match the behavior in Ruby they don't perform as well and are therefore not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.  If you don't want to pass the `WITH_REGRESSION` environment variable you can put any turthy parameter on the monkey patch method to include it.
+performance seems to vary based on CPU cache on possibly 64bit/32bit system environments.  When these methods were initially written, and somewhat simplistic, they were faster than the C implementations on `File`.  After the implementations have been perfected to match the behavior in Ruby they don't perform as well and are therefore not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.
 
 ## Getting Started with Development
 
@@ -205,13 +207,7 @@ Learn and share performance tips on the [wiki](https://github.com/danielpclark/f
 
 ### Building and running tests
 
-First, bundle the gem's development dependencies by running `bundle`.
-
-Then, build the rust code:
-
-```sh
-rake build_src
-```
+First, bundle the gem's development dependencies by running `bundle`.  Rust compilation is included in the current rake commands.
 
 FasterPath is tested with [The Ruby Spec Suite](https://github.com/ruby/spec) to ensure it is compatible with the
 native implementation, and also has its own test suite testing its monkey-patching and refinements functionality.
