@@ -28,7 +28,7 @@ pub fn extname(pth: &str) -> &str {
     end: path.len(),
   };
 
-  for (i, &item) in path.iter().enumerate().rev() {
+  for &item in path.iter().rev() {
     if (item == b'.' && !extname.dot) || item == SEP {
       if item == SEP && extname.word {
         return ""
@@ -38,7 +38,7 @@ pub fn extname(pth: &str) -> &str {
         extname.dec();
       }
 
-      if extname.word && i != 0 {
+      if extname.word {
         extname.dot = true;
       }
     } else {
