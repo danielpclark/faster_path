@@ -1,5 +1,7 @@
 use ruru::{RString, Object, Class, AnyObject};
+extern crate ruby_sys;
 use debug::RubyDebugInfo;
+use pathname::Pathname;
 
 pub trait TryFrom<T>: Sized {
   type Error;
@@ -30,7 +32,7 @@ pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
   }
   
   if result.respond_to("to_path") {
-    return Ok(Class::from(result.send("to_path", None).value()).
+    return Ok(Pathname::from(result.send("to_path", None).value()).
       instance_variable_get("@path").
       try_convert_to::<RString>().
       unwrap_or(RString::new("")).

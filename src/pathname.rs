@@ -9,6 +9,7 @@ use plus;
 use relative_path_from;
 use debug;
 use helpers::TryFrom;
+use pathname_sys::null_byte_check;
 
 use ruru;
 use ruru::{
@@ -20,6 +21,7 @@ use ruru::{
   Object,
   Class,
   VerifiedObject,
+  Exception as Exc,
   AnyException as Exception
 };
 use ruru::types::{Value, ValueType};
@@ -42,6 +44,31 @@ impl Pathname {
     Pathname { value: instance.value() }
   }
 
+  pub fn new_checked(path: AnyObject) -> Result<Pathname, Exception> {
+    let pth: Value = if Class::from_existing("String").case_equals(&path) {
+      path.value()
+    } else if path.respond_to("to_path") {
+      path.send("to_path", None).value()
+    } else {
+      return Err(
+        Exception::new(
+          "ArgumentError",
+          Some("The type for the argument provided to Pathname.new was invalid.")
+        )
+      )
+    };
+
+    if null_byte_check(path.value()) { 
+      return Err( Exception::new("ArgumentError", Some("pathname contains null byte")) )
+    }
+
+    // if it crashes then dup the path string here before assigning to @path
+    let mut instance = Class::from_existing("Pathname").allocate();
+    instance.instance_variable_set("@path", RString::from(pth).to_any_object());
+    
+    Ok(Pathname { value: instance.value() })
+  }
+
   pub fn to_any_object(&self) -> AnyObject {
     AnyObject::from(self.value())
   }
@@ -60,6 +87,8 @@ impl TryFrom<AnyObject> for Pathname {
       Ok(Pathname::new(&RString::from(obj.value()).to_string()))
     } else if Class::from_existing("Pathname").case_equals(&obj) {
       Ok(Pathname::from(obj.value()))
+    } else if obj.respond_to("to_path") {
+      Ok(Pathname::from(obj.send("to_path", None).value()))
     } else {
       Err(Self::Error::from(obj))
     }
