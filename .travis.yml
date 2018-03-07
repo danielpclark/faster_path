@@ -23,15 +23,55 @@ env:
 matrix:
   allow_failures:
   - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
+  - os: linux
+    rvm: 2.3.4
+    env:
+  - os: linux
+    rvm: 2.3.5
+    env:
+  - os: linux
+    rvm: 2.4.1
+    env:
+  - os: linux
+    rvm: 2.4.2
+    env:
+  - os: osx
+    rvm: 2.3.4
+    env:
+  - os: osx
+    rvm: 2.3.5
+    env:
+  - os: osx
+    rvm: 2.4.1
+    env:
+  - os: osx
+    rvm: 2.4.2
+    env:
   include:
-    - rvm: 2.3.4
-      env:
-    - rvm: 2.3.5
-      env:
-    - rvm: 2.4.1
-      env:
-    - rvm: 2.4.2
-      env:
+  - os: linux
+    rvm: 2.3.4
+    env:
+  - os: linux
+    rvm: 2.3.5
+    env:
+  - os: linux
+    rvm: 2.4.1
+    env:
+  - os: linux
+    rvm: 2.4.2
+    env:
+  - os: osx
+    rvm: 2.3.4
+    env:
+  - os: osx
+    rvm: 2.3.5
+    env:
+  - os: osx
+    rvm: 2.4.1
+    env:
+  - os: osx
+    rvm: 2.4.2
+    env:
 before_install:
 - curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 deploy:
