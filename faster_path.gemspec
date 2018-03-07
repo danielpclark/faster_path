@@ -14,11 +14,11 @@ Gem::Specification.new do |spec|
   spec.license       = 'MIT OR Apache-2.0'
 
   spec.files         = [
-    'Cargo.lock', 'Cargo.toml', 'Gemfile',
-    'MIT-LICENSE.txt', 'README.md', 'Rakefile', 'bin/console', 'bin/setup',
-    'ext/Rakefile', 'faster_path.gemspec'
+    'Cargo.lock', 'Cargo.toml', 'Gemfile', 'MIT-LICENSE.txt', 'README.md', 'Rakefile',
+    'bin/console', 'bin/setup', 'ext/Rakefile', 'faster_path.gemspec', 'lib/faster_path.rb',
+    'lib/faster_path/version.rb', 'lib/faster_path/thermite_initialize.rb',
+    'lib/faster_path/optional/monkeypatches.rb', 'lib/faster_path/optional/refinements.rb'
   ]
-  spec.files += Dir['lib/**/*']
   spec.files += Dir['src/**/*']
 
   spec.extensions    = ['ext/Rakefile']
