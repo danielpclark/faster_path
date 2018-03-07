@@ -1,4 +1,5 @@
 require 'rubygems'
+require_relative './version'
 
 module Thermite
   class Config
@@ -9,8 +10,7 @@ module Thermite
 
   module GithubReleaseBinary
     def github_download_uri(_tag, version)
-      spec = Gem::Specification.load("faster_path.gemspec")
-      "#{github_uri}/releases/download/v#{spec.version}/#{config.tarball_filename(version)}"
+      "#{github_uri}/releases/download/v#{FasterPath::VERSION}/#{config.tarball_filename(version)}"
     end
   end
 end
