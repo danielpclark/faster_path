@@ -1,5 +1,5 @@
 require 'thermite/tasks'
-require 'faster_path/thermite_initialize'
+require_relative '../lib/faster_path/thermite_initialize'
 
 project_toplevel_dir = File.dirname(__dir__)
 Thermite::Tasks.new(cargo_project_path: project_toplevel_dir,
