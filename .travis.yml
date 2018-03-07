@@ -9,8 +9,8 @@ cache:
   - $HOME/.cargo
   - $TRAVIS_BUILD_DIR/target
 rvm:
-- 2.3.4
-- 2.4.1
+- 2.3.6
+- 2.4.3
 - 2.5.0
 env:
   global:
@@ -23,6 +23,15 @@ env:
 matrix:
   allow_failures:
   - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
+  include:
+    - rvm: 2.3.4
+      env:
+    - rvm: 2.3.5
+      env:
+    - rvm: 2.4.1
+      env:
+    - rvm: 2.4.2
+      env:
 before_install:
 - curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 deploy:
