@@ -19,3 +19,4 @@ mkmf.log
 *.so
 .ruby-version
 /tags
+spec/ruby_spec/*
