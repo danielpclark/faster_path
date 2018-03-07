@@ -1,6 +1,7 @@
 require 'faster_path/version'
 require 'pathname'
 require 'thermite/config'
+require 'faster_path/thermite_initialize'
 require 'fiddle'
 require 'fiddle/import'
 

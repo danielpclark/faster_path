@@ -1,6 +1,7 @@
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 require 'thermite/tasks'
+require 'faster_path/thermite_initialize'
 
 desc 'System Details'
 task :sysinfo do
