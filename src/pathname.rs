@@ -88,7 +88,7 @@ impl TryFrom<AnyObject> for Pathname {
     } else if Class::from_existing("Pathname").case_equals(&obj) {
       Ok(Pathname::from(obj.value()))
     } else if obj.respond_to("to_path") {
-      Ok(Pathname::from(obj.send("to_path", None).value()))
+      Ok(Pathname::new(&RString::from(obj.send("to_path", None).value()).to_string()))
     } else {
       Err(Self::Error::from(obj))
     }
