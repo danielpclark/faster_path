@@ -1,7 +1,6 @@
 use ruru::{RString, Object, Class, AnyObject};
 extern crate ruby_sys;
 use debug::RubyDebugInfo;
-use pathname::Pathname;
 
 pub trait TryFrom<T>: Sized {
   type Error;
