@@ -40,7 +40,7 @@ impl Pathname {
   pub fn new(path: &str) -> Pathname {
     let mut instance = Class::from_existing("Pathname").allocate();
     instance.instance_variable_set("@path", RString::new(path).to_any_object());
-    
+
     Pathname { value: instance.value() }
   }
 
@@ -58,14 +58,14 @@ impl Pathname {
       )
     };
 
-    if null_byte_check(path.value()) { 
+    if null_byte_check(path.value()) {
       return Err( Exception::new("ArgumentError", Some("pathname contains null byte")) )
     }
 
     // if it crashes then dup the path string here before assigning to @path
     let mut instance = Class::from_existing("Pathname").allocate();
     instance.instance_variable_set("@path", RString::from(pth).to_any_object());
-    
+
     Ok(Pathname { value: instance.value() })
   }
 
@@ -113,6 +113,13 @@ impl VerifiedObject for Pathname {
   }
 }
 
+fn to_str(maybe_string: &MaybeString) -> &str {
+  match maybe_string {
+    &Ok(ref ruru_string) => ruru_string.to_str(),
+    &Err(_) => "",
+  }
+}
+
 pub fn pn_add_trailing_separator(pth: MaybeString) -> RString {
   let p = pth.ok().unwrap();
   let x = format!("{}{}", p.to_str(), "a");
@@ -123,7 +130,7 @@ pub fn pn_add_trailing_separator(pth: MaybeString) -> RString {
 }
 
 pub fn pn_is_absolute(pth: MaybeString) -> Boolean {
-  Boolean::new(match pth.ok().unwrap_or(RString::new("")).to_str().chars().next() {
+  Boolean::new(match to_str(&pth).chars().next() {
     Some(c) => c == MAIN_SEPARATOR,
     None => false
   })
@@ -132,12 +139,7 @@ pub fn pn_is_absolute(pth: MaybeString) -> Boolean {
 // pub fn pn_ascend(){}
 
 pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
-  RString::new(
-    basename::basename(
-      pth.ok().unwrap_or(RString::new("")).to_str(),
-      ext.ok().unwrap_or(RString::new("")).to_str()
-    )
-  )
+  RString::new(basename::basename(to_str(&pth), to_str(&ext)))
 }
 
 pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
@@ -174,8 +176,7 @@ pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
 }
 
 pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
-  let val = pth.ok().unwrap_or(RString::new("."));
-  let val = val.to_str();
+  let val = to_str(&pth);
 
   if let Ok(entries) = fs::read_dir(val) {
     let mut with_directory = with_dir.ok().unwrap_or(Boolean::new(true)).to_bool();
@@ -206,8 +207,7 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject
 
 pub fn pn_chop_basename(pth: MaybeString) -> Array {
   let mut arr = Array::with_capacity(2);
-  let pth = pth.ok().unwrap_or(RString::new(""));
-  let results = chop_basename::chop_basename(pth.to_str());
+  let results = chop_basename::chop_basename(to_str(&pth));
   match results {
     Some((dirname, basename)) => {
       arr.push(RString::new(&dirname[..]));
@@ -221,19 +221,11 @@ pub fn pn_chop_basename(pth: MaybeString) -> Array {
 // pub fn pn_cleanpath(pth: MaybeString){}
 
 pub fn pn_cleanpath_aggressive(pth: MaybeString) -> RString {
-  let path = cleanpath_aggressive::cleanpath_aggressive(
-    pth.ok().unwrap_or(RString::new("")).to_str()
-  );
-
-  RString::new(&path)
+  RString::new(&cleanpath_aggressive::cleanpath_aggressive(to_str(&pth)))
 }
 
 pub fn pn_cleanpath_conservative(pth: MaybeString) -> RString {
-  let path = cleanpath_conservative::cleanpath_conservative(
-    pth.ok().unwrap_or(RString::new("")).to_str()
-  );
-
-  RString::new(&path)
+  RString::new(&cleanpath_conservative::cleanpath_conservative(to_str(&pth)))
 }
 
 pub fn pn_del_trailing_separator(pth: MaybeString) -> RString {
@@ -259,19 +251,11 @@ pub fn pn_del_trailing_separator(pth: MaybeString) -> RString {
 // pub fn pn_descend(){}
 
 pub fn pn_is_directory(pth: MaybeString) -> Boolean {
-  Boolean::new(
-    Path::new(
-      pth.ok().unwrap_or(RString::new("")).to_str()
-    ).is_dir()
-  )
+  Boolean::new(Path::new(to_str(&pth)).is_dir())
 }
 
 pub fn pn_dirname(pth: MaybeString) -> RString {
-  RString::new(
-    dirname::dirname(
-      pth.ok().unwrap_or(RString::new("")).to_str()
-    )
-  )
+  RString::new(dirname::dirname(to_str(&pth)))
 }
 
 // pub fn pn_each_child(){}
@@ -281,7 +265,7 @@ pub fn pn_dirname(pth: MaybeString) -> RString {
 // }
 
 pub fn pn_entries(pth: MaybeString) -> AnyObject {
-  if let Ok(files) = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()) {
+  if let Ok(files) = fs::read_dir(to_str(&pth)) {
     let mut arr = Array::new();
 
     arr.push(RString::new("."));
@@ -301,7 +285,7 @@ pub fn pn_entries(pth: MaybeString) -> AnyObject {
 }
 
 pub fn pn_entries_compat(pth: MaybeString) -> AnyObject {
-  if let Ok(files) = fs::read_dir(pth.ok().unwrap_or(RString::new("")).to_str()) {
+  if let Ok(files) = fs::read_dir(to_str(&pth)) {
     let mut arr = Array::new();
 
     arr.push(Pathname::new("."));
@@ -321,9 +305,7 @@ pub fn pn_entries_compat(pth: MaybeString) -> AnyObject {
 }
 
 pub fn pn_extname(pth: MaybeString) -> RString {
-  RString::new(
-    extname::extname(pth.ok().unwrap_or(RString::new("")).to_str())
-  )
+  RString::new(extname::extname(to_str(&pth)))
 }
 
 // pub fn pn_find(pth: MaybeString, ignore_error: Boolean){}
@@ -359,7 +341,7 @@ pub fn pn_join(args: MaybeArray) -> AnyObject {
 
     qty -= 1;
   }
-  
+
   let result = plus::plus_paths(&path_self, &result);
 
   Pathname::new(&result).to_any_object()

@@ -25,52 +25,68 @@ matrix:
   - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
   - os: linux
     rvm: 2.3.4
+    if: tag =~ ^v0
     env:
   - os: linux
     rvm: 2.3.5
+    if: tag =~ ^v0
     env:
   - os: linux
     rvm: 2.4.1
+    if: tag =~ ^v0
     env:
   - os: linux
     rvm: 2.4.2
+    if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.3.4
+    if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.3.5
+    if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.4.1
+    if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.4.2
+    if: tag =~ ^v0
     env:
   include:
   - os: linux
     rvm: 2.3.4
+    if: tag =~ ^v0
     env:
   - os: linux
     rvm: 2.3.5
+    if: tag =~ ^v0
     env:
   - os: linux
     rvm: 2.4.1
+    if: tag =~ ^v0
     env:
   - os: linux
     rvm: 2.4.2
+    if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.3.4
+    if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.3.5
+    if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.4.1
+    if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.4.2
+    if: tag =~ ^v0
     env:
 before_install:
 - curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
