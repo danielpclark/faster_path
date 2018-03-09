@@ -21,9 +21,6 @@ module FasterPath
     private_class_method :basename
     private_class_method :children
     private_class_method :children_compat
-    private_class_method :chop_basename
-    private_class_method :entries
-    private_class_method :entries_compat
   end
 
   def self.rust_arch_bits
@@ -43,32 +40,11 @@ module FasterPath
   end
 
   def self.children(pth, with_directory=true)
-    result = Public.send(:children, pth, with_directory)
-    return result if result
-    raise Errno::NOENT, "No such file or directory @ dir_initialize - #{pth}"
+    Public.send(:children, pth, with_directory)
   end
 
   def self.children_compat(pth, with_directory=true)
-    result = Public.send(:children_compat, pth, with_directory)
-    return result if result
-    raise Errno::NOENT, "No such file or directory @ dir_initialize - #{pth}"
-  end
-
-  def self.chop_basename(pth)
-    result = Public.send(:chop_basename, pth)
-    result unless result.empty?
-  end
-
-  def self.entries(pth)
-    result = Public.send(:entries, pth)
-    return result if result
-    raise Errno::NOENT, "No such file or directory @ dir_initialize - #{pth}"
-  end
-
-  def self.entries_compat(pth)
-    result = Public.send(:entries_compat, pth)
-    return result if result
-    raise Errno::NOENT, "No such file or directory @ dir_initialize - #{pth}"
+    Public.send(:children_compat, pth, with_directory)
   end
 
   module Rust

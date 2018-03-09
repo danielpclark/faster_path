@@ -142,7 +142,7 @@ pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
   RString::new(basename::basename(to_str(&pth), to_str(&ext)))
 }
 
-pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
+pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> Result<AnyObject, Exception> {
   let val = pth.ok().unwrap_or(RString::new("."));
   let val = val.to_str();
 
@@ -167,15 +167,14 @@ pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
       }
     }
 
-    arr.to_any_object()
+    Ok(arr.to_any_object())
   } else {
-    // TODO: When ruru exceptions are available switch the exception logic
-    // from the Ruby side to the Rust side
-    NilClass::new().to_any_object()
+    let msg = format!("No such file or directory @ dir_initialize - {}", val);
+    Err(Exception::new("Errno::NOENT", Some(&msg)))
   }
 }
 
-pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject {
+pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Result<AnyObject, Exception> {
   let val = to_str(&pth);
 
   if let Ok(entries) = fs::read_dir(val) {
@@ -197,24 +196,23 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> AnyObject
       }
     }
 
-    arr.to_any_object()
+    Ok(arr.to_any_object())
   } else {
-    // TODO: When ruru exceptions are available switch the exception logic
-    // from the Ruby side to the Rust side
-    NilClass::new().to_any_object()
+    let msg = format!("No such file or directory @ dir_initialize - {}", val);
+    Err(Exception::new("Errno::NOENT", Some(&msg)))
   }
 }
 
-pub fn pn_chop_basename(pth: MaybeString) -> Array {
+pub fn pn_chop_basename(pth: MaybeString) -> AnyObject {
   let mut arr = Array::with_capacity(2);
   let results = chop_basename::chop_basename(to_str(&pth));
   match results {
     Some((dirname, basename)) => {
       arr.push(RString::new(&dirname[..]));
       arr.push(RString::new(&basename[..]));
-      arr
+      arr.to_any_object()
     },
-    None => arr
+    None => NilClass::new().to_any_object()
   }
 }
 
@@ -264,7 +262,7 @@ pub fn pn_dirname(pth: MaybeString) -> RString {
 //   NilClass::new()
 // }
 
-pub fn pn_entries(pth: MaybeString) -> AnyObject {
+pub fn pn_entries(pth: MaybeString) -> Result<AnyObject, Exception> {
   if let Ok(files) = fs::read_dir(to_str(&pth)) {
     let mut arr = Array::new();
 
@@ -276,15 +274,15 @@ pub fn pn_entries(pth: MaybeString) -> AnyObject {
       arr.push(RString::new(&file_name_str[..]));
     }
 
-    arr.to_any_object()
+    Ok(arr.to_any_object())
   } else {
-    // TODO: When ruru exceptions are available switch the exception logic
-    // from the Ruby side to the Rust side
-    NilClass::new().to_any_object()
+    let val = pth.unwrap_or(RString::new(""));
+    let msg = format!("No such file or directory @ dir_initialize - {}", val.to_str());
+    Err(Exception::new("Errno::NOENT", Some(&msg)))
   }
 }
 
-pub fn pn_entries_compat(pth: MaybeString) -> AnyObject {
+pub fn pn_entries_compat(pth: MaybeString) -> Result<AnyObject, Exception> {
   if let Ok(files) = fs::read_dir(to_str(&pth)) {
     let mut arr = Array::new();
 
@@ -296,11 +294,11 @@ pub fn pn_entries_compat(pth: MaybeString) -> AnyObject {
       arr.push(Pathname::new(&file_name_str));
     }
 
-    arr.to_any_object()
+    Ok(arr.to_any_object())
   } else {
-    // TODO: When ruru exceptions are available switch the exception logic
-    // from the Ruby side to the Rust side
-    NilClass::new().to_any_object()
+    let val = pth.unwrap_or(RString::new(""));
+    let msg = format!("No such file or directory @ dir_initialize - {}", val.to_str());
+    Err(Exception::new("Errno::NOENT", Some(&msg)))
   }
 }
 

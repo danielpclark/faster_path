@@ -31,7 +31,7 @@ mod relative_path_from;
 use pathname::Pathname;
 use pathname_sys::raise;
 
-use ruru::{Module, Object, RString, Boolean, Array, AnyObject};
+use ruru::{Module, Object, RString, Boolean, AnyObject};
 
 use pathname_sys::*;
 
@@ -54,14 +54,16 @@ methods!(
   }
 
   fn pub_children(pth: RString, with_dir: Boolean) -> AnyObject {
-    pathname::pn_children(pth, with_dir)
+    pathname::pn_children(pth, with_dir).
+      map_err(|e| raise(e) ).unwrap()
   }
 
   fn pub_children_compat(pth: RString, with_dir: Boolean) -> AnyObject {
-    pathname::pn_children_compat(pth, with_dir)
+    pathname::pn_children_compat(pth, with_dir).
+      map_err(|e| raise(e) ).unwrap()
   }
 
-  fn pub_chop_basename(pth: RString) -> Array {
+  fn pub_chop_basename(pth: RString) -> AnyObject {
     pathname::pn_chop_basename(pth)
   }
 
@@ -99,12 +101,14 @@ methods!(
 
   // pub_entries returns an array of String objects
   fn pub_entries(pth: RString) -> AnyObject {
-    pathname::pn_entries(pth)
+    pathname::pn_entries(pth).
+      map_err(|e| raise(e) ).unwrap()
   }
 
   // pub_entries_compat returns an array of Pathname objects
   fn pub_entries_compat(pth: RString) -> AnyObject {
-    pathname::pn_entries_compat(pth)
+    pathname::pn_entries_compat(pth).
+      map_err(|e| raise(e) ).unwrap()
   }
 
   fn pub_extname(pth: RString) -> RString {
@@ -163,10 +167,13 @@ pub extern "C" fn Init_faster_pathname() {
     itself.def_self("absolute?", pub_is_absolute);
     itself.def_self("add_trailing_separator", pub_add_trailing_separator);
     itself.def_self("del_trailing_separator", pub_del_trailing_separator);
+    itself.def_self("chop_basename", pub_chop_basename);
     itself.def_self("cleanpath_aggressive", pub_cleanpath_aggressive);
     itself.def_self("cleanpath_conservative", pub_cleanpath_conservative);
     itself.def_self("directory?", pub_is_directory);
     itself.def_self("dirname", pub_dirname);
+    itself.def_self("entries", pub_entries);
+    itself.def_self("entries_compat", pub_entries_compat);
     itself.def_self("extname", pub_extname);
     itself.def_self("has_trailing_separator?", pub_has_trailing_separator);
     //itself.def_self("join", pub_join);
@@ -182,8 +189,5 @@ pub extern "C" fn Init_faster_pathname() {
     itself.def_self("basename", pub_basename);
     itself.def_self("children", pub_children);
     itself.def_self("children_compat", pub_children_compat);
-    itself.def_self("chop_basename", pub_chop_basename);
-    itself.def_self("entries", pub_entries);
-    itself.def_self("entries_compat", pub_entries_compat);
   });
 }
