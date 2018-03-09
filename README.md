@@ -129,7 +129,7 @@ Or install it yourself as:
 ## Visual Benchmarks
 
 Benchmarks in Faster Path now produce visual graph charts of performance improvements.
-When you run `rake bench` the graph art will be placed in `doc/graph/`.  Here's the performance
+When you run `export GRAPH=1; bundle && rake bench` the graph art will be placed in `doc/graph/`.  Here's the performance
 improvement result  for the `chop_basename` method.
 
 ![Visual Benchmark](https://raw.githubusercontent.com/danielpclark/faster_path/master/assets/chop_basename_benchmark.jpg "Visual Benchmark")
