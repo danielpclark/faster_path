@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'rake/tasklib'
 require_relative './version'
 
 module Thermite
@@ -8,7 +9,7 @@ module Thermite
     end
   end
 
-  class Tasks
+  class Tasks < Rake::TaskLib
     def github_download_uri(_tag, version)
       "#{github_uri}/releases/download/v#{FasterPath::VERSION}/#{config.tarball_filename(version)}"
     end
