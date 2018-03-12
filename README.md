@@ -140,21 +140,23 @@ Current methods implemented:
 
 |FasterPath Rust Implementation|Ruby 2.5.0 Implementation|Time Shaved Off|
 |---|---|:---:|
-| `FasterPath.absolute?` | `Pathname#absolute?` | 91.9% |
-| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 31.2% |
-| `FasterPath.children` | `Pathname#children` | 13.2% |
-| `FasterPath.chop_basename` | `Pathname#chop_basename` | 54.5% |
-| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 73.8% |
-| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 70.7% |
-| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 80.6% |
-| `FasterPath.directory?` | `Pathname#directory?` | 11.3% |
-| `FasterPath.entries` | `Pathname#entries` | 8.4% |
-| `FasterPath.extname` | `File.extname` | 41.2% |
-| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 67.6% |
-| `FasterPath.plus` | `Pathname#join` | 66.4% |
-| `FasterPath.plus` | `Pathname#plus` | 81.4% |
-| `FasterPath.relative?` | `Pathname#relative?` | 84.1% |
-| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 69.8% |
+| `FasterPath.absolute?` | `Pathname#absolute?` | 95.8% |
+| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 68.7% |
+| `FasterPath.basename` | `File.basename` | 49.4% |
+| `FasterPath.children` | `Pathname#children` | 39.2% |
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 76.6% |
+| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 78.2% |
+| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 74.1% |
+| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 87.7% |
+| `FasterPath.directory?` | `Pathname#directory?` | 16.8% |
+| `FasterPath.dirname` | `File.dirname` | 28.9% |
+| `FasterPath.entries` | `Pathname#entries` | 36.1% |
+| `FasterPath.extname` | `File.extname` | 66.2% |
+| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 86.3% |
+| `FasterPath.plus` | `Pathname#join` | 67.9% |
+| `FasterPath.plus` | `Pathname#plus` | 86.6% |
+| `FasterPath.relative?` | `Pathname#relative?` | 87.2% |
+| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 74.0% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch
@@ -182,8 +184,8 @@ These will **not** be included by default in monkey-patches.  Be cautious when u
 
 |FasterPath Implementation|Ruby Implementation|
 |---|---|
-| `FasterPath.dirname` | `File.dirname` |
-| `FasterPath.basename` | `File.basename` |
+| `FasterPath.entries_compat` | `File.entries` |
+| `FasterPath.children_compat` | `File.children` |
 
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
 performance seems to vary based on CPU cache on possibly 64bit/32bit system environments.  When these methods were initially written, and somewhat simplistic, they were faster than the C implementations on `File`.  After the implementations have been perfected to match the behavior in Ruby they don't perform as well and are therefore not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.
