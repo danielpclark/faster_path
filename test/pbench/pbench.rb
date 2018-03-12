@@ -55,10 +55,12 @@ class Pbench # < Minitest::Benchmark
     io.send :puts, "-"*80
     io.send :puts, os_lang_specs
     io.send :puts, "-"*80
+    io.flush
     hsh.each_key do |k|
       h = hsh[k]
       result = performance(h[:old], h[:new])
       io.send :puts, "Performance change for #{k} is %.1f%%" % result
+      io.flush
     end
   end
 

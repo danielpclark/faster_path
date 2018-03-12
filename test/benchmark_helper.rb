@@ -20,6 +20,7 @@ class BenchmarkHelper < Minitest::Benchmark
       n.times do
         yield
       end
+      $stdout.flush
     end
     send(lang).mark
   end
