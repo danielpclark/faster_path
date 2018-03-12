@@ -1,25 +1,18 @@
+use std::borrow::Cow;
+use std::path::MAIN_SEPARATOR;
 use prepend_prefix::prepend_prefix;
 use basename::basename;
 use dirname::dirname;
 use chop_basename::chop_basename;
-extern crate array_tool;
-use self::array_tool::vec::Shift;
-use std::path::MAIN_SEPARATOR;
+use path_parsing::{SEP_STR, contains_sep};
 
-pub fn cleanpath_conservative(path: &str) -> String {
-  let sep = MAIN_SEPARATOR.to_string();
-  let mut names: Vec<String> = vec![];
-  let mut pre = path.to_string();
-  loop {
-    match chop_basename(&pre.clone()) {
-      Some((ref p, ref base)) => {
-        pre = p.to_string();
-        match base.as_ref() {
-          "." => {},
-          _ => names.unshift(base.to_string()),
-        }
-      },
-      None => break,
+pub fn cleanpath_conservative(path: &str) -> Cow<str> {
+  let mut names: Vec<&str> = vec![];
+  let mut prefix = path;
+  while let Some((ref p, ref base)) = chop_basename(&prefix) {
+    prefix = p;
+    if base != &"." {
+      names.push(base);
     }
   }
   // // Windows Feature
@@ -28,33 +21,26 @@ pub fn cleanpath_conservative(path: &str) -> String {
   // pre.tr!(File::ALT_SEPARATOR, File::SEPARATOR) if File::ALT_SEPARATOR
   // ```
   //
-  if basename(&pre, "").contains(&sep) {
-    loop {
-      if names.first() == Some(&"..".to_string()) {
-        let _ = names.shift();
-      } else {
-        break
-      }
-    }
+  if contains_sep(basename(&prefix, "").as_bytes()) {
+    let len = names.iter().rposition(|&c| c != "..").map_or(0, |pos| pos + 1);
+    names.truncate(len);
   }
 
-  if names.is_empty() {
-    return dirname(&pre).to_string();
-  }
+  let last_name = match names.first() {
+    Some(&name) => name,
+    None => return dirname(&prefix).into(),
+  };
 
-  if names.last() != Some(&"..".to_string()) && basename(&path, "") == &".".to_string() {
-    names.push(".".to_string());
-  }
-
-  let result = prepend_prefix(&pre, &names.join(&sep)[..]);
-  let last = names.last();
-
-  if !(last == Some(&".".to_string()) || last == Some(&"..".to_string())) &&
-    chop_basename(path).map(|(a, b)| a.len() + b.len()).unwrap() < path.len() {
-    format!("{}{}", last.unwrap(), MAIN_SEPARATOR)
+  if last_name != ".." && basename(&path, "") == "." {
+    names.reverse();
+    names.push(".");
+  } else if last_name != "." && last_name != ".." &&
+      chop_basename(path).map(|(a, b)| a.len() + b.len()).unwrap() < path.len() {
+    return format!("{}{}", last_name, MAIN_SEPARATOR).into();
   } else {
-    result
+    names.reverse();
   }
+  prepend_prefix(&prefix, &names.join(&SEP_STR))
 }
 
 #[test]
@@ -97,11 +83,11 @@ fn it_conservatively_cleans_the_path() {
 // DOSISH_DRIVE_LETTER = File.dirname("A:") == "A:."
 // DOSISH_UNC = File.dirname("//") == "//"
 //
-// 
+//
 //   if DOSISH
 //     assert_eq!(cleanpath_conservative, 'c:/foo/bar', 'c:\\foo\\bar')
 //   end
-// 
+//
 //   if DOSISH_UNC
 //     assert_eq!(cleanpath_conservative, '//',     '//')
 //   else

@@ -1,32 +1,24 @@
+use std::borrow::Cow;
 use prepend_prefix::prepend_prefix;
 use basename::basename;
 use chop_basename::chop_basename;
-extern crate array_tool;
-use self::array_tool::vec::Shift;
-use std::path::MAIN_SEPARATOR;
+use path_parsing::{SEP_STR, contains_sep};
 
-pub fn cleanpath_aggressive(path: &str) -> String {
-  let sep = MAIN_SEPARATOR.to_string();
-  let mut names: Vec<String> = vec![];
-  let mut pre = path.to_string();
-  loop {
-    match chop_basename(&pre.clone()) {
-      Some((ref p, ref base)) => {
-        pre = p.to_string();
-        match base.as_ref() {
-          "." => {},
-          ".." => names.unshift(base.to_string()),
-          _ => {
-            if names.first() == Some(&"..".to_string()) {
-              names.shift();
-            } else {
-              names.unshift(base.to_string())
-            }
-          }
-
+pub fn cleanpath_aggressive(path: &str) -> Cow<str> {
+  let mut names: Vec<&str> = vec![];
+  let mut prefix = path;
+  while let Some((ref p, ref base)) = chop_basename(&prefix) {
+    prefix = p;
+    match base.as_ref() {
+      "." => {}
+      ".." => names.push(base),
+      _ => {
+        if names.last() == Some(&"..") {
+          names.pop();
+        } else {
+          names.push(base);
         }
-      },
-      None => break,
+      }
     }
   }
   // // Windows Feature
@@ -35,16 +27,12 @@ pub fn cleanpath_aggressive(path: &str) -> String {
   // pre.tr!(File::ALT_SEPARATOR, File::SEPARATOR) if File::ALT_SEPARATOR
   // ```
   //
-  if basename(&pre, "").contains(&sep) {
-    loop {
-      if names.first() == Some(&"..".to_string()) {
-        let _ = names.shift();
-      } else {
-        break
-      }
-    }
+  if contains_sep(basename(&prefix, "").as_bytes()) {
+    let len = names.iter().rposition(|&c| c != "..").map_or(0, |pos| pos + 1);
+    names.truncate(len);
   }
-  prepend_prefix(&pre, &names.join(&sep)[..])
+  names.reverse();
+  prepend_prefix(&prefix, &names.join(&SEP_STR))
 }
 
 #[test]
