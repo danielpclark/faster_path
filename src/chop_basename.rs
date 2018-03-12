@@ -1,21 +1,14 @@
-use std::path::MAIN_SEPARATOR;
+use path_parsing::{find_last_non_sep_pos, find_last_sep_pos};
 use std::str;
 
 pub fn chop_basename<'a>(input: &'a str) -> Option<(&'a str, &'a str)> {
-  if input.is_empty() {
+  let bytes = input.as_bytes();
+  let len = find_last_non_sep_pos(&bytes)? + 1;
+  let base_start = find_last_sep_pos(&bytes[..len]).map_or(0, |pos| pos + 1);
+  if base_start == len {
     return None;
   }
-
-  let input = input.trim_right_matches(MAIN_SEPARATOR);
-  let end = input.rsplitn(2, MAIN_SEPARATOR).nth(0).unwrap().len();
-  let base = &input[input.len()-end..input.len()];
-  let directory = &input[0..input.len()-base.len()];
-
-  if directory.is_empty() && (base.is_empty() || base.chars().next().unwrap() == MAIN_SEPARATOR) {
-    return None
-  };
-
-  Some((directory, base))
+  Some((&input[0..base_start], &input[base_start..len]))
 }
 
 #[test]
@@ -27,5 +20,11 @@ fn it_chops_the_basename_and_dirname() {
   assert_eq!(chop_basename("asdf.txt"),   Some(("",      "asdf.txt")) );
   assert_eq!(chop_basename("asdf/"),      Some(("",          "asdf")) );
   assert_eq!(chop_basename("/asdf/"),     Some(("/",         "asdf")) );
+  assert_eq!(chop_basename("a///b"),      Some(("a///",         "b")) );
+  assert_eq!(chop_basename("a///b//"),    Some(("a///",         "b")) );
+  assert_eq!(chop_basename("/a///b//"),   Some(("/a///",        "b")) );
+  assert_eq!(chop_basename("/a///b//"),   Some(("/a///",        "b")) );
+
+  assert_eq!(chop_basename("./../..///.../..//"), Some(("./../..///.../", "..")));
 }
 
