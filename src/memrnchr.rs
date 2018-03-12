@@ -3,17 +3,7 @@
 // We use this mainly to skip repeated `/`. If there is only one slash, `memrnchr` performs the same
 // as a naive version (e.g. `rposition`). However, it is much faster in pathological cases.
 
-const LO_U64: u64 = 0x0101010101010101;
-const HI_U64: u64 = 0x8080808080808080;
-
-// use truncation
-const LO_USIZE: usize = LO_U64 as usize;
-const HI_USIZE: usize = HI_U64 as usize;
-
-#[cfg(target_pointer_width = "32")]
-const USIZE_BYTES: usize = 4;
-#[cfg(target_pointer_width = "64")]
-const USIZE_BYTES: usize = 8;
+use std::mem::size_of;
 
 // Returns the byte offset of the last byte that is NOT equal to the given one.
 #[inline(always)]
@@ -28,12 +18,11 @@ pub fn memrnchr(x: u8, text: &[u8]) -> Option<usize> {
   let ptr = text.as_ptr();
 
   // search to an aligned boundary
-  let end_align = (ptr as usize + len) & (USIZE_BYTES - 1);
+  let end_align = (ptr as usize + len) & (size_of::<usize>() - 1);
   let mut offset;
   if end_align > 0 {
     offset = if end_align >= len { 0 } else { len - end_align };
-    let pos = text[offset..].iter().rposition(|elt| *elt != x);
-    if let Some(index) = pos {
+    if let Some(index) = memrnchr_naive(x, &text[offset..]) {
       return Some(offset + index);
     }
   } else {
@@ -42,37 +31,25 @@ pub fn memrnchr(x: u8, text: &[u8]) -> Option<usize> {
 
   // search the body of the text
   let repeated_x = repeat_byte(x);
-
-  while offset >= 2 * USIZE_BYTES {
-    debug_assert_eq!((ptr as usize + offset) % USIZE_BYTES, 0);
+  while offset >= 2 * size_of::<usize>() {
+    debug_assert_eq!((ptr as usize + offset) % size_of::<usize>(), 0);
     unsafe {
-      let u = *(ptr.offset(offset as isize - 2 * USIZE_BYTES as isize) as *const usize);
-      let v = *(ptr.offset(offset as isize - USIZE_BYTES as isize) as *const usize);
-
-      // break if there is a matching byte
-      let zu = contains_zero_byte(u ^ repeated_x);
-      let zv = contains_zero_byte(v ^ repeated_x);
-      if !zu || !zv {
+      let u = *(ptr.offset(offset as isize - 2 * size_of::<usize>() as isize) as *const usize);
+      let v = *(ptr.offset(offset as isize - size_of::<usize>() as isize) as *const usize);
+      if u & repeated_x != usize::max_value() || v & repeated_x != usize::max_value() {
         break;
       }
     }
-    offset -= 2 * USIZE_BYTES;
+    offset -= 2 * size_of::<usize>();
   }
 
   // find the byte before the point the body loop stopped
-  text[..offset].iter().rposition(|elt| *elt != x)
+  memrnchr_naive(x, &text[..offset])
 }
 
-/// Return `true` if `x` contains any zero byte.
-///
-/// From *Matters Computational*, J. Arndt
-///
-/// "The idea is to subtract one from each of the bytes and then look for
-/// bytes where the borrow propagated all the way to the most significant
-/// bit."
-#[inline]
-fn contains_zero_byte(x: usize) -> bool {
-  x.wrapping_sub(LO_USIZE) & !x & HI_USIZE != 0
+#[inline(always)]
+fn memrnchr_naive(x: u8, text: &[u8]) -> Option<usize> {
+  text.iter().rposition(|c| *c != x)
 }
 
 #[cfg(target_pointer_width = "32")]
