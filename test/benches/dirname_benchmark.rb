@@ -10,19 +10,19 @@ class DirnameBenchmark < BenchmarkHelper
     graph_benchmarks
   end
 
-  def bench_ruby_dirname
-    benchmark :ruby do
-      File.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
-      File.dirname "/foo/"
-      File.dirname "."
-    end
-  end
-
   def bench_rust_dirname
     benchmark :rust do
       FasterPath.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
       FasterPath.dirname "/foo/"
       FasterPath.dirname "."
+    end
+  end
+
+  def bench_ruby_dirname
+    benchmark :ruby do
+      File.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
+      File.dirname "/foo/"
+      File.dirname "."
     end
   end
 end
