@@ -1,19 +1,19 @@
-extern crate memchr;
-use self::memchr::memchr;
+use std::borrow::Cow;
 use dirname::dirname;
-use path_parsing::SEP;
+use path_parsing::{SEP, contains_sep};
+use std::path::MAIN_SEPARATOR;
 
-pub fn prepend_prefix(prefix: &str, relpath: &str) -> String {
+pub fn prepend_prefix<'a>(prefix: &'a str, relpath: &str) -> Cow<'a, str> {
   if relpath.is_empty() {
-    dirname(prefix).to_string()
-  } else if memchr(SEP, prefix.as_bytes()) != None {
+    dirname(prefix).into()
+  } else if contains_sep(prefix.as_bytes()) {
     let prefix_dirname = dirname(prefix);
     match prefix_dirname.as_bytes().last() {
-      None => relpath.to_string(),
-      Some(&SEP) => format!("{}{}", prefix_dirname, relpath),
-      _ => format!("{}{}{}", prefix_dirname, SEP, relpath)
+      None => relpath.to_string().into(),
+      Some(&SEP) => format!("{}{}", prefix_dirname, relpath).into(),
+      _ => format!("{}{}{}", prefix_dirname, MAIN_SEPARATOR, relpath).into()
     }
   } else {
-    format!("{}{}", prefix, relpath)
+    format!("{}{}", prefix, relpath).into()
   }
 }
