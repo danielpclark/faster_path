@@ -1,9 +1,8 @@
-use helpers::is_same_path;
+use helpers::{is_same_path, to_str};
 use path_parsing::SEP_STR;
+use cleanpath_aggressive::cleanpath_aggressive;
 extern crate array_tool;
-use self::array_tool::vec::{Shift, Join};
 use self::array_tool::iter::ZipOpt;
-use pathname;
 use ruru;
 use chop_basename;
 use pathname::Pathname;
@@ -12,36 +11,38 @@ use ruru::{Exception as Exc, AnyException as Exception};
 type MaybeString = Result<ruru::RString, ruru::result::Error>;
 
 pub fn relative_path_from(itself: MaybeString, base_directory: MaybeString) -> Result<Pathname, Exception> {
-  let dest_directory = pathname::pn_cleanpath_aggressive(itself).to_string();
-  let base_directory = pathname::pn_cleanpath_aggressive(base_directory).to_string();
+  let dest_directory = cleanpath_aggressive(to_str(&itself));
+  let base_directory = cleanpath_aggressive(to_str(&base_directory));
 
-  let mut dest_prefix = dest_directory.clone();
-  let mut dest_names: Vec<String> = vec![];
+  let mut dest_prefix = dest_directory.as_ref();
+  let mut dest_names: Vec<&str> = vec![];
   loop {
     match chop_basename::chop_basename(&dest_prefix.clone()) {
       Some((ref dest, ref basename)) => {
-        dest_prefix = dest.to_string();
+        dest_prefix = dest;
         if basename != &"." {
-          dest_names.unshift(basename.to_string())
+          dest_names.push(basename)
         }
       },
       None => break,
     }
   }
+  dest_names.reverse();
 
-  let mut base_prefix = base_directory.clone();
-  let mut base_names: Vec<String> = vec![];
+  let mut base_prefix = base_directory.as_ref();
+  let mut base_names: Vec<&str> = vec![];
   loop {
-    match chop_basename::chop_basename(&base_prefix.clone()) {
+    match chop_basename::chop_basename(&base_prefix) {
       Some((ref base, ref basename)) => {
-        base_prefix = base.to_string();
+        base_prefix = base;
         if basename != &"." {
-          base_names.unshift(basename.to_string())
+          base_names.push(basename)
         }
       },
       None => break,
     }
   }
+  base_names.reverse();
 
   if !is_same_path(&dest_prefix, &base_prefix) {
     return Err(
@@ -85,6 +86,7 @@ pub fn relative_path_from(itself: MaybeString, base_directory: MaybeString) -> R
   if base_names.is_empty() && dest_names.is_empty() {
     Ok(Pathname::new("."))
   } else {
-    Ok(Pathname::new(&base_names.iter().chain(dest_names.iter()).collect::<Vec<&String>>().join(&SEP_STR)))
+    Ok(Pathname::new(&base_names.iter().chain(dest_names.iter()).map(String::as_str).
+        collect::<Vec<&str>>().join(&SEP_STR)))
   }
 }

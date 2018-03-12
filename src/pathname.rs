@@ -8,8 +8,9 @@ use extname;
 use plus;
 use relative_path_from;
 use debug;
-use helpers::TryFrom;
+use helpers::{TryFrom, to_str};
 use pathname_sys::null_byte_check;
+use path_parsing::{SEP, find_last_non_sep_pos};
 
 use ruru;
 use ruru::{
@@ -84,11 +85,11 @@ impl TryFrom<AnyObject> for Pathname {
   type Error = debug::RubyDebugInfo;
   fn try_from(obj: AnyObject) -> Result<Pathname, Self::Error> {
     if Class::from_existing("String").case_equals(&obj) {
-      Ok(Pathname::new(&RString::from(obj.value()).to_string()))
+      Ok(Pathname::new(&RString::from(obj.value()).to_str()))
     } else if Class::from_existing("Pathname").case_equals(&obj) {
       Ok(Pathname::from(obj.value()))
     } else if obj.respond_to("to_path") {
-      Ok(Pathname::new(&RString::from(obj.send("to_path", None).value()).to_string()))
+      Ok(Pathname::new(&RString::from(obj.send("to_path", None).value()).to_str()))
     } else {
       Err(Self::Error::from(obj))
     }
@@ -113,15 +114,8 @@ impl VerifiedObject for Pathname {
   }
 }
 
-fn to_str(maybe_string: &MaybeString) -> &str {
-  match maybe_string {
-    &Ok(ref ruru_string) => ruru_string.to_str(),
-    &Err(_) => "",
-  }
-}
-
 pub fn pn_add_trailing_separator(pth: MaybeString) -> RString {
-  let p = pth.ok().unwrap();
+  let p = pth.unwrap();
   let x = format!("{}{}", p.to_str(), "a");
   match x.rsplit_terminator(MAIN_SEPARATOR).next() {
     Some("a") => p,
@@ -130,10 +124,7 @@ pub fn pn_add_trailing_separator(pth: MaybeString) -> RString {
 }
 
 pub fn pn_is_absolute(pth: MaybeString) -> Boolean {
-  Boolean::new(match to_str(&pth).chars().next() {
-    Some(c) => c == MAIN_SEPARATOR,
-    None => false
-  })
+  Boolean::new(to_str(&pth).as_bytes().get(0) == Some(&SEP))
 }
 
 // pub fn pn_ascend(){}
@@ -143,16 +134,16 @@ pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
 }
 
 pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> Result<AnyObject, Exception> {
-  let val = pth.ok().unwrap_or(RString::new("."));
-  let val = val.to_str();
+  let path = pth.unwrap_or(RString::new("."));
+  let path = path.to_str();
 
-  if let Ok(entries) = fs::read_dir(val) {
-    let mut with_directory = with_dir.ok().unwrap_or(Boolean::new(true)).to_bool();
-    if val == "." {
+  if let Ok(entries) = fs::read_dir(path) {
+    let mut with_directory = with_dir.unwrap_or(Boolean::new(true)).to_bool();
+    if path == "." {
       with_directory = false;
     }
 
-    let mut arr = Array::new();
+    let mut arr = Array::with_capacity(entries.size_hint().1.unwrap_or(0));
     for entry in entries {
       if with_directory {
         match entry {
@@ -169,21 +160,21 @@ pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> Result<AnyObject
 
     Ok(arr.to_any_object())
   } else {
-    let msg = format!("No such file or directory @ dir_initialize - {}", val);
+    let msg = format!("No such file or directory @ dir_initialize - {}", path);
     Err(Exception::new("Errno::NOENT", Some(&msg)))
   }
 }
 
 pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Result<AnyObject, Exception> {
-  let val = to_str(&pth);
+  let path = to_str(&pth);
 
-  if let Ok(entries) = fs::read_dir(val) {
-    let mut with_directory = with_dir.ok().unwrap_or(Boolean::new(true)).to_bool();
-    if val == "." {
+  if let Ok(entries) = fs::read_dir(path) {
+    let mut with_directory = with_dir.unwrap_or(Boolean::new(true)).to_bool();
+    if path == "." {
       with_directory = false;
     }
 
-    let mut arr = Array::new();
+    let mut arr = Array::with_capacity(entries.size_hint().1.unwrap_or(0));
     for entry in entries {
       if with_directory {
         if let Ok(v) = entry {
@@ -198,18 +189,17 @@ pub fn pn_children_compat(pth: MaybeString, with_dir: MaybeBoolean) -> Result<An
 
     Ok(arr.to_any_object())
   } else {
-    let msg = format!("No such file or directory @ dir_initialize - {}", val);
+    let msg = format!("No such file or directory @ dir_initialize - {}", path);
     Err(Exception::new("Errno::NOENT", Some(&msg)))
   }
 }
 
 pub fn pn_chop_basename(pth: MaybeString) -> AnyObject {
-  let mut arr = Array::with_capacity(2);
-  let results = chop_basename::chop_basename(to_str(&pth));
-  match results {
+  match chop_basename::chop_basename(to_str(&pth)) {
     Some((dirname, basename)) => {
-      arr.push(RString::new(&dirname[..]));
-      arr.push(RString::new(&basename[..]));
+      let mut arr = Array::with_capacity(2);
+      arr.push(RString::new(&dirname));
+      arr.push(RString::new(&basename));
       arr.to_any_object()
     },
     None => NilClass::new().to_any_object()
@@ -227,22 +217,19 @@ pub fn pn_cleanpath_conservative(pth: MaybeString) -> RString {
 }
 
 pub fn pn_del_trailing_separator(pth: MaybeString) -> RString {
-  if let &Ok(ref path) = &pth {
-    let path = path.to_str();
-
-    if !path.is_empty() {
-      let path = path.trim_right_matches('/');
-
-      if path.is_empty() {
-        return RString::new("/");
-      } else {
-        return RString::new(path);
-      }
+  {
+    let path = to_str(&pth);
+    if path.is_empty() {
+      return RString::new("/");
     }
-  } else {
-    return RString::new("");
+    let pos = match find_last_non_sep_pos(path.as_bytes()) {
+      Some(pos) => pos,
+      None => return RString::new("/"),
+    };
+    if pos != path.len() - 1 {
+      return RString::new(&path[..pos + 1]);
+    }
   }
-
   pth.unwrap()
 }
 
@@ -263,41 +250,39 @@ pub fn pn_dirname(pth: MaybeString) -> RString {
 // }
 
 pub fn pn_entries(pth: MaybeString) -> Result<AnyObject, Exception> {
-  if let Ok(files) = fs::read_dir(to_str(&pth)) {
-    let mut arr = Array::new();
+  let path = to_str(&pth);
+  if let Ok(files) = fs::read_dir(path) {
+    let mut arr = Array::with_capacity(files.size_hint().1.unwrap_or(0) + 2);
 
     arr.push(RString::new("."));
     arr.push(RString::new(".."));
 
     for file in files {
-      let file_name_str = file.unwrap().file_name().into_string().unwrap();
-      arr.push(RString::new(&file_name_str[..]));
+      arr.push(RString::new(file.unwrap().file_name().to_str().unwrap()));
     }
 
     Ok(arr.to_any_object())
   } else {
-    let val = pth.unwrap_or(RString::new(""));
-    let msg = format!("No such file or directory @ dir_initialize - {}", val.to_str());
+    let msg = format!("No such file or directory @ dir_initialize - {}", path);
     Err(Exception::new("Errno::NOENT", Some(&msg)))
   }
 }
 
 pub fn pn_entries_compat(pth: MaybeString) -> Result<AnyObject, Exception> {
-  if let Ok(files) = fs::read_dir(to_str(&pth)) {
-    let mut arr = Array::new();
+  let path = to_str(&pth);
+  if let Ok(files) = fs::read_dir(path) {
+    let mut arr = Array::with_capacity(files.size_hint().1.unwrap_or(0) + 2);
 
     arr.push(Pathname::new("."));
     arr.push(Pathname::new(".."));
 
     for file in files {
-      let file_name_str = file.unwrap().file_name().into_string().unwrap();
-      arr.push(Pathname::new(&file_name_str));
+      arr.push(Pathname::new(file.unwrap().file_name().to_str().unwrap()));
     }
 
     Ok(arr.to_any_object())
   } else {
-    let val = pth.unwrap_or(RString::new(""));
-    let msg = format!("No such file or directory @ dir_initialize - {}", val.to_str());
+    let msg = format!("No such file or directory @ dir_initialize - {}", path);
     Err(Exception::new("Errno::NOENT", Some(&msg)))
   }
 }
@@ -309,11 +294,9 @@ pub fn pn_extname(pth: MaybeString) -> RString {
 // pub fn pn_find(pth: MaybeString, ignore_error: Boolean){}
 
 pub fn pn_has_trailing_separator(pth: MaybeString) -> Boolean {
-  let v = pth.ok().unwrap_or(RString::new(""));
-  match chop_basename::chop_basename(v.to_str()) {
-    Some((a,b)) => {
-      Boolean::new(a.len() + b.len() < v.to_str().len())
-    },
+  let v = to_str(&pth);
+  match chop_basename::chop_basename(v) {
+    Some((a,b)) => Boolean::new(a.len() + b.len() < v.len()),
     _ => Boolean::new(false)
   }
 }
@@ -333,7 +316,7 @@ pub fn pn_join(args: MaybeArray) -> AnyObject {
 
     let item = args.pop();
     result = plus::plus_paths(&anyobject_to_string(item).unwrap(), &result);
-    if result.chars().next() == Some(MAIN_SEPARATOR) {
+    if result.as_bytes().get(0) == Some(&SEP) {
       return Pathname::new(&result).to_any_object()
     }
 
@@ -354,23 +337,17 @@ pub fn pn_join(args: MaybeArray) -> AnyObject {
 // pub fn pn_parent(pth: MaybeString){}
 
 pub fn pn_plus(pth1: MaybeString, pth2: MaybeString) -> RString {
-  RString::new(
-    &plus::plus_paths(
-      pth1.ok().unwrap_or(RString::new("")).to_str(),
-      pth2.ok().unwrap_or(RString::new("")).to_str()
-    )[..]
-  )
+  RString::new(&plus::plus_paths(to_str(&pth1), to_str(&pth2)))
 }
 
 // pub fn pn_prepend_prefix(prefix: MaybeString, relpath: MaybeString){}
 
 pub fn pn_is_relative(pth: MaybeString) -> Boolean {
-  Boolean::new(
-    match pth.ok().unwrap_or(RString::new(&MAIN_SEPARATOR.to_string()[..])).to_str().chars().next() {
-      Some(c) => c != MAIN_SEPARATOR,
-      None => true
-    }
-  )
+  let path = match &pth {
+    &Ok(ref ruru_string) => ruru_string.to_str(),
+    &Err(_) => return Boolean::new(false),
+  };
+  Boolean::new(path.as_bytes().get(0) != Some(&SEP))
 }
 
 // pub fn pn_root(pth: MaybeString){}
