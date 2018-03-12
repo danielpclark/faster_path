@@ -25,6 +25,7 @@ mod pathname_sys;
 mod plus;
 mod prepend_prefix;
 pub mod rust_arch_bits;
+mod memrnchr;
 mod path_parsing;
 mod relative_path_from;
 
