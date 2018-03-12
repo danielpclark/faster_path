@@ -178,17 +178,17 @@ FasterPath.sledgehammer_everything!
 
 ## Optional Rust implementations
 
-**These are stable, not performant, and not included in `File` by default.**
+**These are stable, not performant, and not included in `Pathname` by default.**
 
-These will **not** be included by default in monkey-patches.  Be cautious when using the `FasterPath::RefineFile` refinement.  To try them with monkeypatching use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
+These will **not** be included by default in monkey-patches.  To try them with monkeypatching use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
 
 |FasterPath Implementation|Ruby Implementation|
 |---|---|
-| `FasterPath.entries_compat` | `File.entries` |
-| `FasterPath.children_compat` | `File.children` |
+| `FasterPath.entries_compat` | `Pathname.entries` |
+| `FasterPath.children_compat` | `Pathname.children` |
 
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
-performance seems to vary based on CPU cache on possibly 64bit/32bit system environments.  When these methods were initially written, and somewhat simplistic, they were faster than the C implementations on `File`.  After the implementations have been perfected to match the behavior in Ruby they don't perform as well and are therefore not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.
+performance seems to vary based on CPU cache on possibly 64bit/32bit system environments.  These are not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.
 
 ## Getting Started with Development
 
