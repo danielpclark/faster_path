@@ -1,26 +1,69 @@
 extern crate memchr;
-use self::memchr::memrchr;
-use path_parsing::{SEP, last_non_sep_i};
 
-pub fn basename<'a>(pth: &'a str, ext: &str) -> &'a str {
-  let name_end = (last_non_sep_i(pth) + 1) as usize;
-  // Known edge case, all '/'.
-  if !pth.is_empty() && name_end == 0 {
-    return &pth[..1];
-  }
-  let name_start = match memrchr(SEP, &pth.as_bytes()[..name_end]) {
-    Some(i) => i + 1,
-    _ => 0
-  };
-  let mut name = &pth[name_start..name_end];
-  if ext == ".*" {
-    if let Some(dot_i) = memrchr('.' as u8, name.as_bytes()) {
-      name = &name[..dot_i];
+use path_parsing::{find_last_sep_pos, find_last_non_sep_pos, find_last_dot_pos};
+
+pub fn basename<'a>(path: &'a str, ext: &str) -> &'a str {
+  let bytes: &[u8] = path.as_bytes();
+  let mut left: usize = 0;
+  let mut right: usize = bytes.len();
+  if let Some(last_slash_pos) = find_last_sep_pos(bytes) {
+    if last_slash_pos == right - 1 {
+      if let Some(pos) = find_last_non_sep_pos(&bytes[..last_slash_pos]) {
+        right = pos + 1;
+      } else {
+        return "/";
+      }
+      if let Some(pos) = find_last_sep_pos(&bytes[..right]) {
+        left = pos + 1;
+      }
+    } else {
+      left = last_slash_pos + 1;
     }
-  } else if name.ends_with(ext) {
-    name = &name[..name.len() - ext.len()];
-  };
-  name
+  }
+  let ext_bytes = ext.as_bytes();
+  if ext_bytes == b".*" {
+    if let Some(dot_pos) = find_last_dot_pos(&bytes[left..right]) {
+      right = left + dot_pos;
+    }
+  } else if bytes[left..right].ends_with(ext_bytes) {
+    right -= ext_bytes.len();
+  }
+  &path[left..right]
+}
+
+#[test]
+fn absolute() {
+  assert_eq!(basename("/a/b///c", ""), "c");
+}
+
+#[test]
+fn trailing_slashes_absolute() {
+  assert_eq!(basename("/a/b///c//////", ""), "c");
+}
+
+#[test]
+fn relative() {
+  assert_eq!(basename("b///c", ""), "c");
+}
+
+#[test]
+fn trailing_slashes_relative() {
+  assert_eq!(basename("b/c//", ""), "c");
+}
+
+#[test]
+fn root() {
+  assert_eq!(basename("//c", ""), "c");
+}
+
+#[test]
+fn trailing_slashes_root() {
+  assert_eq!(basename("//c//", ""), "c");
+}
+
+#[test]
+fn trailing_slashes_relative_root() {
+  assert_eq!(basename("c//", ""), "c");
 }
 
 #[test]

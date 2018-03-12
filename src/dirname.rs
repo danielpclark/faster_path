@@ -1,26 +1,66 @@
-extern crate memchr;
-use self::memchr::memrchr;
-use path_parsing::{SEP, SEP_STR, last_non_sep_i, last_non_sep_i_before};
+use std::str;
+use path_parsing::{find_last_sep_pos, find_last_non_sep_pos};
 
 pub fn dirname(path: &str) -> &str {
-  if path.is_empty() { return "."; }
-  let non_sep_i = last_non_sep_i(path);
-  if non_sep_i == -1 { return *SEP_STR; }
-  return match memrchr(SEP, &path.as_bytes()[..non_sep_i as usize]) {
-    None => ".",
-    Some(0) => *SEP_STR,
-    Some(sep_i) => {
-      let non_sep_i2 = last_non_sep_i_before(path, sep_i as isize);
-      if non_sep_i2 != -1 {
-        &path[..(non_sep_i2 + 1) as usize]
-      } else {
-        *SEP_STR
-      }
-    }
+  let bytes = path.as_bytes();
+  let mut last_slash_pos = match find_last_sep_pos(bytes) {
+    Some(pos) => pos,
+    _ => return ".",
+  };
+  // Skip trailing slashes.
+  if last_slash_pos == bytes.len() - 1 {
+    let last_non_slash_pos = match find_last_non_sep_pos(&bytes[..last_slash_pos]) {
+      Some(pos) => pos,
+      _ => return "/"
+    };
+    last_slash_pos = match find_last_sep_pos(&bytes[..last_non_slash_pos]) {
+      Some(pos) => pos,
+      _ => return "."
+    };
+  };
+  if let Some(end) = find_last_non_sep_pos(&bytes[..last_slash_pos]) {
+    &path[..end + 1]
+  } else {
+    "/"
   }
 }
 
 #[test]
-fn returns_dot_for_empty_string(){
-  assert_eq!(dirname(""), ".".to_string());
+fn absolute() {
+  assert_eq!(dirname("/a/b///c"), "/a/b");
+}
+
+#[test]
+fn trailing_slashes_absolute() {
+  assert_eq!(dirname("/a/b///c//////"), "/a/b");
+}
+
+#[test]
+fn relative() {
+  assert_eq!(dirname("b///c"), "b");
+}
+
+#[test]
+fn trailing_slashes_relative() {
+  assert_eq!(dirname("b/c//"), "b");
+}
+
+#[test]
+fn root() {
+  assert_eq!(dirname("//c"), "/");
+}
+
+#[test]
+fn trailing_slashes_root() {
+  assert_eq!(dirname("//c//"), "/");
+}
+
+#[test]
+fn trailing_slashes_relative_root() {
+  assert_eq!(dirname("c//"), ".");
+}
+
+#[test]
+fn returns_dot_for_empty_string() {
+  assert_eq!(dirname(""), ".");
 }

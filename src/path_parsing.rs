@@ -1,4 +1,7 @@
 extern crate memchr;
+
+use self::memchr::memrchr;
+use memrnchr::memrnchr;
 use std::path::MAIN_SEPARATOR;
 use std::str;
 
@@ -7,20 +10,20 @@ lazy_static! {
   pub static ref SEP_STR: &'static str = str::from_utf8(&[SEP]).unwrap();
 }
 
-// Returns the byte offset of the last byte preceding a MAIN_SEPARATOR.
-pub fn last_non_sep_i(path: &str) -> isize {
-  last_non_sep_i_before(path, path.len() as isize - 1)
+// Returns the byte offset of the last byte that equals MAIN_SEPARATOR.
+#[inline(always)]
+pub fn find_last_dot_pos(bytes: &[u8]) -> Option<usize> {
+  memrchr(b'.', bytes)
 }
 
-// Returns the byte offset of the last byte preceding a MAIN_SEPARATOR before the given end offset.
-pub fn last_non_sep_i_before(path: &str, end: isize) -> isize {
-  // Works with bytes directly because MAIN_SEPARATOR is always in the ASCII 7-bit range so we can
-  // avoid the overhead of full UTF-8 processing.
-  let ptr = path.as_ptr();
-  let mut i = end;
-  while i >= 0 {
-    if unsafe { *ptr.offset(i) } != SEP { break; };
-    i -= 1;
-  }
-  i
+// Returns the byte offset of the last byte that equals MAIN_SEPARATOR.
+#[inline(always)]
+pub fn find_last_sep_pos(bytes: &[u8]) -> Option<usize> {
+  memrchr(SEP, bytes)
+}
+
+// Returns the byte offset of the last byte that is not MAIN_SEPARATOR.
+#[inline(always)]
+pub fn find_last_non_sep_pos(bytes: &[u8]) -> Option<usize> {
+  memrnchr(SEP, bytes)
 }

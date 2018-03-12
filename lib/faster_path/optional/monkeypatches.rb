@@ -10,7 +10,7 @@ module FasterPath
           pth = pth.to_path if pth.respond_to? :to_path
           raise TypeError unless pth.is_a?(String) && ext.is_a?(String)
           FasterPath.basename(pth, ext)
-        end if !!ENV['WITH_REGRESSION']
+        end
 
         def self.extname(pth)
           pth = pth.to_path if pth.respond_to? :to_path
@@ -22,7 +22,7 @@ module FasterPath
           pth = pth.to_path if pth.respond_to? :to_path
           raise TypeError unless pth.is_a? String
           FasterPath.dirname(pth)
-        end if !!ENV['WITH_REGRESSION']
+        end
       end
     end
 
