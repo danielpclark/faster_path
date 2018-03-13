@@ -1,34 +1,90 @@
-extern crate memchr;
-
-use path_parsing::{find_last_sep_pos, find_last_non_sep_pos, find_last_dot_pos};
+use path_parsing::{find_last_non_sep_pos, find_last_word};
+use extname::extname;
+use memrnchr::memrnchr;
 
 pub fn basename<'a>(path: &'a str, ext: &str) -> &'a str {
+  if path.is_empty() {
+    return path;
+  }
+
   let bytes: &[u8] = path.as_bytes();
-  let mut left: usize = 0;
-  let mut right: usize = bytes.len();
-  if let Some(last_slash_pos) = find_last_sep_pos(bytes) {
-    if last_slash_pos == right - 1 {
-      if let Some(pos) = find_last_non_sep_pos(&bytes[..last_slash_pos]) {
-        right = pos + 1;
-      } else {
-        return "/";
-      }
-      if let Some(pos) = find_last_sep_pos(&bytes[..right]) {
-        left = pos + 1;
-      }
+
+  let mut end = if let Some(v) = find_last_non_sep_pos(bytes) {
+    v + 1
+  } else {
+    return "/"
+  };
+
+  if ext.is_empty() || ext.len() > path.len() {
+    return &path[find_last_word(bytes)];
+  }
+
+  let extension = ext.as_bytes();
+
+  if extension == b".*" {
+    let e = extname(&path[..end]);
+
+    end -= if e.is_empty() {
+      memrnchr(b'.', &bytes[..end]).map(|v| bytes[..end].len() - v - 1).unwrap_or(0)
     } else {
-      left = last_slash_pos + 1;
-    }
+      e.len()
+    };
+    return &path[find_last_word(&bytes[..end])];
   }
-  let ext_bytes = ext.as_bytes();
-  if ext_bytes == b".*" {
-    if let Some(dot_pos) = find_last_dot_pos(&bytes[left..right]) {
-      right = left + dot_pos;
+
+  let mut y = extension.iter().rev();
+  let mut z = bytes[..end].iter().rev();
+  let mut pos = 0;
+  let mut start = end;
+  loop {
+    match (y.next(), z.next()) {
+      (_, None) | (None, Some(_)) => { 
+        start = find_last_word(&bytes[..end]).start;
+        break
+      },
+      (Some(c), Some(d)) if c != d => {
+        start = find_last_word(&bytes[..end]).start;
+        break
+      },
+      _ => {
+        end -= 1;
+
+        if pos > bytes.len() {
+          break
+        }
+      }
     }
-  } else if bytes[left..right].ends_with(ext_bytes) {
-    right -= ext_bytes.len();
+
+    pos += 1;
   }
-  &path[left..right]
+
+  &path[start..end]
+}
+
+#[test]
+fn empty() {
+  assert_eq!(basename("", ""), "");
+}
+
+#[test]
+fn sep() {
+  assert_eq!(basename("/", ""), "/");
+  assert_eq!(basename("//", ""), "/");
+}
+
+#[test]
+fn trailing_dot() {
+  assert_eq!(basename("file.test.", ""), "file.test.");
+  assert_eq!(basename("file.test.", ".*"), "file.test");
+}
+
+#[test]
+fn dots() {
+  assert_eq!(".", basename(".", ""));
+  assert_eq!("..", basename("..", ""));
+  assert_eq!(".", basename("..", "."));
+  assert_eq!("..", basename("..", ".*"));
+  assert_eq!("..", basename("..", "..."));
 }
 
 #[test]
