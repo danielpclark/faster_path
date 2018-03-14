@@ -87,7 +87,7 @@ pub fn basename_version2<'a>(path: &'a str, ext: &str) -> &'a str {
     range = find_last_word(bytes);
   } else {
     let extension = ext.as_bytes();
-    let mut end = bytes.len();
+    let mut end = find_last_non_sep_pos(&bytes).map(|v| v+1).unwrap_or(bytes.len());
 
     if extension == b".*" {
       let e = extname(&path[..end]);

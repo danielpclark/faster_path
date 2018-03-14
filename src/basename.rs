@@ -1,4 +1,4 @@
-use path_parsing::{find_last_sep_pos, find_last_word};
+use path_parsing::{find_last_sep_pos, find_last_non_sep_pos, find_last_word};
 use std::ops::Range;
 use extname::extname;
 use memrnchr::memrnchr;
@@ -12,7 +12,7 @@ pub fn basename<'a>(path: &'a str, ext: &str) -> &'a str {
     range = find_last_word(bytes);
   } else {
     let extension = ext.as_bytes();
-    let mut end = bytes.len();
+    let mut end = find_last_non_sep_pos(&bytes).map(|v| v+1).unwrap_or(bytes.len());
 
     if extension == b".*" {
       let e = extname(&path[..end]);
@@ -81,6 +81,14 @@ fn dots() {
   assert_eq!(".", basename("..", "."));
   assert_eq!("..", basename("..", ".*"));
   assert_eq!("..", basename("..", "..."));
+}
+
+#[test]
+fn some_ruby_spec_trailing_sep_cases() {
+  assert_eq!("base", basename("dir//base.c/", ".c"));
+  assert_eq!("foo", basename("foo.rb/", ".rb"));
+  assert_eq!("base", basename("dir//base.c/", ".*"));
+  assert_eq!("bar", basename("bar.rb///", ".*"));
 }
 
 #[test]
