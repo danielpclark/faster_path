@@ -16,7 +16,10 @@ class Pbench # < Minitest::Benchmark
   def self.bench_range
     # Looking for a consistent result
     # which seems to require more of the same
-    [10_000] * 5
+    amplitude = ENV['LONG_RUN'].to_s[/\d+/].to_i
+    amplitude = 1 if amplitude < 1
+    amplitude = 30 if amplitude > 30
+    [10_000 * amplitude] * 5
   end
 
   def performance(baseline, new_impl)

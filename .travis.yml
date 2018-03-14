@@ -24,6 +24,10 @@ matrix:
   allow_failures:
   - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
   - os: linux
+    rvm: 2.5.0
+    env: LONG_RUN=20
+    script: rake pbench
+  - os: linux
     rvm: 2.3.4
     if: tag =~ ^v0
     env:
@@ -56,6 +60,10 @@ matrix:
     if: tag =~ ^v0
     env:
   include:
+  - os: linux
+    rvm: 2.5.0
+    env: LONG_RUN=20
+    script: rake pbench
   - os: linux
     rvm: 2.3.4
     if: tag =~ ^v0

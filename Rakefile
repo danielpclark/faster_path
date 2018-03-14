@@ -114,6 +114,9 @@ Rake::TestTask.new(bench: :build_lib) do |t|
 end
 
 Rake::TestTask.new(pbench: :build_lib) do |t|
+  if ARGV.last == '--long-run'
+    ENV['LONG_RUN'] = '10'
+  end
   t.libs = %w[lib test test/pbench]
   t.pattern = 'test/pbench/pbench_suite.rb'
 end
