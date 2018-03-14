@@ -1,65 +1,63 @@
-use path_parsing::{find_last_sep_pos, find_last_non_sep_pos, find_last_word};
-use std::ops::Range;
-use extname::extname;
-use memrnchr::memrnchr;
 extern crate memchr;
 
+use self::memchr::memrchr;
+
+use path_parsing::{find_last_sep_pos, find_last_non_sep_pos};
+
 pub fn basename<'a>(path: &'a str, ext: &str) -> &'a str {
-  let bytes = path.as_bytes();
-  let range: Range<usize>;
-
-  if ext.is_empty() {
-    range = find_last_word(bytes);
-  } else {
-    let extension = ext.as_bytes();
-    let mut end = find_last_non_sep_pos(&bytes).map(|v| v+1).unwrap_or(bytes.len());
-
-    if extension == b".*" {
-      let e = extname(&path[..end]);
-
-      end -= if e.is_empty() {
-        // trailing dot on basename
-        memrnchr(b'.', &bytes[..end]).map(|v| bytes[..end].len() - v - 1).unwrap_or(0)
+  let bytes: &[u8] = path.as_bytes();
+  let mut left: usize = 0;
+  let mut right: usize = bytes.len();
+  if let Some(last_slash_pos) = find_last_sep_pos(bytes) {
+    if last_slash_pos == right - 1 {
+      if let Some(pos) = find_last_non_sep_pos(&bytes[..last_slash_pos]) {
+        right = pos + 1;
       } else {
-        e.len()
-      };
-
-      range = find_last_word(&bytes[..end]);
-    } else if ext.len() > path.len() {
-      range = find_last_word(&bytes);
-    } else {
-      let mut y = extension.iter().rev();
-      let mut z = bytes[..end].iter().rev();
-      loop {
-        match (y.next(), z.next()) {
-          (_, None) | (None, Some(_)) => { 
-            range = find_last_word(&bytes[..end]);
-            break
-          },
-          (Some(c), Some(d)) if c != d => {
-            range = find_last_word(&bytes[..end]);
-            break
-          },
-          _ => {
-            end -= 1;
-          }
-        }
+        return "/";
       }
+      if let Some(pos) = find_last_sep_pos(&bytes[..right]) {
+        left = pos + 1;
+      }
+    } else {
+      left = last_slash_pos + 1;
     }
   }
+  &path[left..left + ext_end(&bytes[left..right], ext)]
+}
 
-  if range.start == range.end {
-    if let Some(_) = find_last_sep_pos(bytes) {
-      return "/"
-    }
+fn ext_end(slice: &[u8], ext: &str) -> usize {
+  if ext.len() >= slice.len() || slice == b"." || slice == b".." {
+    return slice.len();
   }
+  let ext_bytes = ext.as_bytes();
+  if ext_bytes.len() == 2 && *ext_bytes.get(1).unwrap() == b'*' {
+    match memrchr(*ext_bytes.get(0).unwrap(), slice) {
+      Some(end) if end != 0 => return end,
+      _ => {}
+    };
+  } else if slice.ends_with(ext_bytes) {
+    return slice.len() - ext_bytes.len();
+  }
+  slice.len()
+}
 
-  &path[range]
+#[test]
+fn non_dot_asterisk_ext() {
+  // This is undocumented Ruby functionality. We match it in case some code out there relies on it.
+  assert_eq!(basename("abc", "b*"), "a");
+  assert_eq!(basename("abc", "abc"), "abc");
+  assert_eq!(basename("abc", "a*"), "abc");
+  assert_eq!(basename("playlist", "l*"), "play");
+  // Treated as literal "*":
+  assert_eq!(basename("playlist", "yl*"), "playlist");
+  assert_eq!(basename("playl*", "yl*"), "pla");
 }
 
 #[test]
 fn empty() {
   assert_eq!(basename("", ""), "");
+  assert_eq!(basename("", ".*"), "");
+  assert_eq!(basename("", ".a"), "");
 }
 
 #[test]
@@ -71,24 +69,40 @@ fn sep() {
 #[test]
 fn trailing_dot() {
   assert_eq!(basename("file.test.", ""), "file.test.");
+  assert_eq!(basename("file.test.", "."), "file.test");
   assert_eq!(basename("file.test.", ".*"), "file.test");
 }
 
 #[test]
-fn dots() {
-  assert_eq!(".", basename(".", ""));
-  assert_eq!("..", basename("..", ""));
-  assert_eq!(".", basename("..", "."));
-  assert_eq!("..", basename("..", ".*"));
-  assert_eq!("..", basename("..", "..."));
+fn trailing_dot_dot() {
+  assert_eq!(basename("a..", ".."), "a");
+  assert_eq!(basename("a..", ".*"), "a.");
 }
 
 #[test]
-fn some_ruby_spec_trailing_sep_cases() {
-  assert_eq!("base", basename("dir//base.c/", ".c"));
-  assert_eq!("foo", basename("foo.rb/", ".rb"));
-  assert_eq!("base", basename("dir//base.c/", ".*"));
-  assert_eq!("bar", basename("bar.rb///", ".*"));
+fn dot() {
+  assert_eq!(basename(".", ""), ".");
+  assert_eq!(basename(".", "."), ".");
+  assert_eq!(basename(".", ".*"), ".");
+}
+
+#[test]
+fn dot_dot() {
+  assert_eq!(basename("..", ""), "..");
+  assert_eq!(basename("..", ".*"), "..");
+  assert_eq!(basename("..", ".."), "..");
+  assert_eq!(basename("..", "..."), "..");
+}
+
+#[test]
+fn non_dot_ext() {
+  assert_eq!(basename("abc", "bc"), "a");
+}
+
+#[test]
+fn basename_eq_ext() {
+  assert_eq!(basename(".x", ".x"), ".x");
+  assert_eq!(basename(".x", ".*"), ".x");
 }
 
 #[test]
@@ -99,6 +113,14 @@ fn absolute() {
 #[test]
 fn trailing_slashes_absolute() {
   assert_eq!(basename("/a/b///c//////", ""), "c");
+}
+
+#[test]
+fn trailing_slashes_with_file_and_extension() {
+  assert_eq!("base", basename("dir//base.c/", ".c"));
+  assert_eq!("foo", basename("foo.rb/", ".rb"));
+  assert_eq!("base", basename("dir//base.c/", ".*"));
+  assert_eq!("bar", basename("bar.rb///", ".*"));
 }
 
 #[test]

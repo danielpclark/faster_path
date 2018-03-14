@@ -5,7 +5,7 @@ use test::Bencher;
 include!("../src/lib.rs");
 
 use basename::basename;
-use path_parsing::{find_last_sep_pos, find_last_non_sep_pos, find_last_dot_pos, find_last_word};
+use path_parsing::{find_last_sep_pos, find_last_non_sep_pos, find_last_word};
 use std::ops::Range;
 use extname::extname;
 use memrnchr::memrnchr;
@@ -25,39 +25,9 @@ fn basename_version1_benchmark(b: &mut Bencher) {
 
   b.iter(|| {
     parameters.iter().for_each(|&(a,b)| {
-      basename_version1(a,b);
+      basename(a,b);
     })
   })
-}
-
-// BUG # 162
-pub fn basename_version1<'a>(path: &'a str, ext: &str) -> &'a str {
-  let bytes: &[u8] = path.as_bytes();
-  let mut left: usize = 0;
-  let mut right: usize = bytes.len();
-  if let Some(last_slash_pos) = find_last_sep_pos(bytes) {
-    if last_slash_pos == right - 1 {
-      if let Some(pos) = find_last_non_sep_pos(&bytes[..last_slash_pos]) {
-        right = pos + 1;
-      } else {
-        return "/";
-      }
-      if let Some(pos) = find_last_sep_pos(&bytes[..right]) {
-        left = pos + 1;
-      }
-    } else {
-      left = last_slash_pos + 1;
-    }
-  }
-  let ext_bytes = ext.as_bytes();
-  if ext_bytes == b".*" {
-    if let Some(dot_pos) = find_last_dot_pos(&bytes[left..right]) {
-      right = left + dot_pos;
-    }
-  } else if bytes[left..right].ends_with(ext_bytes) {
-    right -= ext_bytes.len();
-  }
-  &path[left..right]
 }
 
 #[bench]
