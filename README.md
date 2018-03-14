@@ -3,7 +3,7 @@
 [![TravisCI Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/10ul0gk3cwhlt2lj/branch/master?svg=true)](https://ci.appveyor.com/project/danielpclark/faster-path/branch/master)
 [![Latest Tag](https://img.shields.io/github/tag/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/tags)
-[![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.3.8.svg)](https://github.com/danielpclark/faster_path/pulse)
+[![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.3.9.svg)](https://github.com/danielpclark/faster_path/pulse)
 [![Binary Release](https://img.shields.io/github/release/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/releases)
 [![Coverage Status](https://coveralls.io/repos/github/danielpclark/faster_path/badge.svg?branch=master)](https://coveralls.io/github/danielpclark/faster_path?branch=master)
 [![Inline docs](http://inch-ci.org/github/danielpclark/faster_path.svg?branch=master)](http://inch-ci.org/github/danielpclark/faster_path)
@@ -127,7 +127,7 @@ curl -sSf https://static.rust-lang.org/rustup.sh | sh
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path', '~> 0.3.8'
+gem 'faster_path', '~> 0.3.9'
 ```
 
 And then execute:
