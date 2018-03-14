@@ -6,8 +6,13 @@ require 'fiddle'
 require 'fiddle/import'
 
 # FasterPath module behaves as a singleton object with the alternative method
-# implementations for Pathname, and some for File, available directly on it.
+# implementations for `Pathname`, and some for `File`, available directly on it.
 #
+# New projects are recommend to reference methods defined directly on `FasterPath`.
+# Existing websites may use the `FasterPath.sledgehammer_everything!` method to
+# directly injet the more performant implementations of path handling in to their
+# existing code ecosystem.  To do so you will need to
+# `require 'faster_path/optional/monkeypatches'` beforehand.
 module FasterPath
   FFI_LIBRARY = begin
     toplevel_dir = File.dirname(__dir__)
