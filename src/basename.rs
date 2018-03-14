@@ -1,64 +1,60 @@
-use path_parsing::{find_last_non_sep_pos, find_last_word};
+use path_parsing::{find_last_sep_pos, find_last_word};
+use std::ops::Range;
 use extname::extname;
 use memrnchr::memrnchr;
+extern crate memchr;
 
 pub fn basename<'a>(path: &'a str, ext: &str) -> &'a str {
-  if path.is_empty() {
-    return path;
-  }
+  let bytes = path.as_bytes();
+  let range: Range<usize>;
 
-  let bytes: &[u8] = path.as_bytes();
-
-  let mut end = if let Some(v) = find_last_non_sep_pos(bytes) {
-    v + 1
+  if ext.is_empty() {
+    range = find_last_word(bytes);
   } else {
-    return "/"
-  };
+    let extension = ext.as_bytes();
+    let mut end = bytes.len();
 
-  if ext.is_empty() || ext.len() > path.len() {
-    return &path[find_last_word(bytes)];
-  }
+    if extension == b".*" {
+      let e = extname(&path[..end]);
 
-  let extension = ext.as_bytes();
+      end -= if e.is_empty() {
+        // trailing dot on basename
+        memrnchr(b'.', &bytes[..end]).map(|v| bytes[..end].len() - v - 1).unwrap_or(0)
+      } else {
+        e.len()
+      };
 
-  if extension == b".*" {
-    let e = extname(&path[..end]);
-
-    end -= if e.is_empty() {
-      memrnchr(b'.', &bytes[..end]).map(|v| bytes[..end].len() - v - 1).unwrap_or(0)
+      range = find_last_word(&bytes[..end]);
+    } else if ext.len() > path.len() {
+      range = find_last_word(&bytes);
     } else {
-      e.len()
-    };
-    return &path[find_last_word(&bytes[..end])];
-  }
-
-  let mut y = extension.iter().rev();
-  let mut z = bytes[..end].iter().rev();
-  let mut pos = 0;
-  let mut start = end;
-  loop {
-    match (y.next(), z.next()) {
-      (_, None) | (None, Some(_)) => { 
-        start = find_last_word(&bytes[..end]).start;
-        break
-      },
-      (Some(c), Some(d)) if c != d => {
-        start = find_last_word(&bytes[..end]).start;
-        break
-      },
-      _ => {
-        end -= 1;
-
-        if pos > bytes.len() {
-          break
+      let mut y = extension.iter().rev();
+      let mut z = bytes[..end].iter().rev();
+      loop {
+        match (y.next(), z.next()) {
+          (_, None) | (None, Some(_)) => { 
+            range = find_last_word(&bytes[..end]);
+            break
+          },
+          (Some(c), Some(d)) if c != d => {
+            range = find_last_word(&bytes[..end]);
+            break
+          },
+          _ => {
+            end -= 1;
+          }
         }
       }
     }
-
-    pos += 1;
   }
 
-  &path[start..end]
+  if range.start == range.end {
+    if let Some(_) = find_last_sep_pos(bytes) {
+      return "/"
+    }
+  }
+
+  &path[range]
 }
 
 #[test]

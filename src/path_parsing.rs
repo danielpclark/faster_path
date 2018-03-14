@@ -11,6 +11,7 @@ lazy_static! {
   pub static ref SEP_STR: &'static str = str::from_utf8(&[SEP]).unwrap();
 }
 
+#[allow(dead_code)]
 pub fn find_last_word(bytes: &[u8]) -> Range<usize> {
   let len = bytes.len();
   let mut r: Range<usize> = Range { start: len, end: len };
