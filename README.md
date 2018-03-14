@@ -104,7 +104,7 @@ So now we have some real numbers to work with  We can be generoues and use 66% a
 
 ## What Rails Versions Will This Apply To?
 
-As mentioned earlier Sprockets, which handles assets, changed away from using `Pathname` at all when moving from major version 2 to 3.  So if you're using Sprockets 3 or later you won't reap the biggest performance reqards from using this gem for now _(it's my goal to have this project become a core feature that Rails depends on and yes… that's a big ask)_.  That is unless you write you're own implementation to re-integrate the use of `Pathname` and `FasterPath` into your asset handling library.  For now just know that the Sprockets 2 series primarily works with Rails 4.1 and earlier.  It may work in later Rails version but I have not investigated this.
+As mentioned earlier Sprockets, which handles assets, changed away from using `Pathname` at all when moving from major version 2 to 3.  So if you're using Sprockets 3 or later you won't reap the biggest performance reqards from using this gem for now _(it's my goal to have this project become a core feature that Rails depends on and yes… that's a big ask)_.  That is unless you write you're own implementation to re-integrate the use of `Pathname` and `FasterPath` into your asset handling library.  For now just know that the Sprockets 2 series primarily works with Rails 4.1 and earlier.  It may work in later Rails versions but I have not investigated this.
 
 ## Status
 
