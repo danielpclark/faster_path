@@ -116,6 +116,14 @@ fn trailing_slashes_absolute() {
 }
 
 #[test]
+fn trailing_slashes_with_file_and_extension() {
+  assert_eq!("base", basename("dir//base.c/", ".c"));
+  assert_eq!("foo", basename("foo.rb/", ".rb"));
+  assert_eq!("base", basename("dir//base.c/", ".*"));
+  assert_eq!("bar", basename("bar.rb///", ".*"));
+}
+
+#[test]
 fn relative() {
   assert_eq!(basename("b///c", ""), "c");
 }

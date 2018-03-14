@@ -237,6 +237,27 @@ mspec core/file library/pathname
 mspec
 ```
 
+### Rust Benchmarking
+
+Ruby's benchmarks are pretty well covered here.  So here's the pattern for running Rust benchmarks
+to see whether your new implementations or modifications are faster.  Look at
+[`basename_benchmark.rs`](benches/basename_bench.rs) for an example on how to implement Rust
+benchmarks.  You'll need to create a benchmark for the current implementation and an identical
+benchmark for your new version.  The versions with be benchmark method names ending in `_version#`.
+
+To have the project included natively you will need to use the include macro: `include!("../src/lib.rs")`.
+
+Technically we can place individual benchmarks in the source file of the original methods just like we do
+with some unit tests.  But I'm against that.  I'd much prefer having benchmarks for the method that's being
+re-implemented to be grouped together.
+
+When running benchmarks it will require Rust nightly.  A simple way to run the command is as follows.
+
+```
+rake libruby_release; cargo +nightly bench 
+```
+
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/danielpclark/faster_path.
