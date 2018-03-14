@@ -241,7 +241,7 @@ mspec
 
 Ruby's benchmarks are pretty well covered here.  So here's the pattern for running Rust benchmarks
 to see whether your new implementations or modifications are faster.  Look at
-[`basename_benchmark.rs`](benches/basename_benchmark.rs) for an example on how to implement Rust
+[`basename_benchmark.rs`](benches/basename_bench.rs) for an example on how to implement Rust
 benchmarks.  You'll need to create a benchmark for the current implementation and an identical
 benchmark for your new version.  The versions with be benchmark method names ending in `_version#`.
 
