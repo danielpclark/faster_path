@@ -11,13 +11,16 @@ pub trait TryFrom<T>: Sized {
   fn try_from(value: T) -> Result<Self, Self::Error>;
 }
 
+#[cfg(windows)]
 #[inline]
 pub fn is_same_path(a: &str, b: &str) -> bool {
-  if cfg!(windows) {
-    a.to_uppercase() == b.to_uppercase()
-  } else {
-    a == b
-  }
+  a.to_uppercase() == b.to_uppercase()
+}
+
+#[cfg(not(windows))]
+#[inline]
+pub fn is_same_path(a: &str, b: &str) -> bool {
+  a == b
 }
 
 pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
