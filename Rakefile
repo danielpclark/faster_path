@@ -31,36 +31,6 @@ task :contrib do
 ' > Contributors.md;git shortlog -s -n -e | sed 's/^......./- /' >> Contributors.md"
 end
 
-desc "Add libruby to deps"
-task :libruby_release do
-  filename = RbConfig::CONFIG["LIBRUBY_ALIASES"].split(" ").first
-  libfile = File.join(RbConfig::CONFIG["libdir"], filename)
-  deps = "target/release/deps"
-
-  printf "Copying libruby.so ... "
-  unless File.exist? "#{deps}/#{filename}"
-    FileUtils.mkdir_p deps
-    FileUtils.cp libfile, deps
-  end
-  exit 1 unless File.exist? "#{deps}/#{filename}"
-  puts "libruby.so copied."
-end
-
-desc "Add libruby to debug deps"
-task :libruby_debug do
-  filename = RbConfig::CONFIG["LIBRUBY_ALIASES"].split(" ").first
-  libfile = File.join(RbConfig::CONFIG["libdir"], filename)
-  deps = "target/debug/deps"
-
-  printf "Copying libruby.so ... "
-  unless File.exist? "#{deps}/#{filename}"
-    FileUtils.mkdir_p deps
-    FileUtils.cp libfile, deps
-  end
-  exit 1 unless File.exist? "#{deps}/#{filename}"
-  puts "libruby.so copied."
-end
-
 desc 'Build + clean up Rust extension'
 task build_lib: 'thermite:build' do
   thermite.run_cargo 'clean'
@@ -75,7 +45,7 @@ task :lint do
 end
 
 desc "Run Rust Tests"
-task cargo: :libruby_debug do
+task :cargo do
   sh "cargo test -- --nocapture"
 end
 
