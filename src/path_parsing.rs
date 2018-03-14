@@ -12,12 +12,6 @@ lazy_static! {
 
 // Returns the byte offset of the last byte that equals MAIN_SEPARATOR.
 #[inline(always)]
-pub fn find_last_dot_pos(bytes: &[u8]) -> Option<usize> {
-  memrchr(b'.', bytes)
-}
-
-// Returns the byte offset of the last byte that equals MAIN_SEPARATOR.
-#[inline(always)]
 pub fn find_last_sep_pos(bytes: &[u8]) -> Option<usize> {
   memrchr(SEP, bytes)
 }

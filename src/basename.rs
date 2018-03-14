@@ -1,6 +1,8 @@
 extern crate memchr;
 
-use path_parsing::{find_last_sep_pos, find_last_non_sep_pos, find_last_dot_pos};
+use self::memchr::memrchr;
+
+use path_parsing::{find_last_sep_pos, find_last_non_sep_pos};
 
 pub fn basename<'a>(path: &'a str, ext: &str) -> &'a str {
   let bytes: &[u8] = path.as_bytes();
@@ -20,15 +22,87 @@ pub fn basename<'a>(path: &'a str, ext: &str) -> &'a str {
       left = last_slash_pos + 1;
     }
   }
-  let ext_bytes = ext.as_bytes();
-  if ext_bytes == b".*" {
-    if let Some(dot_pos) = find_last_dot_pos(&bytes[left..right]) {
-      right = left + dot_pos;
-    }
-  } else if bytes[left..right].ends_with(ext_bytes) {
-    right -= ext_bytes.len();
+  &path[left..left + ext_end(&bytes[left..right], ext)]
+}
+
+fn ext_end(slice: &[u8], ext: &str) -> usize {
+  if ext.len() >= slice.len() || slice == b"." || slice == b".." {
+    return slice.len();
   }
-  &path[left..right]
+  let ext_bytes = ext.as_bytes();
+  if ext_bytes.len() == 2 && *ext_bytes.get(1).unwrap() == b'*' {
+    match memrchr(*ext_bytes.get(0).unwrap(), slice) {
+      Some(end) if end != 0 => return end,
+      _ => {}
+    };
+  } else if slice.ends_with(ext_bytes) {
+    return slice.len() - ext_bytes.len();
+  }
+  slice.len()
+}
+
+#[test]
+fn non_dot_asterisk_ext() {
+  // This is undocumented Ruby functionality. We match it in case some code out there relies on it.
+  assert_eq!(basename("abc", "b*"), "a");
+  assert_eq!(basename("abc", "abc"), "abc");
+  assert_eq!(basename("abc", "a*"), "abc");
+  assert_eq!(basename("playlist", "l*"), "play");
+  // Treated as literal "*":
+  assert_eq!(basename("playlist", "yl*"), "playlist");
+  assert_eq!(basename("playl*", "yl*"), "pla");
+}
+
+#[test]
+fn empty() {
+  assert_eq!(basename("", ""), "");
+  assert_eq!(basename("", ".*"), "");
+  assert_eq!(basename("", ".a"), "");
+}
+
+#[test]
+fn sep() {
+  assert_eq!(basename("/", ""), "/");
+  assert_eq!(basename("//", ""), "/");
+}
+
+#[test]
+fn trailing_dot() {
+  assert_eq!(basename("file.test.", ""), "file.test.");
+  assert_eq!(basename("file.test.", "."), "file.test");
+  assert_eq!(basename("file.test.", ".*"), "file.test");
+}
+
+#[test]
+fn trailing_dot_dot() {
+  assert_eq!(basename("a..", ".."), "a");
+  assert_eq!(basename("a..", ".*"), "a.");
+}
+
+#[test]
+fn dot() {
+  assert_eq!(basename(".", ""), ".");
+  assert_eq!(basename(".", "."), ".");
+  assert_eq!(basename(".", ".*"), ".");
+}
+
+#[test]
+fn dot_dot() {
+  assert_eq!(basename("..", ""), "..");
+  assert_eq!(basename("..", ".*"), "..");
+  assert_eq!(basename("..", ".."), "..");
+  assert_eq!(basename("..", "..."), "..");
+}
+
+#[test]
+fn non_dot_ext() {
+  assert_eq!(basename("abc", "bc"), "a");
+}
+
+#[test]
+fn basename_eq_ext() {
+  assert_eq!(basename(".x", ".x"), ".x");
+  assert_eq!(basename(".x", ".*"), ".x");
 }
 
 #[test]
