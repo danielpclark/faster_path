@@ -5,24 +5,21 @@ require 'faster_path/thermite_initialize'
 
 desc 'System Details'
 task :sysinfo do
-  puts "faster_path #{FasterPath::VERSION}"
-  puts
-  puts `rustc -Vv`
-  puts `cargo -Vv`
-  IO.read('Cargo.toml').split('[dependencies]').last.split("\n").
-    select {|line| line =~ /=/ }.
-    each {|line| puts "%s\t%s" % line.match(/(\S+)[ ="']{1,4}([\d.]+)["']?/).captures }
-  puts
+  puts "** FasterPath - faster_path v#{FasterPath::VERSION} **"
   puts RUBY_DESCRIPTION
-  puts "bundler\t#{Bundler::VERSION}"
-  puts "rake\t#{Rake::VERSION}"
-  require 'ffi/version';
-  puts "ffi\t#{FFI::VERSION}"
-  begin
-    puts "%s\t%s" % IO.read('Gemfile.lock').match(/(mspec) \(([\d\.]+)\)/).captures
-  rescue Errno::ENOENT => _
-    puts "\nNo Gemfile.lock"
-  end
+  puts `rustc -Vv`
+  puts `ldd --version`.scan(/(.*)\n/).first if RbConfig::CONFIG["host_os"].to_s[/linux/]
+  puts `cargo -Vv`
+  deps = Regexp.new(/name = "([\w\-]+)"\nversion = "(\d+\.\d+\.\d+)"/)
+  puts "** Rust dependencies **"
+  IO.read("Cargo.lock").
+    scan(deps).
+    delete_if {|i| i[0] == "faster_path" }.
+    each {|name, version| puts "#{name.ljust(20)}#{version}"}
+  puts "** Ruby dependencies **"
+  deps = IO.read("Gemfile.lock")
+  puts deps[(deps =~ /DEPENDENCIES/)..-1].sub("\n\n", "\n")
+  puts "RAKE\n   #{Rake::VERSION}"
 end
 
 thermite = Thermite::Tasks.new
