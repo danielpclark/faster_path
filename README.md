@@ -140,23 +140,23 @@ Current methods implemented:
 
 |FasterPath Rust Implementation|Ruby 2.5.0 Implementation|Time Shaved Off|
 |---|---|:---:|
-| `FasterPath.absolute?` | `Pathname#absolute?` | 95.8% |
-| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 68.7% |
-| `FasterPath.basename` | `File.basename` | 49.4% |
-| `FasterPath.children` | `Pathname#children` | 39.2% |
-| `FasterPath.chop_basename` | `Pathname#chop_basename` | 76.6% |
-| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 78.2% |
-| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 74.1% |
-| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 87.7% |
-| `FasterPath.directory?` | `Pathname#directory?` | 16.8% |
-| `FasterPath.dirname` | `File.dirname` | 28.9% |
-| `FasterPath.entries` | `Pathname#entries` | 36.1% |
-| `FasterPath.extname` | `File.extname` | 66.2% |
-| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 86.3% |
-| `FasterPath.plus` | `Pathname#join` | 67.9% |
-| `FasterPath.plus` | `Pathname#plus` | 86.6% |
-| `FasterPath.relative?` | `Pathname#relative?` | 87.2% |
-| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 74.0% |
+| `FasterPath.absolute?` | `Pathname#absolute?` | 95.3% |
+| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 48.4% |
+| `FasterPath.basename` | `File.basename` | 12.0% |
+| `FasterPath.children` | `Pathname#children` | 34.4% |
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 83.4% |
+| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 94.1% |
+| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 93.5% |
+| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 85.4% |
+| `FasterPath.directory?` | `Pathname#directory?` | 6.4% |
+| `FasterPath.dirname` | `File.dirname` | 55.4% |
+| `FasterPath.entries` | `Pathname#entries` | 41.0% |
+| `FasterPath.extname` | `File.extname` | 63.1% |
+| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 88.9% |
+| `FasterPath.plus` | `Pathname#join` | 72.0% |
+| `FasterPath.plus` | `Pathname#plus` | 87.7% |
+| `FasterPath.relative?` | `Pathname#relative?` | 92.6% |
+| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 93.3% |
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch
