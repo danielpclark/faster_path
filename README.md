@@ -94,6 +94,18 @@ I've said this about Sprockets but this required two other gems to be updated as
 |sass 3.2.19|sass 5.0.4|
 |bootstrap-sass 3.3.4.1|bootstrap-sass 3.3.6|
 
+## Performance Specifics
+
+The headline for the amount for improvement on this library is specific to only the improvement made with the method `chop_basename`.  Just so you know; in my initial release I had a bug in which that method immediately returned nothing. Now the good thing about this is that it gave me some very valuable information.  First I found that all my Rails site tests still passed.  Second I found that all my assets no longer loaded in the website. And third, and most importantly, I found my Rails web pages loaded just more than 66% faster without the cost of time that `chop_basename` took.
+
+**That's right; the path handling for assets in your website \*consumes more than 2/3rds of your websites page load time.**
+
+So now we have some real numbers to work with  We can be generoues and use 66% as our margin of area to improve over _(for `chop_basename` specifically, not counting the benefit from improving the performance in other file path related methods)_.  That means we want to remove as much of that percentage from the overall systems page load time.  The original headline boasts over 33% performance improvement — that was when `chop_basename` was improved by just over 50%.  Now `chop_basename` is improved by 83.4%.  That alone should make your site run 55.044% faster now _(given your performance profile stats are similar to mine)_.
+
+## What Rails Versions Will This Apply To?
+
+As mentioned earlier Sprockets, which handles assets, changed away from using `Pathname` at all when moving from major version 2 to 3.  So if you're using Sprockets 3 or later you won't reap the biggest performance reqards from using this gem for now _(it's my goal to have this project become a core feature that Rails depends on and yes… that's a big ask)_.  That is unless you write you're own implementation to re-integrate the use of `Pathname` and `FasterPath` into your asset handling library.  For now just know that the Sprockets 2 series primarily works with Rails 4.1 and earlier.  It may work in later Rails version but I have not investigated this.
+
 ## Status
 
 * Rust compilation is working
