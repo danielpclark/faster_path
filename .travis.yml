@@ -26,7 +26,7 @@ matrix:
   - os: linux
     rvm: 2.5.0
     env: LONG_RUN=20
-    script: rake pbench
+    script: bundle exec rake pbench
   - os: linux
     rvm: 2.3.4
     if: tag =~ ^v0
@@ -63,7 +63,7 @@ matrix:
   - os: linux
     rvm: 2.5.0
     env: LONG_RUN=20
-    script: rake pbench
+    script: bundle exec rake pbench
   - os: linux
     rvm: 2.3.4
     if: tag =~ ^v0
