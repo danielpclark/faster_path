@@ -165,8 +165,8 @@ Current methods implemented:
 | `FasterPath.entries` | `Pathname#entries` | 41.0% |
 | `FasterPath.extname` | `File.extname` | 63.1% |
 | `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 88.9% |
-| `FasterPath.plus` | `Pathname#join` | 72.0% |
-| `FasterPath.plus` | `Pathname#plus` | 87.7% |
+| `FasterPath.plus` | `Pathname#join` | 79.1% |
+| `FasterPath.plus` | `Pathname#plus` | 94.7% |
 | `FasterPath.relative?` | `Pathname#relative?` | 92.6% |
 | `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 93.3% |
 
