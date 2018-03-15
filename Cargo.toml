@@ -18,6 +18,5 @@ crate-type = ["dylib"]
 [dependencies]
 ruby-sys = { git = "https://github.com/danielpclark/ruby-sys", branch = "playground" }
 ruru = { git = "https://github.com/danielpclark/ruru", branch = "playground" }
-array_tool = "1.0"
 lazy_static = "1.0"
 memchr = "2.0.1"

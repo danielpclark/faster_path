@@ -23,10 +23,11 @@ use ruru::{
   Class,
   VerifiedObject,
   Exception as Exc,
-  AnyException as Exception
+  AnyException as Exception,
 };
 use ruru::types::{Value, ValueType};
-use std::path::{MAIN_SEPARATOR,Path};
+use std::borrow::Cow;
+use std::path::{MAIN_SEPARATOR, Path};
 use std::fs;
 
 type MaybeArray = Result<ruru::Array, ruru::result::Error>;
@@ -77,7 +78,7 @@ impl Pathname {
 
 impl From<Value> for Pathname {
   fn from(value: Value) -> Self {
-    Pathname { value: value }
+    Pathname { value }
   }
 }
 
@@ -302,29 +303,15 @@ pub fn pn_has_trailing_separator(pth: MaybeString) -> Boolean {
 }
 
 pub fn pn_join(args: MaybeArray) -> AnyObject {
-  let mut args = args.unwrap();
-  let path_self = anyobject_to_string(args.shift()).unwrap();
-  let mut qty = args.length();
-  if qty <= 0 {
-    return Pathname::new(&path_self).to_any_object();
-  }
-
-  let mut result = String::new();
-
-  loop {
-    if qty == 0 { break; }
-
-    let item = args.pop();
-    result = plus::plus_paths(&anyobject_to_string(item).unwrap(), &result);
-    if result.as_bytes().get(0) == Some(&SEP) {
-      return Pathname::new(&result).to_any_object()
+  let paths = args.unwrap().into_iter().map(|arg| anyobject_to_string(arg).unwrap()).collect::<Vec<_>>();
+  let mut paths_iter = paths.iter().rev();
+  let mut result = Cow::Borrowed(paths_iter.next().unwrap().as_str());
+  for part in paths_iter {
+    result = plus::plus_paths(&part, result.as_ref());
+    if result.as_bytes().first() == Some(&SEP) {
+      break;
     }
-
-    qty -= 1;
   }
-
-  let result = plus::plus_paths(&path_self, &result);
-
   Pathname::new(&result).to_any_object()
 }
 
