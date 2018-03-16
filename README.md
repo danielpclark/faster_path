@@ -217,8 +217,6 @@ Whenever feasible implement it in Rust.
 After checking out the repo, make sure you have Rust installed, then run `bundle`.
 Run `rake test` to run the tests, and `rake bench` for benchmarks.
 
-Learn and share performance tips on the [wiki](https://github.com/danielpclark/faster_path/wiki)!
-
 ### Building and running tests
 
 First, bundle the gem's development dependencies by running `bundle`.  Rust compilation is included in the current rake commands.
