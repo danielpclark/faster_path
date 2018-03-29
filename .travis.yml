@@ -9,9 +9,9 @@ cache:
   - $HOME/.cargo
   - $TRAVIS_BUILD_DIR/target
 rvm:
-- 2.3.6
-- 2.4.3
-- 2.5.0
+- 2.3.7
+- 2.4.4
+- 2.5.1
 env:
   global:
   - PATH=$PATH:$HOME/.cargo/bin
@@ -28,23 +28,23 @@ matrix:
     env: LONG_RUN=20
     script: bundle exec rake pbench
   - os: linux
-    rvm: 2.3.4
-    if: tag =~ ^v0
-    env:
-  - os: linux
     rvm: 2.3.5
     if: tag =~ ^v0
     env:
   - os: linux
-    rvm: 2.4.1
+    rvm: 2.3.6
     if: tag =~ ^v0
     env:
   - os: linux
     rvm: 2.4.2
     if: tag =~ ^v0
     env:
-  - os: osx
-    rvm: 2.3.4
+  - os: linux
+    rvm: 2.4.3
+    if: tag =~ ^v0
+    env:
+  - os: linux
+    rvm: 2.5.0
     if: tag =~ ^v0
     env:
   - os: osx
@@ -52,11 +52,19 @@ matrix:
     if: tag =~ ^v0
     env:
   - os: osx
-    rvm: 2.4.1
+    rvm: 2.3.6
     if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.4.2
+    if: tag =~ ^v0
+    env:
+  - os: osx
+    rvm: 2.4.3
+    if: tag =~ ^v0
+    env:
+  - os: osx
+    rvm: 2.5.0
     if: tag =~ ^v0
     env:
   include:
@@ -65,23 +73,23 @@ matrix:
     env: LONG_RUN=20
     script: bundle exec rake pbench
   - os: linux
-    rvm: 2.3.4
-    if: tag =~ ^v0
-    env:
-  - os: linux
     rvm: 2.3.5
     if: tag =~ ^v0
     env:
   - os: linux
-    rvm: 2.4.1
+    rvm: 2.3.6
     if: tag =~ ^v0
     env:
   - os: linux
     rvm: 2.4.2
     if: tag =~ ^v0
     env:
-  - os: osx
-    rvm: 2.3.4
+  - os: linux
+    rvm: 2.4.3
+    if: tag =~ ^v0
+    env:
+  - os: linux
+    rvm: 2.5.0
     if: tag =~ ^v0
     env:
   - os: osx
@@ -89,11 +97,19 @@ matrix:
     if: tag =~ ^v0
     env:
   - os: osx
-    rvm: 2.4.1
+    rvm: 2.3.6
     if: tag =~ ^v0
     env:
   - os: osx
     rvm: 2.4.2
+    if: tag =~ ^v0
+    env:
+  - os: osx
+    rvm: 2.4.3
+    if: tag =~ ^v0
+    env:
+  - os: osx
+    rvm: 2.5.0
     if: tag =~ ^v0
     env:
 before_install:
