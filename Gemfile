@@ -3,7 +3,6 @@ source 'https://rubygems.org' do
   gemspec
 
   group :test do
-    gem 'rake', '~> 12.3'
     gem 'coveralls', require: false
   end
 end
