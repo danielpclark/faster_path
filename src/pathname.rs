@@ -9,7 +9,6 @@ use plus;
 use relative_path_from;
 use debug;
 use helpers::{TryFrom, to_str};
-use pathname_sys::null_byte_check;
 use path_parsing::{SEP, find_last_non_sep_pos};
 
 use ruru;
@@ -44,31 +43,6 @@ impl Pathname {
     instance.instance_variable_set("@path", RString::new(path).to_any_object());
 
     Pathname { value: instance.value() }
-  }
-
-  pub fn new_checked(path: AnyObject) -> Result<Pathname, Exception> {
-    let pth: Value = if Class::from_existing("String").case_equals(&path) {
-      path.value()
-    } else if path.respond_to("to_path") {
-      path.send("to_path", None).value()
-    } else {
-      return Err(
-        Exception::new(
-          "ArgumentError",
-          Some("The type for the argument provided to Pathname.new was invalid.")
-        )
-      )
-    };
-
-    if null_byte_check(path.value()) {
-      return Err( Exception::new("ArgumentError", Some("pathname contains null byte")) )
-    }
-
-    // if it crashes then dup the path string here before assigning to @path
-    let mut instance = Class::from_existing("Pathname").allocate();
-    instance.instance_variable_set("@path", RString::from(pth).to_any_object());
-
-    Ok(Pathname { value: instance.value() })
   }
 
   pub fn to_any_object(&self) -> AnyObject {

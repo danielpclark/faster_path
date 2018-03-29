@@ -2,23 +2,9 @@ use ruru::{AnyObject, Array, Object, AnyException};
 use ruru::types::{Argc, Value, CallbackPtr};
 use ruru::util::str_to_cstring;
 extern crate ruby_sys;
-use self::ruby_sys::{class, util, vm, string};
+use self::ruby_sys::{class, util, vm};
 use ::pathname;
 extern crate memchr;
-use self::memchr::memchr;
-use std::slice;
-
-pub fn null_byte_check(value: Value) -> bool {
-  unsafe {
-    let str = string::rb_string_value_ptr(&value) as *const u8;
-
-    // `rb_str_len` is a ruby_sys specific thing.  Consider:
-    // extern { fn rb_str_strlen(value: Value) -> c_long } as isize
-    let len = string::rb_str_len(value) as usize;
-
-    memchr(b'\0', slice::from_raw_parts(str, len)).is_some()
-  }
-}
 
 pub fn raise(exception: AnyException) {
   unsafe { vm::rb_exc_raise(exception.value()); }
