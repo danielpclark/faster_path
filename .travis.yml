@@ -114,6 +114,7 @@ matrix:
     env:
 before_install:
 - curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+- gem install bundler
 deploy:
   provider: releases
   api_key:
