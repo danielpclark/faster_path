@@ -10,6 +10,8 @@ cache:
   - $TRAVIS_BUILD_DIR/target
 rvm:
 - 2.3.7
+- 2.4.4
+- 2.5.1
 env:
   global:
   - PATH=$PATH:$HOME/.cargo/bin
@@ -87,15 +89,9 @@ matrix:
     if: tag =~ ^v0
     env:
   - os: linux
-    rvm: 2.4.4
-    before_install: gem install bundler
-  - os: linux
     rvm: 2.5.0
     if: tag =~ ^v0
     env:
-  - os: linux
-    rvm: 2.5.1
-    before_install: gem install bundler
   - os: osx
     rvm: 2.3.5
     if: tag =~ ^v0
@@ -113,15 +109,9 @@ matrix:
     if: tag =~ ^v0
     env:
   - os: osx
-    rvm: 2.4.4
-    before_install: gem install bundler
-  - os: osx
     rvm: 2.5.0
     if: tag =~ ^v0
     env:
-  - os: osx
-    rvm: 2.5.1
-    before_install: gem install bundler
 before_install:
 - curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 deploy:
