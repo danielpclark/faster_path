@@ -5,7 +5,7 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 #[macro_use]
-extern crate ruru;
+extern crate rutie;
 
 #[macro_use]
 extern crate lazy_static;
@@ -32,7 +32,7 @@ mod relative_path_from;
 use pathname::Pathname;
 use pathname_sys::raise;
 
-use ruru::{Module, Object, RString, Boolean, AnyObject};
+use rutie::{Module, Object, RString, Boolean, AnyObject};
 
 use pathname_sys::*;
 

@@ -1,9 +1,8 @@
-use ruru::{RString, Object, Class, AnyObject};
-extern crate ruby_sys;
+use rutie::{RString, Object, Class, AnyObject};
 use debug::RubyDebugInfo;
-use ruru;
+use rutie;
 
-type MaybeString = Result<ruru::RString, ruru::result::Error>;
+type MaybeString = Result<rutie::RString, rutie::AnyException>;
 
 pub trait TryFrom<T>: Sized {
   type Error;
@@ -45,7 +44,7 @@ pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
 
 pub fn to_str(maybe_string: &MaybeString) -> &str {
   match maybe_string {
-    &Ok(ref ruru_string) => ruru_string.to_str(),
+    &Ok(ref rutie_string) => rutie_string.to_str(),
     &Err(_) => "",
   }
 }

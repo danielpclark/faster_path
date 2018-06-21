@@ -1,4 +1,4 @@
-use ruru::{
+use rutie::{
   RString,
   AnyObject,
   Object,
