@@ -11,8 +11,8 @@ use debug;
 use helpers::{TryFrom, to_str};
 use path_parsing::{SEP, find_last_non_sep_pos};
 
-use ruru;
-use ruru::{
+use rutie;
+use rutie::{
   RString,
   Boolean,
   Array,
@@ -24,14 +24,14 @@ use ruru::{
   Exception as Exc,
   AnyException as Exception,
 };
-use ruru::types::{Value, ValueType};
+use rutie::types::{Value, ValueType};
 use std::borrow::Cow;
 use std::path::{MAIN_SEPARATOR, Path};
 use std::fs;
 
-type MaybeArray = Result<ruru::Array, ruru::result::Error>;
-type MaybeString = Result<ruru::RString, ruru::result::Error>;
-type MaybeBoolean = Result<ruru::Boolean, ruru::result::Error>;
+type MaybeArray = Result<rutie::Array, rutie::AnyException>;
+type MaybeString = Result<rutie::RString, rutie::AnyException>;
+type MaybeBoolean = Result<rutie::Boolean, rutie::AnyException>;
 
 pub struct Pathname {
   value: Value
@@ -305,7 +305,7 @@ pub fn pn_plus(pth1: MaybeString, pth2: MaybeString) -> RString {
 
 pub fn pn_is_relative(pth: MaybeString) -> Boolean {
   let path = match &pth {
-    &Ok(ref ruru_string) => ruru_string.to_str(),
+    &Ok(ref rutie_string) => rutie_string.to_str(),
     &Err(_) => return Boolean::new(false),
   };
   Boolean::new(path.as_bytes().get(0) != Some(&SEP))

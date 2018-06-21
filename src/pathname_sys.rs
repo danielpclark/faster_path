@@ -1,8 +1,7 @@
-use ruru::{AnyObject, Array, Object, AnyException};
-use ruru::types::{Argc, Value, CallbackPtr};
-use ruru::util::str_to_cstring;
-extern crate ruby_sys;
-use self::ruby_sys::{class, util, vm};
+use rutie::{AnyObject, Array, Object, AnyException};
+use rutie::types::{Argc, Value, CallbackPtr};
+use rutie::util::str_to_cstring;
+use rutie::rubysys::{class, util, vm};
 use ::pathname;
 extern crate memchr;
 
@@ -24,7 +23,7 @@ pub fn define_singleton_method<I: Object, O: Object>(
   }
 }
 
-// ruru doesn't support splat arguments yet
+// rutie doesn't support splat arguments yet
 pub extern fn pub_join(argc: Argc, argv: *const Value, _: AnyObject) -> AnyObject {
   let args = Value::from(0);
 

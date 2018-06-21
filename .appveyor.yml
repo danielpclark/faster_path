@@ -1,4 +1,4 @@
-# based on ruru and rust_blank .appveyor.yml files
+# based on rutie and rust_blank .appveyor.yml files
 platform:
   - x86
   - x64

@@ -4,10 +4,10 @@ use path_parsing::SEP_STR;
 use cleanpath_aggressive::cleanpath_aggressive;
 use chop_basename::chop_basename;
 use pathname::Pathname;
-use ruru;
-use ruru::{Exception as Exc, AnyException as Exception};
+use rutie;
+use rutie::{Exception as Exc, AnyException as Exception};
 
-type MaybeString = Result<ruru::RString, ruru::result::Error>;
+type MaybeString = Result<rutie::RString, rutie::AnyException>;
 
 pub fn relative_path_from(itself: MaybeString, base_directory: MaybeString) -> Result<Pathname, Exception> {
   let dest_directory = cleanpath_aggressive(to_str(&itself));
