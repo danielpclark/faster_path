@@ -116,6 +116,7 @@ matrix:
 before_install:
 - curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 - gem install bundler
+- tree /home/travis/.rvm/rubies -I "*.rb"
 deploy:
   provider: releases
   api_key:
