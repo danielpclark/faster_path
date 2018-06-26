@@ -177,8 +177,7 @@ pub extern "C" fn Init_faster_pathname() {
     itself.def_self("entries_compat", pub_entries_compat);
     itself.def_self("extname", pub_extname);
     itself.def_self("has_trailing_separator?", pub_has_trailing_separator);
-    //itself.def_self("join", pub_join);
-    pathname_sys::define_singleton_method(itself.value(), "join", pub_join);
+    itself.def_self("join", pub_join);
     itself.def_self("plus", pub_plus);
     itself.def_self("relative?", pub_is_relative);
     itself.def_self("relative_path_from", pub_relative_path_from);
