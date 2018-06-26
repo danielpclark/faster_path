@@ -4,7 +4,7 @@ version = "0.0.1"
 dependencies = [
  "lazy_static 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "memchr 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "rutie 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rutie 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -26,16 +26,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "pkg-config"
+version = "0.3.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "rutie"
-version = "0.1.0"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "lazy_static 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.42 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [metadata]
 "checksum lazy_static 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "e6412c5e2ad9584b0b8e979393122026cdd6d2a80b933f890dcd694ddbe73739"
 "checksum libc 0.2.42 (registry+https://github.com/rust-lang/crates.io-index)" = "b685088df2b950fccadf07a7187c8ef846a959c142338a48f9dc0b94517eb5f1"
 "checksum memchr 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "796fba70e76612589ed2ce7f45282f5af869e0fdd7cc6199fa1aa1f1d591ba9d"
-"checksum rutie 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "166b5a03fcdfd0ff6408ef54d2d20f2d1dd0dee4d6e4610542623f3f14d9f16f"
+"checksum pkg-config 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)" = "110d5ee3593dbb73f56294327fe5668bcc997897097cbc76b51e7aed3f52452f"
+"checksum rutie 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "754976fb82e99700ce6306bffe7d21061bc93646a0ba20069201d724f227e6bf"

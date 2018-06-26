@@ -46,7 +46,7 @@ end
 
 desc "Run Rust Tests"
 task :cargo do
-  sh "cargo test -- --nocapture"
+  sh "cargo -vv test -- --nocapture"
 end
 
 Rake::TestTask.new(minitest: :build_lib) do |t|
