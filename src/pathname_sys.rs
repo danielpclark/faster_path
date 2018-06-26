@@ -4,7 +4,6 @@ use rutie::util::str_to_cstring;
 use rutie::rubysys::{util, vm};
 use ::pathname;
 use std::mem;
-extern crate memchr;
 
 pub fn raise(exception: AnyException) {
   unsafe { vm::rb_exc_raise(exception.value()); }
