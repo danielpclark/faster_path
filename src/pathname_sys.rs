@@ -1,13 +1,9 @@
-use rutie::{AnyObject, Array, Object, AnyException};
+use rutie::{AnyObject, Array};
 use rutie::types::{Argc, Value};
 use rutie::util::str_to_cstring;
-use rutie::rubysys::{util, vm};
+use rutie::rubysys::util;
 use ::pathname;
 use std::mem;
-
-pub fn raise(exception: AnyException) {
-  unsafe { vm::rb_exc_raise(exception.value()); }
-}
 
 // rutie doesn't support splat arguments yet natively
 pub extern fn pub_join(argc: Argc, argv: *const AnyObject, _: AnyObject) -> AnyObject {

@@ -30,9 +30,8 @@ mod path_parsing;
 mod relative_path_from;
 
 use pathname::Pathname;
-use pathname_sys::raise;
 
-use rutie::{Module, Object, RString, Boolean, AnyObject};
+use rutie::{Module, Object, RString, Boolean, AnyObject, VM};
 
 use pathname_sys::*;
 
@@ -56,12 +55,12 @@ methods!(
 
   fn pub_children(pth: RString, with_dir: Boolean) -> AnyObject {
     pathname::pn_children(pth, with_dir).
-      map_err(|e| raise(e) ).unwrap()
+      map_err(|e| VM::raise_ex(e) ).unwrap()
   }
 
   fn pub_children_compat(pth: RString, with_dir: Boolean) -> AnyObject {
     pathname::pn_children_compat(pth, with_dir).
-      map_err(|e| raise(e) ).unwrap()
+      map_err(|e| VM::raise_ex(e) ).unwrap()
   }
 
   fn pub_chop_basename(pth: RString) -> AnyObject {
@@ -103,13 +102,13 @@ methods!(
   // pub_entries returns an array of String objects
   fn pub_entries(pth: RString) -> AnyObject {
     pathname::pn_entries(pth).
-      map_err(|e| raise(e) ).unwrap()
+      map_err(|e| VM::raise_ex(e) ).unwrap()
   }
 
   // pub_entries_compat returns an array of Pathname objects
   fn pub_entries_compat(pth: RString) -> AnyObject {
     pathname::pn_entries_compat(pth).
-      map_err(|e| raise(e) ).unwrap()
+      map_err(|e| VM::raise_ex(e) ).unwrap()
   }
 
   fn pub_extname(pth: RString) -> RString {
@@ -153,7 +152,7 @@ methods!(
     let to_string = |i: AnyObject| { RString::from(i.send("to_s", None).value()) };
 
     pathname::pn_relative_path_from(itself, base_directory.map(to_string)).
-      map_err(|e| raise(e) ).unwrap()
+      map_err(|e| VM::raise_ex(e) ).unwrap()
   }
 
   // fn pub_rmtree(pth: RString) -> NilClass {
