@@ -147,6 +147,12 @@ improvement result  for the `chop_basename` method.
 
 ## Usage
 
+Add the proper require to your project.
+
+```ruby
+require "faster_path"
+```
+
 Current methods implemented:
 
 |FasterPath Rust Implementation|Ruby 2.5.0 Implementation|Time Shaved Off|
