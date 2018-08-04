@@ -31,7 +31,7 @@ pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
   if Class::from_existing("Pathname").case_equals(result) {
     return Ok(result.instance_variable_get("@path").
       try_convert_to::<RString>().
-      unwrap_or(RString::new("")).
+      unwrap_or(RString::new_usascii_unchecked("")).
       to_string())
   }
 
