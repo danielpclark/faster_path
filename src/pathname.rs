@@ -39,7 +39,7 @@ pub struct Pathname {
 
 impl Pathname {
   pub fn new(path: &str) -> Pathname {
-    let arguments = [RString::new_usascii_unchecked(path).to_any_object()];
+    let arguments = [RString::new_utf8(path).to_any_object()];
     let instance = Class::from_existing("Pathname").new_instance(Some(&arguments));
 
     Pathname { value: instance.value() }
@@ -94,7 +94,7 @@ pub fn pn_add_trailing_separator(pth: MaybeString) -> RString {
   let x = format!("{}{}", p.to_str(), "a");
   match x.rsplit_terminator(MAIN_SEPARATOR).next() {
     Some("a") => p,
-    _ => RString::new_usascii_unchecked(format!("{}{}", p.to_str(), MAIN_SEPARATOR).as_str())
+    _ => RString::new_utf8(format!("{}{}", p.to_str(), MAIN_SEPARATOR).as_str())
   }
 }
 
@@ -105,11 +105,11 @@ pub fn pn_is_absolute(pth: MaybeString) -> Boolean {
 // pub fn pn_ascend(){}
 
 pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
-  RString::new_usascii_unchecked(basename::basename(to_str(&pth), to_str(&ext)))
+  RString::new_utf8(basename::basename(to_str(&pth), to_str(&ext)))
 }
 
 pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> Result<AnyObject, Exception> {
-  let path = pth.unwrap_or(RString::new_usascii_unchecked("."));
+  let path = pth.unwrap_or(RString::new_utf8("."));
   let path = path.to_str();
 
   if let Ok(entries) = fs::read_dir(path) {
@@ -122,12 +122,12 @@ pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> Result<AnyObject
     for entry in entries {
       if with_directory {
         match entry {
-          Ok(v) => { arr.push(RString::new_usascii_unchecked(v.path().to_str().unwrap())); },
+          Ok(v) => { arr.push(RString::new_utf8(v.path().to_str().unwrap())); },
           _ => {}
         };
       } else {
         match entry {
-          Ok(v) => { arr.push(RString::new_usascii_unchecked(v.file_name().to_str().unwrap())); },
+          Ok(v) => { arr.push(RString::new_utf8(v.file_name().to_str().unwrap())); },
           _ => {}
         };
       }
@@ -173,8 +173,8 @@ pub fn pn_chop_basename(pth: MaybeString) -> AnyObject {
   match chop_basename::chop_basename(to_str(&pth)) {
     Some((dirname, basename)) => {
       let mut arr = Array::with_capacity(2);
-      arr.push(RString::new_usascii_unchecked(&dirname));
-      arr.push(RString::new_usascii_unchecked(&basename));
+      arr.push(RString::new_utf8(&dirname));
+      arr.push(RString::new_utf8(&basename));
       arr.to_any_object()
     },
     None => NilClass::new().to_any_object()
@@ -184,25 +184,25 @@ pub fn pn_chop_basename(pth: MaybeString) -> AnyObject {
 // pub fn pn_cleanpath(pth: MaybeString){}
 
 pub fn pn_cleanpath_aggressive(pth: MaybeString) -> RString {
-  RString::new_usascii_unchecked(&cleanpath_aggressive::cleanpath_aggressive(to_str(&pth)))
+  RString::new_utf8(&cleanpath_aggressive::cleanpath_aggressive(to_str(&pth)))
 }
 
 pub fn pn_cleanpath_conservative(pth: MaybeString) -> RString {
-  RString::new_usascii_unchecked(&cleanpath_conservative::cleanpath_conservative(to_str(&pth)))
+  RString::new_utf8(&cleanpath_conservative::cleanpath_conservative(to_str(&pth)))
 }
 
 pub fn pn_del_trailing_separator(pth: MaybeString) -> RString {
   {
     let path = to_str(&pth);
     if path.is_empty() {
-      return RString::new_usascii_unchecked("/");
+      return RString::new_utf8("/");
     }
     let pos = match find_last_non_sep_pos(path.as_bytes()) {
       Some(pos) => pos,
-      None => return RString::new_usascii_unchecked("/"),
+      None => return RString::new_utf8("/"),
     };
     if pos != path.len() - 1 {
-      return RString::new_usascii_unchecked(&path[..pos + 1]);
+      return RString::new_utf8(&path[..pos + 1]);
     }
   }
   pth.unwrap()
@@ -215,7 +215,7 @@ pub fn pn_is_directory(pth: MaybeString) -> Boolean {
 }
 
 pub fn pn_dirname(pth: MaybeString) -> RString {
-  RString::new_usascii_unchecked(dirname::dirname(to_str(&pth)))
+  RString::new_utf8(dirname::dirname(to_str(&pth)))
 }
 
 // pub fn pn_each_child(){}
@@ -229,11 +229,11 @@ pub fn pn_entries(pth: MaybeString) -> Result<AnyObject, Exception> {
   if let Ok(files) = fs::read_dir(path) {
     let mut arr = Array::with_capacity(files.size_hint().1.unwrap_or(0) + 2);
 
-    arr.push(RString::new_usascii_unchecked("."));
-    arr.push(RString::new_usascii_unchecked(".."));
+    arr.push(RString::new_utf8("."));
+    arr.push(RString::new_utf8(".."));
 
     for file in files {
-      arr.push(RString::new_usascii_unchecked(file.unwrap().file_name().to_str().unwrap()));
+      arr.push(RString::new_utf8(file.unwrap().file_name().to_str().unwrap()));
     }
 
     Ok(arr.to_any_object())
@@ -263,7 +263,7 @@ pub fn pn_entries_compat(pth: MaybeString) -> Result<AnyObject, Exception> {
 }
 
 pub fn pn_extname(pth: MaybeString) -> RString {
-  RString::new_usascii_unchecked(extname::extname(to_str(&pth)))
+  RString::new_utf8(extname::extname(to_str(&pth)))
 }
 
 // pub fn pn_find(pth: MaybeString, ignore_error: Boolean){}
@@ -298,7 +298,7 @@ pub fn pn_join(args: MaybeArray) -> AnyObject {
 // pub fn pn_parent(pth: MaybeString){}
 
 pub fn pn_plus(pth1: MaybeString, pth2: MaybeString) -> RString {
-  RString::new_usascii_unchecked(&plus::plus_paths(to_str(&pth1), to_str(&pth2)))
+  RString::new_utf8(&plus::plus_paths(to_str(&pth1), to_str(&pth2)))
 }
 
 // pub fn pn_prepend_prefix(prefix: MaybeString, relpath: MaybeString){}
