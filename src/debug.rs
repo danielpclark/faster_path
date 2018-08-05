@@ -14,11 +14,11 @@ pub struct RubyDebugInfo {
 impl From<AnyObject> for RubyDebugInfo {
   fn from(ao: AnyObject) -> Self {
     let object_id = ao.send("object_id", None).send("to_s", None).
-      try_convert_to::<RString>().unwrap_or(RString::new("Failed to get object_id!")).to_string();
+      try_convert_to::<RString>().unwrap_or(RString::new_utf8("Failed to get object_id!")).to_string();
     let class = ao.send("class", None).send("to_s", None).
-      try_convert_to::<RString>().unwrap_or(RString::new("Failed to get class!")).to_string();
+      try_convert_to::<RString>().unwrap_or(RString::new_utf8("Failed to get class!")).to_string();
     let inspect = ao.send("inspect", None).
-      try_convert_to::<RString>().unwrap_or(RString::new("Failed to get inspect!")).to_string();
+      try_convert_to::<RString>().unwrap_or(RString::new_utf8("Failed to get inspect!")).to_string();
 
     RubyDebugInfo {
       object_id: object_id,
