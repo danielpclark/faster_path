@@ -73,7 +73,7 @@ class OutputTypeCompatibilityTest < Minitest::Test
 
   end
 
-  describe "TestForIdenticalOutput" do
+  describe "test for identical output" do
     def test_absolute?
       assert_happy_path :absolute?
       assert_unhappy_path :absolute?
