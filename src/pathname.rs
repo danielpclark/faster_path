@@ -8,7 +8,7 @@ use extname;
 use plus;
 use relative_path_from;
 use debug;
-use helpers::{TryFrom, to_str};
+use helpers::{TryFrom, to_str, to_bytes};
 use path_parsing::{SEP, find_last_non_sep_pos};
 
 use rutie;
@@ -23,6 +23,7 @@ use rutie::{
   VerifiedObject,
   Exception as Exc,
   AnyException as Exception,
+  Encoding,
 };
 use rutie::types::{Value, ValueType};
 use std::borrow::Cow;
@@ -105,7 +106,7 @@ pub fn pn_is_absolute(pth: MaybeString) -> Boolean {
 // pub fn pn_ascend(){}
 
 pub fn pn_basename(pth: MaybeString, ext: MaybeString) -> RString {
-  RString::new_utf8(basename::basename(to_str(&pth), to_str(&ext)))
+  RString::from_bytes(basename::basename(to_bytes(&pth), to_str(&ext)), &Encoding::utf8())
 }
 
 pub fn pn_children(pth: MaybeString, with_dir: MaybeBoolean) -> Result<AnyObject, Exception> {

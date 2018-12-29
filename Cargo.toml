@@ -16,6 +16,6 @@ name = "faster_path"
 crate-type = ["dylib"]
 
 [dependencies]
-rutie = "0.3.2"
-lazy_static = "1.0"
+rutie = "0.3.3"
+lazy_static = "1.1"
 memchr = "2.0.1"

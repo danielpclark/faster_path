@@ -21,7 +21,7 @@ pub fn cleanpath_conservative(path: &str) -> Cow<str> {
   // pre.tr!(File::ALT_SEPARATOR, File::SEPARATOR) if File::ALT_SEPARATOR
   // ```
   //
-  if contains_sep(basename(&prefix, "").as_bytes()) {
+  if contains_sep(basename(&prefix.as_bytes(), "")) {
     let len = names.iter().rposition(|&c| c != "..").map_or(0, |pos| pos + 1);
     names.truncate(len);
   }
@@ -31,7 +31,7 @@ pub fn cleanpath_conservative(path: &str) -> Cow<str> {
     None => return dirname(&prefix).into(),
   };
 
-  if last_name != ".." && basename(&path, "") == "." {
+  if last_name != ".." && basename(&path.as_bytes(), "") == ".".as_bytes() {
     names.reverse();
     names.push(".");
   } else if last_name != "." && last_name != ".." &&

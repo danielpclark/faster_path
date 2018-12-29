@@ -44,7 +44,14 @@ pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
 
 pub fn to_str(maybe_string: &MaybeString) -> &str {
   match maybe_string {
-    &Ok(ref rutie_string) => rutie_string.to_str(),
+    &Ok(ref rutie_string) => rutie_string.to_str_unchecked(),
     &Err(_) => "",
+  }
+}
+
+pub fn to_bytes(maybe_string: &MaybeString) -> &[u8] {
+  match maybe_string {
+    &Ok(ref rutie_string) => rutie_string.to_bytes_unchecked(),
+    &Err(_) => &[],
   }
 }

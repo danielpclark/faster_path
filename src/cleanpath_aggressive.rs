@@ -27,7 +27,7 @@ pub fn cleanpath_aggressive(path: &str) -> Cow<str> {
   // pre.tr!(File::ALT_SEPARATOR, File::SEPARATOR) if File::ALT_SEPARATOR
   // ```
   //
-  if contains_sep(basename(&prefix, "").as_bytes()) {
+  if contains_sep(basename(&prefix.as_bytes(), "")) {
     let len = names.iter().rposition(|&c| c != "..").map_or(0, |pos| pos + 1);
     names.truncate(len);
   }
