@@ -36,10 +36,10 @@ pub fn anyobject_to_string(item: AnyObject) -> Result<String, RubyDebugInfo> {
   }
 
   if result.respond_to("to_path") {
-    return Ok(RString::from(result.send("to_path", None).value()).to_string())
+    return Ok(RString::from(result.send("to_path", &[]).value()).to_string())
   }
 
-  Ok(RString::from(result.send("to_s", None).value()).to_string())
+  Ok(RString::from(result.send("to_s", &[]).value()).to_string())
 }
 
 pub fn to_str(maybe_string: &MaybeString) -> &str {

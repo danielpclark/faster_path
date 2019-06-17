@@ -40,7 +40,7 @@ pub struct Pathname {
 impl Pathname {
   pub fn new(path: &str) -> Pathname {
     let arguments = [RString::new_utf8(path).to_any_object()];
-    let instance = Class::from_existing("Pathname").new_instance(Some(&arguments));
+    let instance = Class::from_existing("Pathname").new_instance(&arguments);
 
     Pathname { value: instance.value() }
   }
@@ -64,7 +64,7 @@ impl TryFrom<AnyObject> for Pathname {
     } else if Class::from_existing("Pathname").case_equals(&obj) {
       Ok(Pathname::from(obj.value()))
     } else if obj.respond_to("to_path") {
-      Ok(Pathname::new(&RString::from(obj.send("to_path", None).value()).to_str()))
+      Ok(Pathname::new(&RString::from(obj.send("to_path", &[]).value()).to_str()))
     } else {
       Err(Self::Error::from(obj))
     }
