@@ -46,7 +46,14 @@ end
 
 desc "Run Rust Tests"
 task :cargo do
-  sh "cargo -vv test -- --nocapture"
+  ruby_lib = RbConfig::CONFIG['libdir']
+  sh(
+    {
+      'LD_LIBRARY_PATH' => ruby_lib,
+      'DYLD_LIBRARY_PATH' => ruby_lib
+    },
+    'cargo -vv test -- --nocapture'
+  )
 end
 
 Rake::TestTask.new(minitest: :build_lib) do |t|

@@ -3,7 +3,7 @@ if ENV['TEST_MONKEYPATCHES'] &&
     ENV['WITH_REGRESSION'] &&
     !ENV['RUST_BACKTRACE'] &&
     ENV['TRAVIS_OS_NAME'] == 'linux' &&
-    Gem::Dependency.new('', '~> 2.3', '< 2.4').match?('', RUBY_VERSION)
+    Gem::Dependency.new('', '~> 2.4', '< 2.5').match?('', RUBY_VERSION)
   require 'simplecov'
   require 'coveralls'
 
