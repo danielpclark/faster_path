@@ -24,6 +24,9 @@ Gem::Specification.new do |spec|
   spec.extensions    = ['ext/Rakefile']
   spec.require_paths = ['lib']
 
+  # Rutie 0.10, which the Rust extension is built with, supports Ruby 2.5 to 2.7
+  spec.required_ruby_version = ['>= 2.5', '< 3.0']
+
   spec.add_dependency 'bundler', '>= 1.12'
   spec.add_dependency 'rake', '~> 12.3'
   spec.add_dependency 'thermite', '0.13.0'

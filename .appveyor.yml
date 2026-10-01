@@ -1,18 +1,24 @@
 # based on rutie and rust_blank .appveyor.yml files
+# Rutie 0.10 supports 64-bit RubyInstaller Rubies 2.5 to 2.7 on Windows
 platform:
-  - x86
   - x64
 environment:
   matrix:
     - RUST_VERSION: stable
       BUILD_TARGET: gnu
-      RUBY_VERSION: 23
+      RUBY_VERSION: 25
+    - RUST_VERSION: stable
+      BUILD_TARGET: gnu
+      RUBY_VERSION: 26
+    - RUST_VERSION: stable
+      BUILD_TARGET: gnu
+      RUBY_VERSION: 27
     - RUST_VERSION: beta
       BUILD_TARGET: gnu
-      RUBY_VERSION: 23
+      RUBY_VERSION: 27
     - RUST_VERSION: nightly
       BUILD_TARGET: gnu
-      RUBY_VERSION: 23
+      RUBY_VERSION: 27
 cache:
   - target\debug\build
   - target\debug\deps

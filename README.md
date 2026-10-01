@@ -113,6 +113,11 @@ As mentioned earlier Sprockets, which handles assets, changed away from using `P
 * Testers and developers are most welcome
 * Windows & encoding support is underway!
 
+## Requirements
+
+* Ruby 2.5, 2.6 or 2.7 (the Rust extension is built with [Rutie](https://github.com/danielpclark/rutie) 0.10, which supports these)
+* Rust 1.71 or later
+
 ## Installation
 
 Ensure Rust is installed:
@@ -120,7 +125,7 @@ Ensure Rust is installed:
 [Rust Downloads](https://www.rust-lang.org/downloads.html)
 
 ```
-curl -sSf https://static.rust-lang.org/rustup.sh | sh
+curl -sSf https://sh.rustup.rs | sh
 ```
 
 Add this line to your application's Gemfile:

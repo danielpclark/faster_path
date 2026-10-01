@@ -9,9 +9,9 @@ cache:
   - $HOME/.cargo
   - $TRAVIS_BUILD_DIR/target
 rvm:
-- 2.4.6
-- 2.5.5
-- 2.6.3
+- 2.5.9
+- 2.6.10
+- 2.7.8
 env:
   global:
   - NO_LINK_RUTIE=1
@@ -24,62 +24,61 @@ env:
   - RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
 matrix:
   allow_failures:
-  - env: RUST_BACKTRACE=1 ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
   - os: linux
-    rvm: 2.6.3
+    rvm: 2.7.8
     env: LONG_RUN=20
     script: bundle exec rake pbench
   - os: linux
-    rvm: 2.4.6
+    rvm: 2.5.9
     if: tag =~ ^v0
     env:
   - os: linux
-    rvm: 2.5.5
+    rvm: 2.6.10
     if: tag =~ ^v0
     env:
   - os: linux
-    rvm: 2.6.3
+    rvm: 2.7.8
     if: tag =~ ^v0
     env:
   - os: osx
-    rvm: 2.4.6
+    rvm: 2.5.9
     if: tag =~ ^v0
     env:
   - os: osx
-    rvm: 2.5.5
+    rvm: 2.6.10
     if: tag =~ ^v0
     env:
   - os: osx
-    rvm: 2.6.3
+    rvm: 2.7.8
     if: tag =~ ^v0
     env:
   include:
   - os: linux
-    rvm: 2.6.3
+    rvm: 2.7.8
     env: LONG_RUN=20
     script: bundle exec rake pbench
   - os: linux
-    rvm: 2.4.6
+    rvm: 2.5.9
     if: tag =~ ^v0
     env:
   - os: linux
-    rvm: 2.5.5
+    rvm: 2.6.10
     if: tag =~ ^v0
     env:
   - os: linux
-    rvm: 2.6.3
+    rvm: 2.7.8
     if: tag =~ ^v0
     env:
   - os: osx
-    rvm: 2.4.6
+    rvm: 2.5.9
     if: tag =~ ^v0
     env:
   - os: osx
-    rvm: 2.5.5
+    rvm: 2.6.10
     if: tag =~ ^v0
     env:
   - os: osx
-    rvm: 2.6.3
+    rvm: 2.7.8
     if: tag =~ ^v0
     env:
 before_install:
