@@ -13,7 +13,7 @@ class RefinedPathname
   end
 end
 
-class CleanpathAggressiveTest < Minitest::Test
+class RippleEffectsPlusTest < Minitest::Test
   def test_plus
     assert_kind_of(Pathname, RefinedPathname.new.+("a", "b"))
   end

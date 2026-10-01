@@ -25,7 +25,8 @@ class ExtnameTest < Minitest::Test
       appendixes.each do |appendix|
         infixes.each do |infix|
           path = "#{prefix}foo#{infix}#{appendix}"
-          assert_equal("", FasterPath.extname(path), "FasterPath.extname(#{path.inspect})")
+          expected = infix == "." && appendix.empty? ? TRAILING_DOT_EXTNAME : ""
+          assert_equal(expected, FasterPath.extname(path), "FasterPath.extname(#{path.inspect})")
         end
         infixes2.each do |infix|
           path = "#{prefix}foo#{infix}.ext#{appendix}"
@@ -56,8 +57,8 @@ class ExtnameTest < Minitest::Test
     assert_equal "", FasterPath.extname("..")
     assert_equal "", FasterPath.extname("...")
     assert_equal "", FasterPath.extname("....")
-    assert_equal "", FasterPath.extname(".foo.")
-    assert_equal "", FasterPath.extname("foo.")
+    assert_equal TRAILING_DOT_EXTNAME, FasterPath.extname(".foo.")
+    assert_equal TRAILING_DOT_EXTNAME, FasterPath.extname("foo.")
     assert_equal "", FasterPath.extname("..foo")
   end
 
@@ -86,5 +87,10 @@ class ExtnameTest < Minitest::Test
     assert_equal( *result_pair.("foo.")                      )
     assert_equal( *result_pair.("foo.rb/")                   )
     assert_equal( *result_pair.("foo.rb//")                  )
+    assert_equal( *result_pair.("..foo")                     )
+    assert_equal( *result_pair.("a/..b")                     )
+    assert_equal( *result_pair.("...a")                      )
+    assert_equal( *result_pair.("foo..")                     )
+    assert_equal( *result_pair.("a./")                       )
   end
 end

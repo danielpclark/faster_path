@@ -9,7 +9,7 @@ class RefinedPathname
   end
 end
 
-class CleanpathConservativeTest < Minitest::Test
+class RippleEffectsCleanpathConservativeTest < Minitest::Test
   def test_clean_conservative_defaults1
     assert_equal RefinedPathname.new.cleanpath_conservative('/'), '/'
     assert_equal RefinedPathname.new.cleanpath_conservative(''), '.'

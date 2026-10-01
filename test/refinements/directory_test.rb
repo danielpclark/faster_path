@@ -8,7 +8,7 @@ class RefinedPathname
   end
 end
 
-class DirectoryRefinementTest < Minitest::Test
+class RefinementsDirectoryRefinementTest < Minitest::Test
   def test_refines_pathname_directory?
     assert RefinedPathname.new.directory?("/")
   end

@@ -9,7 +9,7 @@ class RefinedPathname
   end
 end
 
-class AbsoluteRefinementTest < Minitest::Test
+class RefinementsAbsoluteRefinementTest < Minitest::Test
   def test_refines_pathname_absolute?
     assert RefinedPathname.new.absolute?("/")
   end

@@ -9,7 +9,7 @@ class RefinedPathname
   end
 end
 
-class HasTrailingSeparatorTest < Minitest::Test
+class RippleEffectsHasTrailingSeparatorTest < Minitest::Test
   def test_has_trailing_separator?
     refute RefinedPathname.new.has_trailing_separator?("/")
     refute RefinedPathname.new.has_trailing_separator?("///")

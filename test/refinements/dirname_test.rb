@@ -9,7 +9,7 @@ class RefinedFile
   end
 end
 
-class DirnameTest < Minitest::Test
+class RefinementsDirnameTest < Minitest::Test
   def setup
     @refined_file = RefinedFile.new
   end

@@ -1,70 +1,83 @@
-use std::iter;
-use helpers::{is_same_path, to_str};
-use path_parsing::SEP_STR;
-use cleanpath_aggressive::cleanpath_aggressive;
-use chop_basename::chop_basename;
-use pathname::Pathname;
-use rutie;
-use rutie::{Exception as Exc, AnyException as Exception};
+use crate::helpers::is_same_path;
+use crate::path_parsing::SEP_BYTES;
+use crate::cleanpath_aggressive::cleanpath_aggressive;
+use crate::chop_basename::chop_basename;
 
-type MaybeString = Result<rutie::RString, rutie::AnyException>;
+#[derive(Debug, PartialEq)]
+pub enum RelativePathError {
+  // Holds the destination prefix and the cleaned base directory.
+  DifferentPrefix(Vec<u8>, Vec<u8>),
+  // Holds the cleaned base directory.
+  BaseDirectoryHasDotDot(Vec<u8>),
+}
 
-pub fn relative_path_from(itself: MaybeString, base_directory: MaybeString) -> Result<Pathname, Exception> {
-  let dest_directory = cleanpath_aggressive(to_str(&itself));
-  let base_directory = cleanpath_aggressive(to_str(&base_directory));
+pub fn relative_path_from(dest: &[u8], base: &[u8]) -> Result<Vec<u8>, RelativePathError> {
+  let dest_directory = cleanpath_aggressive(dest);
+  let base_directory = cleanpath_aggressive(base);
 
-  let (dest_prefix, mut dest_names) = to_names(dest_directory.as_ref());
-  let (base_prefix, mut base_names) = to_names(base_directory.as_ref());
+  let (dest_prefix, mut dest_names) = to_names(&dest_directory);
+  let (base_prefix, mut base_names) = to_names(&base_directory);
 
-  if !is_same_path(&dest_prefix, &base_prefix) {
-    return Err(
-      Exception::new(
-        "ArgumentError",
-        Some(&format!("different prefix: {} and {}", dest_prefix, base_prefix)),
-      )
-    );
+  if !is_same_path(dest_prefix, base_prefix) {
+    return Err(RelativePathError::DifferentPrefix(dest_prefix.to_vec(), base_directory.to_vec()));
   }
 
-  // Remove shared tail
+  // Remove the shared leading names (stored last, as the names are collected in reverse)
   {
     let num_same = dest_names.iter().rev().zip(base_names.iter().rev()).
-        take_while(|&(dest, base)| dest == base).count();
-    let num_dest_names = dest_names.len();
-    dest_names.truncate(num_dest_names - num_same);
-    let num_base_names = base_names.len();
-    base_names.truncate(num_base_names - num_same);
+        take_while(|&(dest, base)| is_same_path(dest, base)).count();
+    dest_names.truncate(dest_names.len() - num_same);
+    base_names.truncate(base_names.len() - num_same);
   };
 
-  if base_names.contains(&"..") {
-    return Err(
-      Exception::new(
-        "ArgumentError",
-        Some(&format!("base_directory has ..: {}", base_directory)),
-      )
-    );
+  if base_names.contains(&&b".."[..]) {
+    return Err(RelativePathError::BaseDirectoryHasDotDot(base_directory.to_vec()));
   }
 
   if base_names.is_empty() && dest_names.is_empty() {
-    Ok(Pathname::new("."))
+    Ok(b".".to_vec())
   } else {
-    Ok(Pathname::new(&iter::repeat("..").take(base_names.len()).chain(dest_names.into_iter().rev()).
-        collect::<Vec<&str>>().join(&SEP_STR)))
+    let names: Vec<&[u8]> = std::iter::repeat(&b".."[..]).take(base_names.len()).
+      chain(dest_names.into_iter().rev()).collect();
+    Ok(names.join(SEP_BYTES))
   }
 }
 
 #[inline(always)]
-fn to_names(path: &str) -> (&str, Vec<&str>) {
-  let mut result: Vec<&str> = vec![];
+fn to_names(path: &[u8]) -> (&[u8], Vec<&[u8]>) {
+  let mut result: Vec<&[u8]> = vec![];
   let mut prefix = path;
-  loop {
-    match chop_basename(&prefix) {
-      Some((ref dest, ref basename)) => {
-        prefix = dest;
-        if basename != &"." {
-          result.push(basename);
-        }
-      }
-      None => return (prefix, result),
+  while let Some((dest, basename)) = chop_basename(prefix) {
+    prefix = dest;
+    if basename != b"." {
+      result.push(basename);
     }
   }
+  (prefix, result)
+}
+
+#[cfg(test)]
+fn relative_str(dest: &str, base: &str) -> Option<String> {
+  relative_path_from(dest.as_bytes(), base.as_bytes()).ok().map(|path| String::from_utf8(path).unwrap())
+}
+
+#[test]
+fn it_finds_relative_paths() {
+  assert_eq!(relative_str("a", "b").unwrap(), "../a");
+  assert_eq!(relative_str("/a/b/c/d", "/a/b").unwrap(), "c/d");
+  assert_eq!(relative_str("/a/b", "/a/b/c/d").unwrap(), "../..");
+  assert_eq!(relative_str(".", ".").unwrap(), ".");
+  assert_eq!(relative_str("a/b/c", "a/d").unwrap(), "../b/c");
+}
+
+#[test]
+fn it_rejects_incompatible_paths() {
+  assert_eq!(
+    relative_path_from(b"/", b"."),
+    Err(RelativePathError::DifferentPrefix(b"/".to_vec(), b".".to_vec()))
+  );
+  assert_eq!(
+    relative_path_from(b"a", b".."),
+    Err(RelativePathError::BaseDirectoryHasDotDot(b"..".to_vec()))
+  );
 }

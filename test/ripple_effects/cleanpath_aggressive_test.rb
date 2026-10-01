@@ -9,7 +9,7 @@ class RefinedPathname
   end
 end
 
-class CleanpathAggressiveTest < Minitest::Test
+class RippleEffectsCleanpathAggressiveTest < Minitest::Test
   def test_clean_aggressive_defaults1
     assert_equal RefinedPathname.new.cleanpath_aggressive('/'), '/'
     assert_equal RefinedPathname.new.cleanpath_aggressive(''), '.'

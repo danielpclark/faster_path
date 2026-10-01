@@ -7,15 +7,15 @@ homepage = "https://github.com/danielpclark/faster_path"
 repository = "https://github.com/danielpclark/faster_path"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
+edition = "2021"
 
 [package.metadata.thermite]
 github_releases = true
 
 [lib]
 name = "faster_path"
-crate-type = ["dylib"]
+crate-type = ["cdylib"]
 
 [dependencies]
-rutie = "0.6.0"
-lazy_static = "1.3"
-memchr = "2.2"
+rutie = "0.10.2"
+memchr = "2"

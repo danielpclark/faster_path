@@ -1,19 +1,19 @@
 use std::borrow::Cow;
-use prepend_prefix::prepend_prefix;
-use basename::basename;
-use chop_basename::chop_basename;
-use path_parsing::{SEP_STR, contains_sep};
+use crate::prepend_prefix::prepend_prefix;
+use crate::basename::basename;
+use crate::chop_basename::chop_basename;
+use crate::path_parsing::{SEP_BYTES, contains_sep};
 
-pub fn cleanpath_aggressive(path: &str) -> Cow<str> {
-  let mut names: Vec<&str> = vec![];
+pub fn cleanpath_aggressive(path: &[u8]) -> Cow<'_, [u8]> {
+  let mut names: Vec<&[u8]> = vec![];
   let mut prefix = path;
-  while let Some((ref p, ref base)) = chop_basename(&prefix) {
+  while let Some((p, base)) = chop_basename(prefix) {
     prefix = p;
-    match base.as_ref() {
-      "." => {}
-      ".." => names.push(base),
+    match base {
+      b"." => {}
+      b".." => names.push(base),
       _ => {
-        if names.last() == Some(&"..") {
+        if names.last() == Some(&&b".."[..]) {
           names.pop();
         } else {
           names.push(base);
@@ -27,48 +27,53 @@ pub fn cleanpath_aggressive(path: &str) -> Cow<str> {
   // pre.tr!(File::ALT_SEPARATOR, File::SEPARATOR) if File::ALT_SEPARATOR
   // ```
   //
-  if contains_sep(basename(&prefix, "").as_bytes()) {
-    let len = names.iter().rposition(|&c| c != "..").map_or(0, |pos| pos + 1);
+  if contains_sep(basename(prefix, b"")) {
+    let len = names.iter().rposition(|&c| c != b"..").map_or(0, |pos| pos + 1);
     names.truncate(len);
   }
   names.reverse();
-  prepend_prefix(&prefix, &names.join(&SEP_STR))
+  prepend_prefix(prefix, &names.join(SEP_BYTES))
+}
+
+#[cfg(test)]
+fn cleanpath_aggressive_str(path: &str) -> String {
+  String::from_utf8(cleanpath_aggressive(path.as_bytes()).into_owned()).unwrap()
 }
 
 #[test]
 fn it_aggressively_cleans_the_path() {
-  assert_eq!(cleanpath_aggressive("/")                     ,       "/");
-  assert_eq!(cleanpath_aggressive("")                      ,       ".");
-  assert_eq!(cleanpath_aggressive(".")                     ,       ".");
-  assert_eq!(cleanpath_aggressive("..")                    ,      "..");
-  assert_eq!(cleanpath_aggressive("a")                     ,       "a");
-  assert_eq!(cleanpath_aggressive("/.")                    ,       "/");
-  assert_eq!(cleanpath_aggressive("/..")                   ,       "/");
-  assert_eq!(cleanpath_aggressive("/a")                    ,      "/a");
-  assert_eq!(cleanpath_aggressive("./")                    ,       ".");
-  assert_eq!(cleanpath_aggressive("../")                   ,      "..");
-  assert_eq!(cleanpath_aggressive("a/")                    ,       "a");
-  assert_eq!(cleanpath_aggressive("a//b")                  ,     "a/b");
-  assert_eq!(cleanpath_aggressive("a/.")                   ,       "a");
-  assert_eq!(cleanpath_aggressive("a/./")                  ,       "a");
-  assert_eq!(cleanpath_aggressive("a/..")                  ,       ".");
-  assert_eq!(cleanpath_aggressive("a/../")                 ,       ".");
-  assert_eq!(cleanpath_aggressive("/a/.")                  ,      "/a");
-  assert_eq!(cleanpath_aggressive("./..")                  ,      "..");
-  assert_eq!(cleanpath_aggressive("../.")                  ,      "..");
-  assert_eq!(cleanpath_aggressive("./../")                 ,      "..");
-  assert_eq!(cleanpath_aggressive(".././")                 ,      "..");
-  assert_eq!(cleanpath_aggressive("/./..")                 ,       "/");
-  assert_eq!(cleanpath_aggressive("/../.")                 ,       "/");
-  assert_eq!(cleanpath_aggressive("/./../")                ,       "/");
-  assert_eq!(cleanpath_aggressive("/.././")                ,       "/");
-  assert_eq!(cleanpath_aggressive("a/b/c")                 ,   "a/b/c");
-  assert_eq!(cleanpath_aggressive("./b/c")                 ,     "b/c");
-  assert_eq!(cleanpath_aggressive("a/./c")                 ,     "a/c");
-  assert_eq!(cleanpath_aggressive("a/b/.")                 ,     "a/b");
-  assert_eq!(cleanpath_aggressive("a/../.")                ,       ".");
-  assert_eq!(cleanpath_aggressive("/../.././../a")         ,      "/a");
-  assert_eq!(cleanpath_aggressive("a/b/../../../../c/../d"), "../../d");
+  assert_eq!(cleanpath_aggressive_str("/")                     ,       "/");
+  assert_eq!(cleanpath_aggressive_str("")                      ,       ".");
+  assert_eq!(cleanpath_aggressive_str(".")                     ,       ".");
+  assert_eq!(cleanpath_aggressive_str("..")                    ,      "..");
+  assert_eq!(cleanpath_aggressive_str("a")                     ,       "a");
+  assert_eq!(cleanpath_aggressive_str("/.")                    ,       "/");
+  assert_eq!(cleanpath_aggressive_str("/..")                   ,       "/");
+  assert_eq!(cleanpath_aggressive_str("/a")                    ,      "/a");
+  assert_eq!(cleanpath_aggressive_str("./")                    ,       ".");
+  assert_eq!(cleanpath_aggressive_str("../")                   ,      "..");
+  assert_eq!(cleanpath_aggressive_str("a/")                    ,       "a");
+  assert_eq!(cleanpath_aggressive_str("a//b")                  ,     "a/b");
+  assert_eq!(cleanpath_aggressive_str("a/.")                   ,       "a");
+  assert_eq!(cleanpath_aggressive_str("a/./")                  ,       "a");
+  assert_eq!(cleanpath_aggressive_str("a/..")                  ,       ".");
+  assert_eq!(cleanpath_aggressive_str("a/../")                 ,       ".");
+  assert_eq!(cleanpath_aggressive_str("/a/.")                  ,      "/a");
+  assert_eq!(cleanpath_aggressive_str("./..")                  ,      "..");
+  assert_eq!(cleanpath_aggressive_str("../.")                  ,      "..");
+  assert_eq!(cleanpath_aggressive_str("./../")                 ,      "..");
+  assert_eq!(cleanpath_aggressive_str(".././")                 ,      "..");
+  assert_eq!(cleanpath_aggressive_str("/./..")                 ,       "/");
+  assert_eq!(cleanpath_aggressive_str("/../.")                 ,       "/");
+  assert_eq!(cleanpath_aggressive_str("/./../")                ,       "/");
+  assert_eq!(cleanpath_aggressive_str("/.././")                ,       "/");
+  assert_eq!(cleanpath_aggressive_str("a/b/c")                 ,   "a/b/c");
+  assert_eq!(cleanpath_aggressive_str("./b/c")                 ,     "b/c");
+  assert_eq!(cleanpath_aggressive_str("a/./c")                 ,     "a/c");
+  assert_eq!(cleanpath_aggressive_str("a/b/.")                 ,     "a/b");
+  assert_eq!(cleanpath_aggressive_str("a/../.")                ,       ".");
+  assert_eq!(cleanpath_aggressive_str("/../.././../a")         ,      "/a");
+  assert_eq!(cleanpath_aggressive_str("a/b/../../../../c/../d"), "../../d");
 }
 
 // Future Windows Support

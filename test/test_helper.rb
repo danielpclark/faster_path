@@ -34,6 +34,8 @@ Minitest::Reporters.use! [ColorPoundSpecReporter.new]
 end
 
 ::Minitest::Test.class_eval do
+  # Ruby 2.7 changed File.extname("foo.") from "" to "."
+  TRAILING_DOT_EXTNAME = Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7") ? "." : ""
   DRIVE = Dir.pwd[%r{\A(?:[a-z]:|//[^/]+/[^/]+)}i]
   POSIX = /cygwin|mswin|bccwin|mingw|emx/ !~ RUBY_PLATFORM
   NTFS = !(/mingw|mswin|bccwin/ !~ RUBY_PLATFORM)

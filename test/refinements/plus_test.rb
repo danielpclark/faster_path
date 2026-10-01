@@ -7,7 +7,7 @@ class RefinedPathname
   end
 end
 
-class BasenameTest < Minitest::Test
+class RefinementsPlusTest < Minitest::Test
   # Tests copied from https://searchcode.com/codesearch/view/12785140/
   def test_it_creates_basename_correctly
     assert_equal('/', RefinedPathname.allocate.send(:plus, '/', '/'))
