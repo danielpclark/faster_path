@@ -23,12 +23,13 @@ class AddTrailingSeparatorTest < Minitest::Test
 
   def test_add_trailing_separator_in_dosish_context
     if File.dirname('A:') == 'A:.'
-      assert_equal FasterPath.add_trailing_separator('A:'), 'A:/'
-      assert_equal FasterPath.add_trailing_separator('A:/'), 'A:/'
-      assert_equal FasterPath.add_trailing_separator('A://'), 'A://'
-      assert_equal FasterPath.add_trailing_separator('A:.'), 'A:./'
-      assert_equal FasterPath.add_trailing_separator('A:./'), 'A:./'
-      assert_equal FasterPath.add_trailing_separator('A:.//'), 'A:.//'
+      # As in Ruby's test_pathname.rb
+      assert_equal 'A:', FasterPath.add_trailing_separator('A:')
+      assert_equal 'A:/', FasterPath.add_trailing_separator('A:/')
+      assert_equal 'A://', FasterPath.add_trailing_separator('A://')
+      assert_equal 'A:./', FasterPath.add_trailing_separator('A:.')
+      assert_equal 'A:./', FasterPath.add_trailing_separator('A:./')
+      assert_equal 'A:.//', FasterPath.add_trailing_separator('A:.//')
     end
   end
 

@@ -170,6 +170,22 @@ impl Rules {
     i
   }
 
+  // Ruby's Windows `stat` doesn't find a path whose first "..." is a
+  // whole name of dots, as Windows would take "dir\\..." for "dir"
+  // (`check_valid_dir` in `win32.c`).
+  pub fn has_dots_name(self, path: &[u8]) -> bool {
+    if !self.dosish {
+      return false;
+    }
+    let start = match memchr::memmem::find(path, b"...") {
+      Some(start) => start,
+      None => return false,
+    };
+    let end = start + path[start..].iter().take_while(|&&c| c == b'.').count();
+    let delimits = |c: u8| c == b':' || self.is_sep(c);
+    (start == 0 || delimits(path[start - 1])) && (end == path.len() || delimits(path[end]))
+  }
+
   // `File.join(a, b)`
   pub fn join(self, a: &[u8], b: &[u8]) -> Vec<u8> {
     let tail = self.chomp_dir_sep(a);
@@ -244,6 +260,18 @@ mod tests {
     assert_eq!(W.ntfs_tail(b"foo.bar"), 7);
     assert_eq!(W.ntfs_tail(b"..."), 3);
     assert_eq!(W.ntfs_tail(b"foo/"), 3);
+  }
+
+  #[test]
+  fn it_finds_names_of_dots() {
+    assert!(W.has_dots_name(b"dir/..."));
+    assert!(W.has_dots_name(b"..."));
+    assert!(W.has_dots_name(b"C:..../a"));
+    assert!(W.has_dots_name(b"a\\...\\b"));
+    assert!(!W.has_dots_name(b"dir/a..."));
+    assert!(!W.has_dots_name(b"dir/..a"));
+    assert!(!W.has_dots_name(b"dir/."));
+    assert!(!U.has_dots_name(b"dir/..."));
   }
 
   #[test]

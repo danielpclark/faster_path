@@ -145,7 +145,9 @@ pub fn pn_is_directory(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  let is_directory = path.os_path().map_or(false, |os_path| os_path.is_dir());
+  // Windows takes "dir\\..." for "dir"; Ruby doesn't.
+  let is_directory = !RULES.has_dots_name(path.bytes()) &&
+    path.os_path().map_or(false, |os_path| os_path.is_dir());
   Ok(Boolean::new(is_directory).into())
 }
 
