@@ -164,7 +164,7 @@ Current methods implemented:
 |---|---|:---:|:---:|
 | `FasterPath.absolute?` | `Pathname#absolute?` | 95.7% | 96.7% |
 | `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 85.4% | 83.0% |
-| `FasterPath.basename` | `File.basename` | 44.2% | 28.9% |
+| `FasterPath.basename` | `File.basename` | 42.4% | 39.1% |
 | `FasterPath.children` | `Pathname#children` | 54.7% | 47.8% |
 | `FasterPath.chop_basename` | `Pathname#chop_basename` | 70.4% | 75.1% |
 | `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 90.3% | 90.6% |
@@ -231,7 +231,7 @@ and after it. Higher is better; the change is in percentage points.
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
 | `absolute?` | 93.3% | 95.7% | +2.4 | 96.1% | 96.7% | +0.6 |
 | `add_trailing_separator` | 66.6% | 85.4% | **+18.8** | 64.3% | 83.0% | **+18.7** |
-| `basename` | 42.4% | 44.2% | +1.8 | 34.6% | 28.9% | −5.7 |
+| `basename` | 42.4% | 42.4% | 0.0 | 32.1% | 39.1% | **+7.0** |
 | `children` | 52.8% | 54.7% | +1.9 | 46.5% | 47.8% | +1.3 |
 | `children_compat` | −1.2% | 32.1% | **+33.3** | 1.1% | 26.6% | **+25.5** |
 | `chop_basename` | 71.2% | 70.4% | −0.8 | 74.7% | 75.1% | +0.4 |
@@ -253,8 +253,11 @@ Before the upgrade, `FasterPath.join` segfaulted, so its benchmark can't be meas
 `add_trailing_separator`, `dirname` and the `_compat` methods gained the most:
 `add_trailing_separator` no longer builds a temporary string, no method checks its arguments
 for valid UTF-8 any more, and the `_compat` methods build `Pathname` objects without calling
-`Pathname.new`. `basename` on Ruby 2.5 is the one notable loss, though its runs
-overlapped (before: 29.8%, 34.6%, 36.2%; after: 28.7%, 28.9%, 35.6%).
+`Pathname.new`. `basename` was re-measured after it was made to take a shorter path on Unix
+and skip an empty extension; it was the one method that first measured slower on Ruby 2.5.
+Its timings vary a lot from run to run (Ruby 2.5 before: 40.0%, 32.1%, 28.7%; after: 29.6%,
+39.1%, 39.2%), so its instruction counts from `valgrind --tool=callgrind` are a steadier
+measure. They went from 2439 to 2331 per call on Ruby 2.5 and from 2689 to 2561 on Ruby 2.7.
 
 ## Getting Started with Development
 
