@@ -11,12 +11,16 @@
 // * Strings are read as bytes in their own encoding, never assumed to be UTF-8.
 use std::any::Any;
 use std::borrow::Cow;
+use std::io;
+use std::path::Path;
 use std::sync::atomic::{AtomicI32, AtomicU8, Ordering};
 use std::thread;
 
 use rutie::rubysys;
 use rutie::types::{c_char, c_long, Argc, EncodingIndex, Value, ValueType};
 use rutie::{AnyException, AnyObject, Class, Encoding, NilClass, Object, RString, Symbol, VM};
+
+use crate::path_parsing::Rules;
 
 pub type RubyResult = Result<AnyObject, AnyException>;
 
@@ -171,7 +175,11 @@ impl PathArgument {
 
 /// A path read from a Ruby `String`: its bytes and its encoding.
 pub struct PathString<'a> {
-  bytes: Cow<'a, [u8]>,
+  original: Cow<'a, [u8]>,
+  // On Windows, a copy in which each `\` that is part of a multibyte
+  // character is a NUL instead, so it isn't taken for a separator; see
+  // `EncodingId::mask_backslashes`.
+  masked: Option<Vec<u8>>,
   pub encoding: EncodingId,
 }
 
@@ -182,7 +190,7 @@ impl<'a> PathString<'a> {
   }
 
   pub fn literal(bytes: &'static [u8]) -> Self {
-    PathString { bytes: Cow::Borrowed(bytes), encoding: EncodingId::us_ascii() }
+    PathString { original: Cow::Borrowed(bytes), masked: None, encoding: EncodingId::us_ascii() }
   }
 
   /// Reads `string`, which must be kept alive (and unmodified) while the
@@ -204,15 +212,17 @@ impl<'a> PathString<'a> {
     if bytes.contains(&0) {
       return Err(argument_error("path name contains null byte"));
     }
-    Ok(PathString { bytes: Cow::Borrowed(bytes), encoding })
+    let masked = if Rules::NATIVE.is_dosish() { encoding.mask_backslashes(bytes) } else { None };
+    Ok(PathString { original: Cow::Borrowed(bytes), masked, encoding })
   }
 
   pub fn into_owned(self) -> PathString<'static> {
-    PathString { bytes: Cow::Owned(self.bytes.into_owned()), encoding: self.encoding }
+    PathString { original: Cow::Owned(self.original.into_owned()), masked: self.masked, encoding: self.encoding }
   }
 
+  /// The bytes the path functions work on.
   pub fn bytes(&self) -> &[u8] {
-    &self.bytes
+    self.masked.as_deref().unwrap_or(&self.original)
   }
 
   /// A new Ruby string with `bytes` in this path's encoding.
@@ -230,22 +240,44 @@ impl<'a> PathString<'a> {
       // Not a continuation byte
       return (bytes[pos] & 0xC0) != 0x80;
     }
-    if self.encoding == EncodingId::us_ascii() || self.encoding == EncodingId::ascii_8bit() {
+    if self.encoding.is_single_byte_or_utf8() {
       return true;
     }
     // Other encodings: walk the characters from the start like Ruby does.
-    // Safety: the encoding comes from a string or `Encoding`, so its index
-    // is valid, and every pointer passed to `rb_enc_mbclen` is within
-    // `bytes`, with `end` one past its last byte.
-    let encoding = unsafe { rubysys::encoding::rb_enc_from_index(self.encoding.0) };
-    let end = bytes.as_ptr_range().end as *const c_char;
+    let bytes = unmask(bytes);
     let mut index = 0;
     while index < pos {
-      let start = bytes[index..].as_ptr() as *const c_char;
-      let length = unsafe { rubysys::encoding::rb_enc_mbclen(start, end, encoding) };
-      index += length.max(1) as usize;
+      index += self.encoding.char_len(&bytes, index);
     }
     index == pos
+  }
+
+  /// The path to give the OS.
+  #[cfg(unix)]
+  pub fn os_path(&self) -> io::Result<Cow<'_, Path>> {
+    use std::os::unix::ffi::OsStrExt;
+    Ok(Cow::Borrowed(Path::new(std::ffi::OsStr::from_bytes(&self.original))))
+  }
+
+  /// The path to give the OS, which takes Unicode on Windows.
+  #[cfg(not(unix))]
+  pub fn os_path(&self) -> io::Result<Cow<'_, Path>> {
+    let invalid = || io::Error::new(io::ErrorKind::InvalidInput, "path name can't be converted to UTF-8");
+    if self.encoding == EncodingId::utf8() || self.original.is_ascii() {
+      return std::str::from_utf8(&self.original).map(|path| Cow::Borrowed(Path::new(path))).map_err(|_| invalid());
+    }
+    let utf8 = self.encoding.transcode(&self.original, EncodingId::utf8()).ok_or_else(invalid)?;
+    String::from_utf8(utf8).map(|path| Cow::Owned(path.into())).map_err(|_| invalid())
+  }
+}
+
+// Puts back the `\`s `EncodingId::mask_backslashes` replaced. NUL is never
+// in a path otherwise.
+fn unmask(bytes: &[u8]) -> Cow<'_, [u8]> {
+  if Rules::NATIVE.is_dosish() && memchr::memchr(0, bytes).is_some() {
+    Cow::Owned(bytes.iter().map(|&c| if c == 0 { b'\\' } else { c }).collect())
+  } else {
+    Cow::Borrowed(bytes)
   }
 }
 
@@ -333,8 +365,62 @@ impl EncodingId {
     }
   }
 
+  // UTF-8, or an encoding of single bytes where every character starts a
+  // character.
+  fn is_single_byte_or_utf8(self) -> bool {
+    self == EncodingId::utf8() || self == EncodingId::us_ascii() || self == EncodingId::ascii_8bit()
+  }
+
+  // The length of the character at `start` (`rb_enc_mbclen`), at least 1.
+  fn char_len(self, bytes: &[u8], start: usize) -> usize {
+    // Safety: the index is valid (see `is_char_boundary`), and both
+    // pointers are within `bytes`, `end` one past its last byte.
+    let length = unsafe {
+      rubysys::encoding::rb_enc_mbclen(
+        bytes[start..].as_ptr() as *const c_char,
+        bytes.as_ptr_range().end as *const c_char,
+        rubysys::encoding::rb_enc_from_index(self.0),
+      )
+    };
+    (length.max(1) as usize).min(bytes.len() - start)
+  }
+
+  /// In encodings such as Shift_JIS, `\` (0x5C) can be the second byte of a
+  /// character. Windows Ruby only takes a `\` that starts a character for a
+  /// separator; this returns a copy of `bytes` with the others replaced by
+  /// NUL (which a path never contains), or `None` if there are none.
+  pub fn mask_backslashes(self, bytes: &[u8]) -> Option<Vec<u8>> {
+    if self.is_single_byte_or_utf8() || !bytes.contains(&b'\\') {
+      return None;
+    }
+    let mut masked: Option<Vec<u8>> = None;
+    let mut index = 0;
+    while index < bytes.len() {
+      let length = self.char_len(bytes, index);
+      for trailing in index + 1..index + length {
+        if bytes[trailing] == b'\\' {
+          masked.get_or_insert_with(|| bytes.to_vec())[trailing] = 0;
+        }
+      }
+      index += length;
+    }
+    masked
+  }
+
+  /// `bytes`, in this encoding, converted to the encoding `to`
+  /// (`String#encode`), or `None` if they can't be.
+  #[cfg_attr(unix, allow(dead_code))]
+  pub fn transcode(self, bytes: &[u8], to: EncodingId) -> Option<Vec<u8>> {
+    let string = self.new_string(bytes);
+    let encoded = string.protect_send("encode", &[to.to_encoding().into()]).ok()?;
+    // Copied before anything else can run the garbage collector
+    let encoded = encoded.try_convert_to::<RString>().ok()?;
+    Some(encoded.to_bytes_unchecked().to_vec())
+  }
+
   /// A new `String` of `bytes` in this encoding.
   pub fn new_string(self, bytes: &[u8]) -> RString {
+    let bytes = unmask(bytes);
     // Safety: `bytes` is valid for its length, which Ruby copies, and the
     // index is valid (see `is_char_boundary`).
     RString::from(unsafe {

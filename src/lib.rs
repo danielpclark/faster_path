@@ -8,7 +8,6 @@
 
 #[macro_use]
 mod ruby;
-mod helpers;
 mod pathname;
 mod basename;
 mod chop_basename;

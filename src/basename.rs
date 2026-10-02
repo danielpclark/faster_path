@@ -1,55 +1,87 @@
 use memchr::memrchr;
 
-use crate::path_parsing::{find_last_sep_pos, find_last_non_sep_pos, SEP_BYTES};
+use crate::path_parsing::{Rules, SEP_BYTES};
 
-pub fn basename<'a>(path: &'a [u8], ext: &[u8]) -> &'a [u8] {
-  let base = last_component(path);
-  &base[..ext_end(base, ext)]
+// Ruby's `File.basename(path, ext)`.
+pub fn basename<'a>(rules: Rules, path: &'a [u8], ext: &[u8]) -> &'a [u8] {
+  let (name, base_len) = last_component(rules, path);
+  match base_len {
+    Some(base_len) => &name[..ext_end(rules, name, base_len, ext)],
+    None => name,
+  }
 }
 
-// The last component of the path, without trailing separators; "/" when
-// there are only separators.
-pub fn last_component(path: &[u8]) -> &[u8] {
-  let mut left: usize = 0;
-  let mut right: usize = path.len();
-  if let Some(last_slash_pos) = find_last_sep_pos(path) {
-    if last_slash_pos == right - 1 {
-      if let Some(pos) = find_last_non_sep_pos(&path[..last_slash_pos]) {
-        right = pos + 1;
-      } else {
-        return SEP_BYTES;
-      }
-      if let Some(pos) = find_last_sep_pos(&path[..right]) {
-        left = pos + 1;
-      }
-    } else {
-      left = last_slash_pos + 1;
+// Ruby's `ruby_enc_find_basename`: the last component of the path, without
+// trailing separators (and on Windows, trailing dots, spaces and `:stream`),
+// and where that component ends without its extension. A path that is only
+// separators and prefixes has no extension: its "component" is a separator,
+// or "" for a drive letter.
+pub fn last_component(rules: Rules, path: &[u8]) -> (&[u8], Option<usize>) {
+  if path.is_empty() {
+    return (path, None);
+  }
+  let root = rules.skip_prefix(path);
+  let mut name = root;
+  while name < path.len() && rules.is_sep(path[name]) {
+    name += 1;
+  }
+  if name == path.len() {
+    if !rules.is_dosish() || name != root {
+      // The last separator
+      return (&path[name - 1..name], None);
     }
+    if path[name - 1] == b':' {
+      // A drive letter
+      return (&path[name..], None);
+    }
+    // A UNC prefix
+    return (SEP_BYTES, None);
   }
-  &path[left..right]
+  let start = match rules.last_separator(&path[name..]) {
+    Some(pos) => {
+      let mut start = name + pos;
+      while rules.is_sep(path[start]) {
+        start += 1;
+      }
+      start
+    }
+    None => name,
+  };
+  let rest = &path[start..];
+  let len = if rules.is_dosish() { rules.ntfs_tail(rest) } else { rules.chomp_dir_sep(rest) };
+  let component = &rest[..len];
+  let dots = component.iter().take_while(|&&c| c == b'.').count();
+  let base_len = component[dots..].iter().rposition(|&c| c == b'.').map_or(len, |pos| dots + pos);
+  (component, Some(base_len))
 }
 
-// Where `slice` ends without the extension `ext`. `ext` is either an
-// extension to remove, or a byte followed by `*` to remove everything from
-// the last occurrence of that byte, such as ".*".
-pub fn ext_end(slice: &[u8], ext: &[u8]) -> usize {
-  if ext.len() >= slice.len() || slice == b"." || slice == b".." {
-    return slice.len();
-  }
-  if let [first, b'*'] = *ext {
-    match memrchr(first, slice) {
-      Some(end) if end != 0 => return end,
-      _ => {}
-    };
-  } else if slice.ends_with(ext) {
-    return slice.len() - ext.len();
-  }
-  slice.len()
+// Ruby's `rmext`: where `component` ends without the extension `ext`, or
+// its length if `ext` isn't there. `ext` is an extension to remove, ".*"
+// for any extension, or a character followed by `*` to remove everything
+// from the last occurrence of that character.
+pub fn ext_end(rules: Rules, component: &[u8], base_len: usize, ext: &[u8]) -> usize {
+  let len = component.len();
+  let end = match *ext {
+    [] => 0,
+    [b'.', b'*'] => base_len,
+    [c, b'*'] => memrchr(c, component).unwrap_or(len),
+    _ if len < ext.len() => len,
+    _ => {
+      let start = len - ext.len();
+      if rules.same_path(&component[start..], ext) { start } else { 0 }
+    }
+  };
+  if end == 0 { len } else { end }
 }
 
 #[cfg(test)]
 fn basename_str<'a>(path: &'a str, ext: &str) -> &'a str {
-  std::str::from_utf8(basename(path.as_bytes(), ext.as_bytes())).unwrap()
+  std::str::from_utf8(basename(Rules::UNIX, path.as_bytes(), ext.as_bytes())).unwrap()
+}
+
+#[cfg(test)]
+fn windows_basename<'a>(path: &'a str, ext: &str) -> &'a str {
+  std::str::from_utf8(basename(Rules::WINDOWS, path.as_bytes(), ext.as_bytes())).unwrap()
 }
 
 #[test]
@@ -154,4 +186,43 @@ fn trailing_slashes_relative_root() {
 #[test]
 fn edge_case_all_seps() {
   assert_eq!("/", basename_str("///", ".*"));
+}
+
+#[test]
+fn ext_compared_like_ruby() {
+  assert_eq!(basename_str("..", "."), ".");
+  assert_eq!(basename_str("a.rb", ".RB"), "a.rb");
+  assert_eq!(windows_basename("a.rb", ".RB"), "a");
+}
+
+#[test]
+fn windows_separators() {
+  assert_eq!(windows_basename("a\\b", ""), "b");
+  assert_eq!(windows_basename("a\\b\\", ""), "b");
+  assert_eq!(windows_basename("a/b\\c", ""), "c");
+  assert_eq!(windows_basename("\\", ""), "\\");
+  assert_eq!(basename_str("a\\b", ""), "a\\b");
+}
+
+#[test]
+fn windows_prefixes() {
+  assert_eq!(windows_basename("C:", ""), "");
+  assert_eq!(windows_basename("C:/", ""), "/");
+  assert_eq!(windows_basename("C:/a", ""), "a");
+  assert_eq!(windows_basename("C:a", ""), "a");
+  assert_eq!(windows_basename("//a/b", ""), "/");
+  assert_eq!(windows_basename("//a/b/", ""), "/");
+  assert_eq!(windows_basename("//a/b/c", ""), "c");
+  assert_eq!(basename_str("//a/b", ""), "b");
+}
+
+#[test]
+fn windows_ntfs_names() {
+  assert_eq!(windows_basename("foo.test ", ""), "foo.test");
+  assert_eq!(windows_basename("foo.test.", ""), "foo.test");
+  assert_eq!(windows_basename("foo.test::$DATA", ""), "foo.test");
+  assert_eq!(windows_basename("foo.test ", ".test"), "foo");
+  assert_eq!(windows_basename("foo.test.", ".*"), "foo");
+  assert_eq!(windows_basename("foo.test::$DATA", ".*"), "foo");
+  assert_eq!(windows_basename("...", ""), "...");
 }

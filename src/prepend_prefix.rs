@@ -1,18 +1,17 @@
 use std::borrow::Cow;
-use crate::dirname::dirname;
-use crate::path_parsing::{SEP, contains_sep};
 
-pub fn prepend_prefix<'a>(prefix: &'a [u8], relpath: &[u8]) -> Cow<'a, [u8]> {
+use crate::cleanpath_conservative::add_trailing_separator;
+use crate::dirname::dirname;
+use crate::path_parsing::Rules;
+
+// Pathname's `prepend_prefix`
+pub fn prepend_prefix<'a>(rules: Rules, prefix: &'a [u8], relpath: &[u8]) -> Cow<'a, [u8]> {
   if relpath.is_empty() {
-    dirname(prefix).into()
-  } else if contains_sep(prefix) {
-    let prefix_dirname = dirname(prefix);
-    match prefix_dirname.last() {
-      None => relpath.to_vec().into(),
-      Some(&SEP) => [prefix_dirname, relpath].concat().into(),
-      _ => [prefix_dirname, &[SEP], relpath].concat().into(),
-    }
+    dirname(rules, prefix)
+  } else if rules.contains_sep(prefix) {
+    let prefix = add_trailing_separator(rules, dirname(rules, prefix));
+    Cow::Owned([&prefix[..], relpath].concat())
   } else {
-    [prefix, relpath].concat().into()
+    Cow::Owned([prefix, relpath].concat())
   }
 }

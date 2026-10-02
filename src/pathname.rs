@@ -2,23 +2,25 @@ use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::fs;
 use std::io;
-use std::path::Path;
 
 use rutie::{AnyException, AnyObject, Array, Boolean, Class, NilClass, Object, RString};
 
 use crate::basename;
-use crate::chop_basename;
+use crate::chop_basename::{self, is_relative};
 use crate::cleanpath_aggressive;
-use crate::cleanpath_conservative::{self, add_trailing_separator, has_trailing_separator};
+use crate::cleanpath_conservative::{self, add_trailing_separator, del_trailing_separator, has_trailing_separator};
 use crate::dirname;
 use crate::extname;
-use crate::path_parsing::{SEP, SEP_BYTES, find_last_non_sep_pos};
+use crate::path_parsing::Rules;
 use crate::plus;
 use crate::relative_path_from::{self, RelativePathError};
 use crate::ruby::{
   argument_error, check_max_arguments, error, new_pathname, path_like_to_string, pathname_class,
   truthy_argument, EncodingId, EncodingOf, PathArgument, PathString, RubyResult,
 };
+
+// Ruby's path rules on this platform
+const RULES: Rules = Rules::NATIVE;
 
 pub fn pn_add_trailing_separator(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
@@ -27,7 +29,7 @@ pub fn pn_add_trailing_separator(arguments: &[AnyObject]) -> RubyResult {
     return Err(implicit_conversion_error(arguments.first()));
   }
   let path = argument.path()?;
-  match (add_trailing_separator(Cow::Borrowed(path.bytes())), argument.string()) {
+  match (add_trailing_separator(RULES, Cow::Borrowed(path.bytes())), argument.string()) {
     (Cow::Borrowed(_), Some(string)) => Ok(string.to_any_object()),
     (result, _) => Ok(path.to_ruby(&result).into()),
   }
@@ -37,7 +39,7 @@ pub fn pn_is_absolute(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  Ok(Boolean::new(path.bytes().first() == Some(&SEP)).into())
+  Ok(Boolean::new(!is_relative(RULES, path.bytes())).into())
 }
 
 pub fn pn_basename(arguments: &[AnyObject]) -> RubyResult {
@@ -46,10 +48,16 @@ pub fn pn_basename(arguments: &[AnyObject]) -> RubyResult {
   let path = argument.path()?;
   let ext_argument = PathArgument::new(arguments, 1)?;
   let ext = ext_argument.path()?;
-  let basename = basename::last_component(path.bytes());
-  let end = basename::ext_end(basename, ext.bytes());
-  // Like Ruby, only remove an extension that starts a character.
-  let result = if path.is_char_boundary(basename, end) { &basename[..end] } else { basename };
+  let (component, base_len) = basename::last_component(RULES, path.bytes());
+  let result = match base_len {
+    // Like Ruby, ignore an extension in an incompatible encoding, and only
+    // remove one that starts a character.
+    Some(base_len) if EncodingOf::new(&path).merge(&ext).is_ok() => {
+      let end = basename::ext_end(RULES, component, base_len, ext.bytes());
+      if path.is_char_boundary(component, end) { &component[..end] } else { component }
+    }
+    _ => component,
+  };
   Ok(path.to_ruby(result).into())
 }
 
@@ -79,15 +87,15 @@ fn children<F>(path: &PathString, with_directory: bool, error_path: &AnyObject, 
   let mut array = Array::with_capacity(entries.size_hint().0);
   for entry in entries {
     let entry = entry.map_err(|e| system_call_error(&e, error_path, "dir_read"))?;
-    let file_name = entry.file_name();
-    let name = os_bytes(&file_name);
+    let os_name = entry.file_name();
+    let (name, name_encoding) = file_name(&os_name, filesystem);
     let string = if with_directory {
-      // Encoded like Ruby's `path + name`, or as the file name if they don't mix.
-      let encoding = EncodingOf::new(path).merge_with(EncodingOf::of_bytes(&name, filesystem)).
-        map_or(filesystem, |encoding| encoding.encoding);
-      encoding.new_string(&os_bytes(entry.path().as_os_str()))
+      // `File.join(path, name)`, encoded like that, or as the file name if they don't mix.
+      let encoding = EncodingOf::new(path).merge_with(EncodingOf::of_bytes(&name, name_encoding)).
+        map_or(name_encoding, |encoding| encoding.encoding);
+      encoding.new_string(&RULES.join(path.bytes(), &name))
     } else {
-      filesystem.new_string(&name)
+      name_encoding.new_string(&name)
     };
     array.push(wrap(string)?);
   }
@@ -98,7 +106,7 @@ pub fn pn_chop_basename(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  match chop_basename::chop_basename(path.bytes()) {
+  match chop_basename::chop_basename(RULES, path.bytes()) {
     Some((dirname, basename)) => {
       let mut array = Array::with_capacity(2);
       array.push(path.to_ruby(dirname));
@@ -113,31 +121,23 @@ pub fn pn_cleanpath_aggressive(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  Ok(path.to_ruby(&cleanpath_aggressive::cleanpath_aggressive(path.bytes())).into())
+  Ok(path.to_ruby(&cleanpath_aggressive::cleanpath_aggressive(RULES, path.bytes())).into())
 }
 
 pub fn pn_cleanpath_conservative(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  Ok(path.to_ruby(&cleanpath_conservative::cleanpath_conservative(path.bytes())).into())
+  Ok(path.to_ruby(&cleanpath_conservative::cleanpath_conservative(RULES, path.bytes())).into())
 }
 
 pub fn pn_del_trailing_separator(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  let bytes = path.bytes();
-  if bytes.is_empty() {
-    return Ok(path.to_ruby(b"").into());
-  }
-  let pos = match find_last_non_sep_pos(bytes) {
-    Some(pos) => pos,
-    None => return Ok(path.to_ruby(SEP_BYTES).into()),
-  };
-  match argument.string() {
-    Some(string) if pos == bytes.len() - 1 => Ok(string.to_any_object()),
-    _ => Ok(path.to_ruby(&bytes[..pos + 1]).into()),
+  match (del_trailing_separator(RULES, path.bytes()), argument.string()) {
+    (Cow::Borrowed(result), Some(string)) if result.len() == path.bytes().len() => Ok(string.to_any_object()),
+    (result, _) => Ok(path.to_ruby(&result).into()),
   }
 }
 
@@ -145,7 +145,7 @@ pub fn pn_is_directory(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  let is_directory = os_path(path.bytes()).map_or(false, |os_path| os_path.is_dir());
+  let is_directory = path.os_path().map_or(false, |os_path| os_path.is_dir());
   Ok(Boolean::new(is_directory).into())
 }
 
@@ -153,7 +153,7 @@ pub fn pn_dirname(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  Ok(path.to_ruby(dirname::dirname(path.bytes())).into())
+  Ok(path.to_ruby(&dirname::dirname(RULES, path.bytes())).into())
 }
 
 // Returns an array of `String`s
@@ -184,7 +184,9 @@ fn entries<F>(path: &PathString, error_path: &AnyObject, mut wrap: F) -> RubyRes
   array.push(wrap(filesystem.new_string(b".."))?);
   for file in files {
     let file = file.map_err(|e| system_call_error(&e, error_path, "dir_read"))?;
-    array.push(wrap(filesystem.new_string(&os_bytes(&file.file_name())))?);
+    let os_name = file.file_name();
+    let (name, encoding) = file_name(&os_name, filesystem);
+    array.push(wrap(encoding.new_string(&name))?);
   }
   Ok(array.into())
 }
@@ -193,14 +195,14 @@ pub fn pn_extname(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  Ok(path.to_ruby(extname::extname(path.bytes())).into())
+  Ok(path.to_ruby(extname::extname(RULES, path.bytes())).into())
 }
 
 pub fn pn_has_trailing_separator(arguments: &[AnyObject]) -> RubyResult {
   check_max_arguments(arguments, 1)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  Ok(Boolean::new(has_trailing_separator(path.bytes())).into())
+  Ok(Boolean::new(has_trailing_separator(RULES, path.bytes())).into())
 }
 
 pub fn pn_join(arguments: &[AnyObject]) -> RubyResult {
@@ -230,10 +232,10 @@ pub fn pn_join(arguments: &[AnyObject]) -> RubyResult {
     None => Cow::Borrowed(b""),
   };
   for part in parts {
-    if result.first() == Some(&SEP) {
+    if !is_relative(RULES, &result) {
       break;
     }
-    result = Cow::Owned(plus::plus_paths(part, &result).into_owned());
+    result = Cow::Owned(plus::plus_paths(RULES, part, &result).into_owned());
   }
   let encoding = match encoding {
     Some(encoding) => encoding.encoding,
@@ -249,7 +251,7 @@ pub fn pn_plus(arguments: &[AnyObject]) -> RubyResult {
   let argument2 = PathArgument::new(arguments, 1)?;
   let path2 = argument2.path()?;
   let encoding = EncodingOf::new(&path1).merge(&path2)?.encoding;
-  Ok(encoding.new_string(&plus::plus_paths(path1.bytes(), path2.bytes())).into())
+  Ok(encoding.new_string(&plus::plus_paths(RULES, path1.bytes(), path2.bytes())).into())
 }
 
 pub fn pn_is_relative(arguments: &[AnyObject]) -> RubyResult {
@@ -259,7 +261,7 @@ pub fn pn_is_relative(arguments: &[AnyObject]) -> RubyResult {
     return Ok(Boolean::new(false).into());
   }
   let path = argument.path()?;
-  Ok(Boolean::new(path.bytes().first() != Some(&SEP)).into())
+  Ok(Boolean::new(is_relative(RULES, path.bytes())).into())
 }
 
 pub fn pn_relative_path_from(arguments: &[AnyObject]) -> RubyResult {
@@ -278,7 +280,7 @@ pub fn pn_relative_path_from(arguments: &[AnyObject]) -> RubyResult {
   let encoding = EncodingOf::new(&dest).merge(&base)?.encoding;
   let inspect = |bytes: &[u8]| crate::ruby::inspect(&encoding.new_string(bytes));
 
-  match relative_path_from::relative_path_from(dest.bytes(), base.bytes()) {
+  match relative_path_from::relative_path_from(RULES, dest.bytes(), base.bytes()) {
     Ok(path) => new_pathname(&pathname, encoding.new_string(&path)),
     Err(RelativePathError::DifferentPrefix(dest_prefix, base_directory)) => {
       let message = format!("different prefix: {} and {}", inspect(&dest_prefix)?, inspect(&base_directory)?);
@@ -299,8 +301,8 @@ fn error_path(argument: &PathArgument, default: &str) -> AnyObject {
 }
 
 fn read_dir(path: &PathString, error_path: &AnyObject) -> Result<fs::ReadDir, AnyException> {
-  let os_path = os_path(path.bytes()).map_err(|e| system_call_error(&e, error_path, "dir_initialize"))?;
-  fs::read_dir(os_path).map_err(|e| system_call_error(&e, error_path, "dir_initialize"))
+  let os_path = path.os_path().map_err(|e| system_call_error(&e, error_path, "dir_initialize"))?;
+  fs::read_dir(&*os_path).map_err(|e| system_call_error(&e, error_path, "dir_initialize"))
 }
 
 // `SystemCallError.new(path, errno, func)` gives the same `Errno::*` error
@@ -324,29 +326,26 @@ fn system_call_error(err: &io::Error, path: &AnyObject, func: &str) -> AnyExcept
   AnyException::from_io_error(err, &path)
 }
 
+// A file name from the OS as Ruby's `Dir` methods return it, in the
+// filesystem encoding: its bytes, and their encoding.
 #[cfg(unix)]
-fn os_path(bytes: &[u8]) -> io::Result<&Path> {
+fn file_name(name: &OsStr, filesystem: EncodingId) -> (Cow<'_, [u8]>, EncodingId) {
   use std::os::unix::ffi::OsStrExt;
-  Ok(Path::new(OsStr::from_bytes(bytes)))
+  (Cow::Borrowed(name.as_bytes()), filesystem)
 }
 
 #[cfg(not(unix))]
-fn os_path(bytes: &[u8]) -> io::Result<&Path> {
-  std::str::from_utf8(bytes).map(Path::new).
-    map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "path name is not valid UTF-8"))
-}
-
-#[cfg(unix)]
-fn os_bytes(string: &OsStr) -> Cow<'_, [u8]> {
-  use std::os::unix::ffi::OsStrExt;
-  Cow::Borrowed(string.as_bytes())
-}
-
-#[cfg(not(unix))]
-fn os_bytes(string: &OsStr) -> Cow<'_, [u8]> {
-  match string.to_string_lossy() {
-    Cow::Borrowed(string) => Cow::Borrowed(string.as_bytes()),
-    Cow::Owned(string) => Cow::Owned(string.into_bytes()),
+fn file_name(name: &OsStr, filesystem: EncodingId) -> (Cow<'_, [u8]>, EncodingId) {
+  let utf8 = match name.to_string_lossy() {
+    Cow::Borrowed(name) => Cow::Borrowed(name.as_bytes()),
+    Cow::Owned(name) => Cow::Owned(name.into_bytes()),
+  };
+  if utf8.is_ascii() || filesystem == EncodingId::utf8() {
+    return (utf8, filesystem);
+  }
+  match EncodingId::utf8().transcode(&utf8, filesystem) {
+    Some(encoded) => (Cow::Owned(encoded), filesystem),
+    None => (utf8, EncodingId::utf8()),
   }
 }
 

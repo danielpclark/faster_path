@@ -17,11 +17,14 @@ jobs:
   test:
     name: Ruby ${{ matrix.ruby }} on ${{ matrix.os }} (${{ matrix.suite.name }})
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
         # Rutie 0.10, which the extension is built with, supports Ruby 2.5 to 2.7
-        os: [ubuntu-22.04]
+        os: [ubuntu-22.04, windows-latest]
         ruby: ['2.5', '2.6', '2.7']
         suite:
           - name: regression
@@ -50,33 +53,12 @@ jobs:
       - name: Test (cargo, minitest, rubocop, pbench, mspec)
         run: env ${{ matrix.suite.env }} bundle exec rake test
 
-  windows:
-    name: Ruby ${{ matrix.ruby }} on windows-latest
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby: ['2.7']
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
-      - name: Test (cargo, minitest)
-        env:
-          WITH_REGRESSION: 'true'
-        run: bundle exec rake cargo minitest
-
   # Builds the precompiled extension tarballs that `gem install` downloads,
   # and attaches them to the GitHub release of a version tag.
   release:
     name: Release tarball for Ruby ${{ matrix.ruby }} on ${{ matrix.os }}
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [test, windows]
+    needs: [test]
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write

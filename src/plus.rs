@@ -1,76 +1,80 @@
 use std::borrow::Cow;
 
+use crate::basename::basename;
 use crate::chop_basename::chop_basename;
-use crate::path_parsing::SEP;
+use crate::dirname::dirname;
+use crate::path_parsing::Rules;
 
-pub fn plus_paths<'a>(path1: &'a [u8], path2: &[u8]) -> Cow<'a, [u8]> {
+// Pathname's `plus`, which `Pathname#+` and `Pathname#join` use.
+pub fn plus_paths<'a>(rules: Rules, path1: &'a [u8], path2: &[u8]) -> Cow<'a, [u8]> {
+  // The names in path2, and where each starts
   let mut prefix2 = path2;
   let mut index_list2: Vec<usize> = vec![];
   let mut basename_list2: Vec<&[u8]> = vec![];
-  while let Some((pfx2, basename2)) = chop_basename(prefix2) {
-    prefix2 = pfx2;
-    index_list2.push(pfx2.len());
-    basename_list2.push(basename2);
+  while let Some((prefix, basename)) = chop_basename(rules, prefix2) {
+    prefix2 = prefix;
+    index_list2.push(prefix.len());
+    basename_list2.push(basename);
   }
   if !prefix2.is_empty() {
-    return path2.to_vec().into();
-  };
+    return Cow::Owned(path2.to_vec());
+  }
+  index_list2.reverse();
+  basename_list2.reverse();
+  // The names before `first` have been shifted off
+  let mut first = 0;
 
-  let result_prefix: Cow<'a, [u8]>;
   let mut prefix1 = path1;
   loop {
-    let mut new_len = basename_list2.len() - count_trailing(b".", &basename_list2);
-    index_list2.truncate(new_len);
-    basename_list2.truncate(new_len);
-    match chop_basename(prefix1) {
-      None => {
-        result_prefix = prefix1.into();
-        break;
-      }
-      Some((pfx1, basename1)) => {
-        prefix1 = pfx1;
-        if basename1 == b"." { continue; };
-        if basename1 == b".." || basename_list2.last() != Some(&&b".."[..]) {
-          result_prefix = [prefix1, basename1].concat().into();
-          break;
-        }
-      }
+    while basename_list2.get(first) == Some(&&b"."[..]) {
+      first += 1;
     }
-    if new_len > 0 {
-      new_len -= 1;
-      index_list2.truncate(new_len);
-      basename_list2.truncate(new_len);
+    let (prefix, basename1) = match chop_basename(rules, prefix1) {
+      Some(chopped) => chopped,
+      None => break,
+    };
+    prefix1 = prefix;
+    if basename1 == b"." {
+      continue;
     }
+    if basename1 == b".." || basename_list2.get(first) != Some(&&b".."[..]) {
+      // `prefix1 + basename1`; the basename follows its prefix
+      prefix1 = &path1[..prefix1.len() + basename1.len()];
+      break;
+    }
+    first += 1;
   }
 
-  if !result_prefix.is_empty() && result_prefix.iter().all(|&b| b == SEP) {
-    let new_len = basename_list2.len() - count_trailing(b"..", &basename_list2);
-    index_list2.truncate(new_len);
-    basename_list2.truncate(new_len);
-  }
-  if let Some(&last_index2) = index_list2.last() {
-    let suffix = &path2[last_index2..];
-    match (result_prefix.last(), suffix.first()) {
-      (Some(&SEP), Some(&SEP)) => [&result_prefix[..], &suffix[1..]].concat().into(),
-      (Some(&SEP), Some(_)) | (Some(_), Some(&SEP)) => [&result_prefix[..], suffix].concat().into(),
-      (None, Some(_)) => suffix.to_vec().into(),
-      _ => [&result_prefix[..], &[SEP], suffix].concat().into(),
+  let mut prefix1_has_name = chop_basename(rules, prefix1).is_some();
+  if !prefix1_has_name && rules.contains_sep(basename(rules, prefix1, b"")) {
+    // Nothing goes above the root
+    prefix1_has_name = true;
+    while basename_list2.get(first) == Some(&&b".."[..]) {
+      first += 1;
     }
-  } else if result_prefix.is_empty() {
-    Cow::Borrowed(b".")
+  }
+  if first < basename_list2.len() {
+    let suffix2 = &path2[index_list2[first]..];
+    if prefix1_has_name {
+      Cow::Owned(rules.join(prefix1, suffix2))
+    } else {
+      Cow::Owned([prefix1, suffix2].concat())
+    }
+  } else if prefix1_has_name {
+    Cow::Borrowed(prefix1)
   } else {
-    result_prefix
+    dirname(rules, prefix1)
   }
-}
-
-#[inline(always)]
-fn count_trailing(x: &[u8], xs: &[&[u8]]) -> usize {
-  xs.iter().rev().take_while(|&&c| c == x).count()
 }
 
 #[cfg(test)]
 fn plus_str(path1: &str, path2: &str) -> String {
-  String::from_utf8(plus_paths(path1.as_bytes(), path2.as_bytes()).into_owned()).unwrap()
+  String::from_utf8(plus_paths(Rules::UNIX, path1.as_bytes(), path2.as_bytes()).into_owned()).unwrap()
+}
+
+#[cfg(test)]
+fn windows_plus(path1: &str, path2: &str) -> String {
+  String::from_utf8(plus_paths(Rules::WINDOWS, path1.as_bytes(), path2.as_bytes()).into_owned()).unwrap()
 }
 
 #[test]
@@ -95,4 +99,20 @@ fn it_will_plus_same_as_ruby() {
   assert_eq!("a//b/d//e",     plus_str("a//b/c", "../d//e"));
 
   assert_eq!("//foo/var/bar", plus_str("//foo/var", "bar"));
+}
+
+#[test]
+fn it_will_plus_same_as_ruby_on_windows() {
+  assert_eq!("a/b",        windows_plus("a", "b"));
+  assert_eq!("a/b",        windows_plus("a\\", "b"));
+  assert_eq!("/b",         windows_plus("a", "/b"));
+  assert_eq!("\\b",        windows_plus("a", "\\b"));
+  assert_eq!("C:/b",       windows_plus("a", "C:/b"));
+  assert_eq!("C:/a/b",     windows_plus("C:/a", "b"));
+  assert_eq!("C:/b",       windows_plus("C:/a", "../b"));
+  assert_eq!("C:/b",       windows_plus("C:/", "../b"));
+  assert_eq!("C:\\a/b",    windows_plus("C:\\a", "b"));
+  assert_eq!("a",          windows_plus("a\\b", ".."));
+  assert_eq!("//a/b/c",    windows_plus("//a/b", "c"));
+  assert_eq!("//a/b/c",    windows_plus("//a/b", "../c"));
 }
