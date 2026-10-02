@@ -106,8 +106,10 @@ ruby_methods! {
 #[allow(non_snake_case)]
 #[no_mangle]
 pub extern "C" fn Init_faster_pathname() {
+  // An extension of only a dot: "" before Ruby 2.7, "." since. ("a." would
+  // tell on Unix, but Windows doesn't count trailing dots.)
   let trailing_dot_extname = Class::file().
-    protect_send("extname", &[RString::new_utf8("a.").into()]).
+    protect_send("extname", &[RString::new_utf8("a./").into()]).
     ok().
     and_then(|extname| extname.try_convert_to::<RString>().ok()).
     map_or(false, |extname| extname.to_bytes_unchecked() == b".");

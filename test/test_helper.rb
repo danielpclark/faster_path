@@ -22,6 +22,10 @@ require 'pathname'
 require 'minitest/reporters'
 require 'color_pound_spec_reporter'
 
+# color_pound_spec_reporter prints failures with the `MiniTest` name, which
+# minitest 5.19 and later only define for compatibility
+MiniTest = Minitest unless defined?(MiniTest)
+
 Minitest::Reporters.use! [ColorPoundSpecReporter.new]
 
 ::Minitest::Assertions.module_eval do

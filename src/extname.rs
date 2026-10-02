@@ -2,9 +2,10 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use crate::path_parsing::Rules;
 
-// Ruby 2.7 changed `File.extname("foo.")` from `""` to `"."` (except on
-// Windows, where trailing dots aren't part of a file name). `FasterPath`
-// follows the Ruby it is loaded into; see `Init_faster_pathname`.
+// Ruby 2.7 changed `File.extname` to return an extension of only a dot
+// (`"foo."` on Unix, `"foo./"` on both Unix and Windows, where trailing dots
+// aren't part of a file name) instead of `""`. `FasterPath` follows the Ruby
+// it is loaded into; see `Init_faster_pathname`.
 static TRAILING_DOT_IS_EXTNAME: AtomicBool = AtomicBool::new(false);
 
 pub fn set_trailing_dot_is_extname(value: bool) {
