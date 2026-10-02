@@ -1,7 +1,6 @@
 # FasterPath
 [![Gem Version](https://badge.fury.io/rb/faster_path.svg)](https://badge.fury.io/rb/faster_path)
-[![TravisCI Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/10ul0gk3cwhlt2lj/branch/master?svg=true)](https://ci.appveyor.com/project/danielpclark/faster-path/branch/master)
+[![CI](https://github.com/danielpclark/faster_path/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/danielpclark/faster_path/actions/workflows/ci.yml)
 [![Latest Tag](https://img.shields.io/github/tag/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/tags)
 [![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.3.10.svg)](https://github.com/danielpclark/faster_path/pulse)
 [![Binary Release](https://img.shields.io/github/release/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/releases)

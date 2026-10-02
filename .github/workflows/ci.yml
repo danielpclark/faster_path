@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  RUST_BACKTRACE: '1'
+
+jobs:
+  test:
+    name: Ruby ${{ matrix.ruby }} on ${{ matrix.os }} (${{ matrix.suite.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Rutie 0.10, which the extension is built with, supports Ruby 2.5 to 2.7
+        os: [ubuntu-22.04]
+        ruby: ['2.5', '2.6', '2.7']
+        suite:
+          - name: regression
+            env: WITH_REGRESSION=true
+          - name: monkeypatches
+            env: TEST_MONKEYPATCHES=true WITH_REGRESSION=true
+          - name: encoding
+            env: ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
+        include:
+          - os: macos-latest
+            ruby: '2.7'
+            suite:
+              name: regression
+              env: WITH_REGRESSION=true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: System details
+        run: bundle exec rake sysinfo
+      - name: Test (cargo, minitest, rubocop, pbench, mspec)
+        run: env ${{ matrix.suite.env }} bundle exec rake test
+
+  windows:
+    name: Ruby ${{ matrix.ruby }} on windows-latest
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ['2.7']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Test (cargo, minitest)
+        env:
+          WITH_REGRESSION: 'true'
+        run: bundle exec rake cargo minitest
+
+  # Builds the precompiled extension tarballs that `gem install` downloads,
+  # and attaches them to the GitHub release of a version tag.
+  release:
+    name: Release tarball for Ruby ${{ matrix.ruby }} on ${{ matrix.os }}
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [test, windows]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        ruby: ['2.5', '2.6', '2.7']
+        include:
+          - os: macos-latest
+            ruby: '2.7'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - run: bundle exec rake thermite:tarball
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: faster_path-*.tar.gz
