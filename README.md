@@ -110,7 +110,7 @@ As mentioned earlier Sprockets, which handles assets, changed away from using `P
 * Methods are stable
 * Thoroughly tested
 * Testers and developers are most welcome
-* Windows: paths follow Ruby's Windows rules (`\\` separators, drive letters, UNC paths)
+* Windows: paths follow Ruby's Windows rules (`\` and `/` separators, drive letters, UNC paths)
 * Paths keep their encoding, as with Ruby's own methods
 
 ## Requirements
