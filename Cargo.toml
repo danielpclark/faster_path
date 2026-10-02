@@ -1,6 +1,6 @@
 [package]
 name = "faster_path"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Daniel P. Clark <6ftdan@gmail.com>"]
 description = "Alternative to Pathname"
 homepage = "https://github.com/danielpclark/faster_path"

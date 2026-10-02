@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "faster_path"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "memchr",
  "rutie",
