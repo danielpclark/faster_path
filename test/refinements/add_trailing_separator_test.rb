@@ -8,7 +8,7 @@ class RefinedPathname
   end
 end
 
-class AddTrailingSeparatorTest < Minitest::Test
+class RefinementsAddTrailingSeparatorTest < Minitest::Test
   def test_refines_pathname_add_trailing_separator
     assert RefinedPathname.allocate.send(:add_trailing_separator, 'hello')
   end

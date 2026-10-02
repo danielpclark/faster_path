@@ -22,7 +22,7 @@ module FasterPath
   end
 
   Fiddle::Function.
-    new(Fiddle.dlopen(FFI_LIBRARY)['Init_faster_pathname'], [], Fiddle::TYPE_VOIDP).
+    new(Fiddle.dlopen(FFI_LIBRARY)['Init_faster_pathname'], [], Fiddle::TYPE_VOID).
     call
 
   Public.class_eval do

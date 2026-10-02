@@ -38,9 +38,16 @@ class CleanpathConservativeTest < Minitest::Test
     assert_equal FasterPath.cleanpath_conservative("a/b/../../../../c/../d"), "a/b/../../../../c/../d"
   end
 
+  def test_it_keeps_every_name_with_a_trailing_separator
+    %w[a/b/ /a/b// a/./b/ a/b/../ ./a/b/ a//b/c/].each do |path|
+      assert_equal Pathname.new(path).cleanpath(true).to_s, FasterPath.cleanpath_conservative(path), path
+    end
+  end
+
   def test_windows_compat
     if DOSISH
-      assert_equal FasterPath.cleanpath_conservative('c:/foo/bar'), 'c:\\foo\\bar'
+      # Ruby's test_pathname.rb: defassert(:cleanpath_conservative, 'c:/foo/bar', 'c:\\foo\\bar')
+      assert_equal 'c:/foo/bar', FasterPath.cleanpath_conservative('c:\\foo\\bar')
     end
 
     if DOSISH_UNC

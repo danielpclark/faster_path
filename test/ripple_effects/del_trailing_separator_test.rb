@@ -9,7 +9,7 @@ class RefinedPathname
   end
 end
 
-class DelTrailingSeparatorTest < Minitest::Test
+class RippleEffectsDelTrailingSeparatorTest < Minitest::Test
   def test_del_trailing_separator
     assert_equal RefinedPathname.new.del_trailing_separator("/"), "/"
     assert_equal RefinedPathname.new.del_trailing_separator("/a"), "/a"

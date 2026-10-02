@@ -4,16 +4,10 @@
 // http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
-#[macro_use]
-extern crate rutie;
+#![forbid(unsafe_op_in_unsafe_fn)]
 
 #[macro_use]
-extern crate lazy_static;
-
-module!(FasterPath);
-
-mod debug;
-mod helpers;
+mod ruby;
 mod pathname;
 mod basename;
 mod chop_basename;
@@ -21,148 +15,106 @@ mod cleanpath_aggressive;
 mod cleanpath_conservative;
 mod dirname;
 mod extname;
-mod pathname_sys;
 mod plus;
 mod prepend_prefix;
 pub mod rust_arch_bits;
-mod memrnchr;
 mod path_parsing;
 mod relative_path_from;
 
-use pathname::Pathname;
+use rutie::{Class, Module, Object, RString};
 
-use rutie::{Module, Object, RString, Boolean, AnyObject, VM};
-
-use pathname_sys::*;
-
-methods!(
-  FasterPath,
-  _itself,
-
-  fn pub_add_trailing_separator(pth: RString) -> RString {
-    pathname::pn_add_trailing_separator(pth)
+ruby_methods! {
+  fn pub_add_trailing_separator(arguments) {
+    pathname::pn_add_trailing_separator(arguments)
   }
 
-  fn pub_is_absolute(pth: RString) -> Boolean {
-    pathname::pn_is_absolute(pth)
+  fn pub_is_absolute(arguments) {
+    pathname::pn_is_absolute(arguments)
   }
 
-  // fn r_ascend(){}
-
-  fn pub_basename(pth: RString, ext: RString) -> RString {
-    pathname::pn_basename(pth, ext)
+  fn pub_basename(arguments) {
+    pathname::pn_basename(arguments)
   }
 
-  fn pub_children(pth: RString, with_dir: Boolean) -> AnyObject {
-    pathname::pn_children(pth, with_dir).
-      map_err(|e| VM::raise_ex(e) ).unwrap()
+  fn pub_children(arguments) {
+    pathname::pn_children(arguments)
   }
 
-  fn pub_children_compat(pth: RString, with_dir: Boolean) -> AnyObject {
-    pathname::pn_children_compat(pth, with_dir).
-      map_err(|e| VM::raise_ex(e) ).unwrap()
+  fn pub_children_compat(arguments) {
+    pathname::pn_children_compat(arguments)
   }
 
-  fn pub_chop_basename(pth: RString) -> AnyObject {
-    pathname::pn_chop_basename(pth)
+  fn pub_chop_basename(arguments) {
+    pathname::pn_chop_basename(arguments)
   }
 
-  // fn r_cleanpath(){ pub_cleanpath(r_to_path()) }
-  // fn pub_cleanpath(pth: RString){}
-
-  fn pub_cleanpath_aggressive(pth: RString) -> RString {
-    pathname::pn_cleanpath_aggressive(pth)
+  fn pub_cleanpath_aggressive(arguments) {
+    pathname::pn_cleanpath_aggressive(arguments)
   }
 
-  fn pub_cleanpath_conservative(pth: RString) -> RString {
-    pathname::pn_cleanpath_conservative(pth)
+  fn pub_cleanpath_conservative(arguments) {
+    pathname::pn_cleanpath_conservative(arguments)
   }
 
-  fn pub_del_trailing_separator(pth: RString) -> RString {
-    pathname::pn_del_trailing_separator(pth)
+  fn pub_del_trailing_separator(arguments) {
+    pathname::pn_del_trailing_separator(arguments)
   }
 
-  // fn r_descend(){}
-
-  fn pub_is_directory(pth: RString) -> Boolean {
-    pathname::pn_is_directory(pth)
+  fn pub_is_directory(arguments) {
+    pathname::pn_is_directory(arguments)
   }
 
-  fn pub_dirname(pth: RString) -> RString {
-    pathname::pn_dirname(pth)
+  fn pub_dirname(arguments) {
+    pathname::pn_dirname(arguments)
   }
-
-  // fn r_each_child(){}
-  // fn pub_each_child(){}
-
-  // fn pub_each_filename(pth: RString) -> NilClass {
-  //   pathname::pn_each_filename(pth)
-  // }
 
   // pub_entries returns an array of String objects
-  fn pub_entries(pth: RString) -> AnyObject {
-    pathname::pn_entries(pth).
-      map_err(|e| VM::raise_ex(e) ).unwrap()
+  fn pub_entries(arguments) {
+    pathname::pn_entries(arguments)
   }
 
   // pub_entries_compat returns an array of Pathname objects
-  fn pub_entries_compat(pth: RString) -> AnyObject {
-    pathname::pn_entries_compat(pth).
-      map_err(|e| VM::raise_ex(e) ).unwrap()
+  fn pub_entries_compat(arguments) {
+    pathname::pn_entries_compat(arguments)
   }
 
-  fn pub_extname(pth: RString) -> RString {
-    pathname::pn_extname(pth)
+  fn pub_extname(arguments) {
+    pathname::pn_extname(arguments)
   }
 
-  // fn r_find(ignore_error: Boolean){}
-  // fn pub_find(pth: RString ,ignore_error: Boolean){}
-
-  fn pub_has_trailing_separator(pth: RString) -> Boolean {
-    pathname::pn_has_trailing_separator(pth)
+  fn pub_has_trailing_separator(arguments) {
+    pathname::pn_has_trailing_separator(arguments)
   }
 
-  // fn pub_mkpath(pth: RString) -> NilClass {
-  //   pathname::pn_mkpath(pth)
-  // }
-
-  // fn r_is_mountpoint(){ pub_is_mountpount(r_to_path()) }
-  // fn pub_is_mountpoint(pth: RString){}
-
-  // fn r_parent(){ pub_parent(r_to_path()) }
-  // fn pub_parent(pth: RString){}
-
-  // also need impl +
-  fn pub_plus(pth1: RString, pth2: RString) -> RString {
-    pathname::pn_plus(pth1, pth2)
+  fn pub_join(arguments) {
+    pathname::pn_join(arguments)
   }
 
-  // fn r_prepend_prefix(prefix: RString, relpath: RString){}
-
-  fn pub_is_relative(pth: RString) -> Boolean {
-    pathname::pn_is_relative(pth)
+  fn pub_plus(arguments) {
+    pathname::pn_plus(arguments)
   }
 
-  // fn r_root(){ pub_root(r_to_path()) }
-  // fn pub_root(pth: RString){}
-
-  // fn r_split_names(pth: RString){}
-
-  fn pub_relative_path_from(itself: RString, base_directory: AnyObject) -> Pathname {
-    let to_string = |i: AnyObject| { RString::from(i.send("to_s", &[]).value()) };
-
-    pathname::pn_relative_path_from(itself, base_directory.map(to_string)).
-      map_err(|e| VM::raise_ex(e) ).unwrap()
+  fn pub_is_relative(arguments) {
+    pathname::pn_is_relative(arguments)
   }
 
-  // fn pub_rmtree(pth: RString) -> NilClass {
-  //   pathname::pn_rmtree(pth)
-  // }
-);
+  fn pub_relative_path_from(arguments) {
+    pathname::pn_relative_path_from(arguments)
+  }
+}
 
 #[allow(non_snake_case)]
 #[no_mangle]
 pub extern "C" fn Init_faster_pathname() {
+  // An extension of only a dot: "" before Ruby 2.7, "." since. ("a." would
+  // tell on Unix, but Windows doesn't count trailing dots.)
+  let trailing_dot_extname = Class::file().
+    protect_send("extname", &[RString::new_utf8("a./").into()]).
+    ok().
+    and_then(|extname| extname.try_convert_to::<RString>().ok()).
+    map_or(false, |extname| extname.to_bytes_unchecked() == b".");
+  extname::set_trailing_dot_is_extname(trailing_dot_extname);
+
   Module::from_existing("FasterPath").define(|itself| {
     itself.def_self("absolute?", pub_is_absolute);
     itself.def_self("add_trailing_separator", pub_add_trailing_separator);

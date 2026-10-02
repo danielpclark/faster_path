@@ -9,7 +9,7 @@ class RefinedPathname
   end
 end
 
-class RelativeRefinementTest < Minitest::Test
+class RefinementsRelativeRefinementTest < Minitest::Test
   def test_refines_pathname_relative?
     refute RefinedPathname.new.relative?("/")
   end

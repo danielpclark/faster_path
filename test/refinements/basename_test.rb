@@ -7,7 +7,7 @@ class RefinedFile
   end
 end
 
-class BasenameTest < Minitest::Test
+class RefinementsBasenameTest < Minitest::Test
   # Tests copied from https://searchcode.com/codesearch/view/12785140/
   def test_it_creates_basename_correctly
     # Tests for basename

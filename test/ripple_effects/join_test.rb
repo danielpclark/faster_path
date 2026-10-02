@@ -10,7 +10,7 @@ class RefinedPathname
   end
 end
 
-class JoinTest < Minitest::Test
+class RippleEffectsJoinTest < Minitest::Test
   def test_join
     r = RefinedPathname.new.join("a", Pathname("b"), Pathname("c"))
     assert_equal(Pathname("a/b/c"), r)

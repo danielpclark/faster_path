@@ -1,7 +1,6 @@
 # FasterPath
 [![Gem Version](https://badge.fury.io/rb/faster_path.svg)](https://badge.fury.io/rb/faster_path)
-[![TravisCI Build Status](https://travis-ci.org/danielpclark/faster_path.svg?branch=master)](https://travis-ci.org/danielpclark/faster_path)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/10ul0gk3cwhlt2lj/branch/master?svg=true)](https://ci.appveyor.com/project/danielpclark/faster-path/branch/master)
+[![CI](https://github.com/danielpclark/faster_path/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/danielpclark/faster_path/actions/workflows/ci.yml)
 [![Latest Tag](https://img.shields.io/github/tag/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/tags)
 [![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.3.10.svg)](https://github.com/danielpclark/faster_path/pulse)
 [![Binary Release](https://img.shields.io/github/release/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/releases)
@@ -111,7 +110,13 @@ As mentioned earlier Sprockets, which handles assets, changed away from using `P
 * Methods are stable
 * Thoroughly tested
 * Testers and developers are most welcome
-* Windows & encoding support is underway!
+* Windows: paths follow Ruby's Windows rules (`\` and `/` separators, drive letters, UNC paths)
+* Paths keep their encoding, as with Ruby's own methods
+
+## Requirements
+
+* Ruby 2.5, 2.6 or 2.7 (the Rust extension is built with [Rutie](https://github.com/danielpclark/rutie) 0.10, which supports these)
+* Rust 1.71 or later
 
 ## Installation
 
@@ -120,13 +125,13 @@ Ensure Rust is installed:
 [Rust Downloads](https://www.rust-lang.org/downloads.html)
 
 ```
-curl -sSf https://static.rust-lang.org/rustup.sh | sh
+curl -sSf https://sh.rustup.rs | sh
 ```
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path', '~> 0.3.10'
+gem 'faster_path', '~> 0.4.0'
 ```
 
 And then execute:
@@ -155,25 +160,27 @@ require "faster_path"
 
 Current methods implemented:
 
-|FasterPath Rust Implementation|Ruby 2.5.0 Implementation|Time Shaved Off|
-|---|---|:---:|
-| `FasterPath.absolute?` | `Pathname#absolute?` | 95.3% |
-| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 48.4% |
-| `FasterPath.basename` | `File.basename` | 12.0% |
-| `FasterPath.children` | `Pathname#children` | 34.4% |
-| `FasterPath.chop_basename` | `Pathname#chop_basename` | 83.4% |
-| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 94.1% |
-| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 93.5% |
-| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 85.4% |
-| `FasterPath.directory?` | `Pathname#directory?` | 6.4% |
-| `FasterPath.dirname` | `File.dirname` | 55.4% |
-| `FasterPath.entries` | `Pathname#entries` | 41.0% |
-| `FasterPath.extname` | `File.extname` | 63.1% |
-| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 88.9% |
-| `FasterPath.plus` | `Pathname#join` | 79.1% |
-| `FasterPath.plus` | `Pathname#plus` | 94.7% |
-| `FasterPath.relative?` | `Pathname#relative?` | 92.6% |
-| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 93.3% |
+|FasterPath Rust Implementation|Ruby Implementation|Time Shaved Off (Ruby 2.7)|Time Shaved Off (Ruby 2.5)|
+|---|---|:---:|:---:|
+| `FasterPath.absolute?` | `Pathname#absolute?` | 95.7% | 96.7% |
+| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 85.4% | 83.0% |
+| `FasterPath.basename` | `File.basename` | 42.4% | 39.1% |
+| `FasterPath.children` | `Pathname#children` | 54.7% | 47.8% |
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 70.4% | 75.1% |
+| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 90.3% | 90.6% |
+| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 89.6% | 91.6% |
+| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 85.3% | 87.6% |
+| `FasterPath.directory?` | `Pathname#directory?` | 34.3% | 37.5% |
+| `FasterPath.dirname` | `File.dirname` | 56.8% | 54.7% |
+| `FasterPath.entries` | `Pathname#entries` | 38.0% | 33.9% |
+| `FasterPath.extname` | `File.extname` | 74.0% | 73.1% |
+| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 88.5% | 89.1% |
+| `FasterPath.join` | `Pathname#join` | 88.1% | 90.3% |
+| `FasterPath.plus` | `Pathname#plus` | 91.7% | 93.4% |
+| `FasterPath.relative?` | `Pathname#relative?` | 92.8% | 95.2% |
+| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 92.5% | 93.6% |
+
+See [Benchmarks](#benchmarks) for how these are measured.
 
 You may choose to use the methods directly, or scope change to rewrite behavior on the
 standard library with the included refinements, or even call a method to monkeypatch
@@ -199,13 +206,58 @@ FasterPath.sledgehammer_everything!
 
 These will **not** be included by default in monkey-patches.  To try them with monkeypatching use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
 
-|FasterPath Implementation|Ruby Implementation|
-|---|---|
-| `FasterPath.entries_compat` | `Pathname.entries` |
-| `FasterPath.children_compat` | `Pathname.children` |
+|FasterPath Implementation|Ruby Implementation|Time Shaved Off (Ruby 2.7)|Time Shaved Off (Ruby 2.5)|
+|---|---|:---:|:---:|
+| `FasterPath.entries_compat` | `Pathname.entries` | 16.8% | 9.2% |
+| `FasterPath.children_compat` | `Pathname.children` | 32.1% | 26.6% |
 
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
 performance seems to vary based on CPU cache on possibly 64bit/32bit system environments.  These are not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.
+
+## Benchmarks
+
+The "Time Shaved Off" figures come from the project's Pinch-bench (`rake pbench`, in
+`test/pbench`): each method runs against Ruby's own implementation, and the result is how much
+less time FasterPath took. They are the median of 3 runs of `LONG_RUN=10 rake pbench` (500,000
+calls of each method, 5 times) on Linux x86_64 with Ruby 2.7.8 and 2.5.7, built with Rust 1.97.
+Expect a few points of difference from run to run.
+
+### Before and after the Rutie 0.10 upgrade
+
+Measured the same way, alternating runs of the code before the upgrade (built with Rutie 0.6)
+and after it. Higher is better; the change is in percentage points.
+
+|Method|Ruby 2.7 before|Ruby 2.7 after|Change|Ruby 2.5 before|Ruby 2.5 after|Change|
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| `absolute?` | 93.3% | 95.7% | +2.4 | 96.1% | 96.7% | +0.6 |
+| `add_trailing_separator` | 66.6% | 85.4% | **+18.8** | 64.3% | 83.0% | **+18.7** |
+| `basename` | 42.4% | 42.4% | 0.0 | 32.1% | 39.1% | **+7.0** |
+| `children` | 52.8% | 54.7% | +1.9 | 46.5% | 47.8% | +1.3 |
+| `children_compat` | −1.2% | 32.1% | **+33.3** | 1.1% | 26.6% | **+25.5** |
+| `chop_basename` | 71.2% | 70.4% | −0.8 | 74.7% | 75.1% | +0.4 |
+| `cleanpath_aggressive` | 90.3% | 90.3% | 0.0 | 92.7% | 90.6% | −2.1 |
+| `cleanpath_conservative` | 89.8% | 89.6% | −0.2 | 91.7% | 91.6% | −0.1 |
+| `del_trailing_separator` | 86.5% | 85.3% | −1.2 | 87.0% | 87.6% | +0.6 |
+| `directory?` | 33.2% | 34.3% | +1.1 | 37.2% | 37.5% | +0.3 |
+| `dirname` | 49.8% | 56.8% | **+7.0** | 51.2% | 54.7% | +3.5 |
+| `entries` | 40.4% | 38.0% | −2.4 | 33.6% | 33.9% | +0.3 |
+| `entries_compat` | −29.8% | 16.8% | **+46.6** | −23.3% | 9.2% | **+32.5** |
+| `extname` | 70.3% | 74.0% | +3.7 | 74.0% | 73.1% | −0.9 |
+| `has_trailing_separator?` | 87.5% | 88.5% | +1.0 | 87.1% | 89.1% | +2.0 |
+| `join` | crashes | 88.1% | | crashes | 90.3% | |
+| `plus` | 92.3% | 91.7% | −0.6 | 93.0% | 93.4% | +0.4 |
+| `relative?` | 90.7% | 92.8% | +2.1 | 93.6% | 95.2% | +1.6 |
+| `relative_path_from` | 92.7% | 92.5% | −0.2 | 94.0% | 93.6% | −0.4 |
+
+Before the upgrade, `FasterPath.join` segfaulted, so its benchmark can't be measured.
+`add_trailing_separator`, `dirname` and the `_compat` methods gained the most:
+`add_trailing_separator` no longer builds a temporary string, no method checks its arguments
+for valid UTF-8 any more, and the `_compat` methods build `Pathname` objects without calling
+`Pathname.new`. `basename` was re-measured after it was made to take a shorter path on Unix
+and skip an empty extension; it was the one method that first measured slower on Ruby 2.5.
+Its timings vary a lot from run to run (Ruby 2.5 before: 40.0%, 32.1%, 28.7%; after: 29.6%,
+39.1%, 39.2%), so its instruction counts from `valgrind --tool=callgrind` are a steadier
+measure. They went from 2439 to 2331 per call on Ruby 2.5 and from 2689 to 2561 on Ruby 2.7.
 
 ## Getting Started with Development
 

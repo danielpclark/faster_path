@@ -7,7 +7,7 @@ class RefinedFile
   end
 end
 
-class ExtnameTest < Minitest::Test
+class RefinementsExtnameTest < Minitest::Test
   # Tests copied from https://searchcode.com/codesearch/view/12785140/
   def test_extname
     assert_equal ".rb", RefinedFile.new.extname("foo.rb")
@@ -27,7 +27,7 @@ class ExtnameTest < Minitest::Test
     assert_equal "", RefinedFile.new.extname("..")
     assert_equal "", RefinedFile.new.extname("...")
     assert_equal "", RefinedFile.new.extname("....")
-    assert_equal "", RefinedFile.new.extname(".foo.")
-    assert_equal "", RefinedFile.new.extname("foo.")
+    assert_equal TRAILING_DOT_EXTNAME, RefinedFile.new.extname(".foo.")
+    assert_equal TRAILING_DOT_EXTNAME, RefinedFile.new.extname("foo.")
   end
 end

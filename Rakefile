@@ -69,7 +69,9 @@ task :init_mspec do |_t|
 end
 
 task test: [:cargo, :minitest, :lint, :pbench, :init_mspec] do |_t|
-  exec 'spec/mspec/bin/mspec --format spec core/file/basename core/file/extname core/file/dirname library/pathname'
+  # Run through Ruby so this also works on Windows
+  exec Gem.ruby, 'spec/mspec/bin/mspec', '--format', 'spec',
+       'core/file/basename', 'core/file/extname', 'core/file/dirname', 'library/pathname'
 end
 
 desc "Full mspec results w/o encoding"

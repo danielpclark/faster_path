@@ -22,6 +22,10 @@ require 'pathname'
 require 'minitest/reporters'
 require 'color_pound_spec_reporter'
 
+# color_pound_spec_reporter prints failures with the `MiniTest` name, which
+# minitest 5.19 and later only define for compatibility
+MiniTest = Minitest unless defined?(MiniTest)
+
 Minitest::Reporters.use! [ColorPoundSpecReporter.new]
 
 ::Minitest::Assertions.module_eval do
@@ -34,6 +38,13 @@ Minitest::Reporters.use! [ColorPoundSpecReporter.new]
 end
 
 ::Minitest::Test.class_eval do
+  # Ruby 2.7 changed File.extname("foo.") from "" to ".", except on Windows
+  TRAILING_DOT_EXTNAME =
+    if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7") && /mingw|mswin/ !~ RUBY_PLATFORM
+      "."
+    else
+      ""
+    end
   DRIVE = Dir.pwd[%r{\A(?:[a-z]:|//[^/]+/[^/]+)}i]
   POSIX = /cygwin|mswin|bccwin|mingw|emx/ !~ RUBY_PLATFORM
   NTFS = !(/mingw|mswin|bccwin/ !~ RUBY_PLATFORM)
