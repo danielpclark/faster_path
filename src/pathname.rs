@@ -52,9 +52,10 @@ pub fn pn_basename(arguments: &[AnyObject]) -> RubyResult {
   let result = match base_len {
     // Like Ruby, ignore an extension in an incompatible encoding, and only
     // remove one that starts a character.
-    Some(base_len) if EncodingOf::new(&path).merge(&ext).is_ok() => {
+    Some(base_len) if !ext.bytes().is_empty() &&
+        (path.encoding == ext.encoding || EncodingOf::new(&path).merge(&ext).is_ok()) => {
       let end = basename::ext_end(RULES, component, base_len, ext.bytes());
-      if path.is_char_boundary(component, end) { &component[..end] } else { component }
+      if end == component.len() || path.is_char_boundary(component, end) { &component[..end] } else { component }
     }
     _ => component,
   };

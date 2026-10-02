@@ -20,13 +20,24 @@ pub fn last_component(rules: Rules, path: &[u8]) -> (&[u8], Option<usize>) {
   if path.is_empty() {
     return (path, None);
   }
+  if !rules.is_dosish() {
+    // On Unix this is just the last name, or the last separator.
+    let end = match rules.last_non_sep_pos(path) {
+      Some(pos) => pos + 1,
+      None => return (&path[path.len() - 1..], None),
+    };
+    // Paths are short: a plain scan beats `memrchr`'s setup here.
+    let start = path[..end].iter().rposition(|&c| c == b'/').map_or(0, |pos| pos + 1);
+    let component = &path[start..end];
+    return (component, Some(base_len(component)));
+  }
   let root = rules.skip_prefix(path);
   let mut name = root;
   while name < path.len() && rules.is_sep(path[name]) {
     name += 1;
   }
   if name == path.len() {
-    if !rules.is_dosish() || name != root {
+    if name != root {
       // The last separator
       return (&path[name - 1..name], None);
     }
@@ -48,11 +59,15 @@ pub fn last_component(rules: Rules, path: &[u8]) -> (&[u8], Option<usize>) {
     None => name,
   };
   let rest = &path[start..];
-  let len = if rules.is_dosish() { rules.ntfs_tail(rest) } else { rules.chomp_dir_sep(rest) };
-  let component = &rest[..len];
+  let component = &rest[..rules.ntfs_tail(rest)];
+  (component, Some(base_len(component)))
+}
+
+// Where the name ends without its extension: at its last dot, unless that
+// is one of its leading dots.
+fn base_len(component: &[u8]) -> usize {
   let dots = component.iter().take_while(|&&c| c == b'.').count();
-  let base_len = component[dots..].iter().rposition(|&c| c == b'.').map_or(len, |pos| dots + pos);
-  (component, Some(base_len))
+  component[dots..].iter().rposition(|&c| c == b'.').map_or(component.len(), |pos| dots + pos)
 }
 
 // Ruby's `rmext`: where `component` ends without the extension `ext`, or
