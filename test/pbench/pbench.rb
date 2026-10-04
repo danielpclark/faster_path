@@ -53,18 +53,34 @@ class Pbench # < Minitest::Benchmark
   # the key is the name of the method
   # value :old    will be a proc to execute original method behavior
   # value :new    will be a proc to execute newer method behavior
+  # value :min    (optional) the least improvement, in percent, the method
+  #               must keep over the original; see `regressions`
+  #
+  # Returns a hash of the method names to their measured improvement.
   def run(hsh)
     io.send :puts, "Pinch-bench (Pbench) by Daniel P. Clark"
     io.send :puts, "-"*80
     io.send :puts, os_lang_specs
     io.send :puts, "-"*80
     io.flush
-    hsh.each_key do |k|
-      h = hsh[k]
+    hsh.each_with_object({}) do |(k, h), results|
       result = performance(h[:old], h[:new])
+      results[k] = result
       io.send :puts, "Performance change for #{k} is %.1f%%" % result
       io.flush
     end
+  end
+
+  # The benchmarks whose result fell below their :min floor, as messages.
+  #
+  # The floors are regression tests for performance: a method that has been
+  # changed, or a dependency that has been upgraded, must not lose the
+  # improvement over Ruby that this library exists for.
+  def regressions(results, hsh)
+    hsh.map do |k, h|
+      next unless h[:min] && results[k] < h[:min]
+      "%s is %.1f%% faster than Ruby, below its floor of %d%%" % [k, results[k], h[:min]]
+    end.compact
   end
 
   def os_lang_specs

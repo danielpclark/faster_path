@@ -222,6 +222,13 @@ less time FasterPath took. They are the median of 3 runs of `LONG_RUN=10 rake pb
 calls of each method, 5 times) on Linux x86_64 with Ruby 2.7.8 and 2.5.7, built with Rust 1.97.
 Expect a few points of difference from run to run.
 
+`rake pbench` is also the performance regression test: each method has a floor in
+`test/pbench/pbench_suite.rb` (about half of the improvement in the table above) and the task
+fails when a method measures below it, so a change that makes a method slower shows up in
+`rake test`. On Windows, where `join` is currently slower than Ruby's
+([#185](https://github.com/danielpclark/faster_path/issues/185)), the floors are reported but not
+enforced.
+
 ### Before and after the Rutie 0.10 upgrade
 
 Measured the same way, alternating runs of the code before the upgrade (built with Rutie 0.6)
