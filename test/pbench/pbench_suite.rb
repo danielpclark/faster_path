@@ -1,6 +1,7 @@
 require 'pbench'
 
 # PBENCHES[:""] = {
+#  min: 50,  # the least improvement over Ruby, in percent, the method must keep
 #  new: lambda do |x|
 #    x.times do
 #    end
@@ -10,6 +11,13 @@ require 'pbench'
 #    end
 #  end
 # }
+#
+# The :min floors are about half of the improvements documented in the README,
+# so that the noise of a shared CI runner doesn't trip them but a method that
+# falls back towards Ruby's speed does. Methods that mostly wait on the
+# filesystem (children, directory?, entries) only have to stay faster than Ruby.
+# The _compat methods are documented as "stable, not performant" and have no
+# floor, and neither does the allocate baseline.
 
 # SOME DEFAULTS
 PATHNAME_A = Pathname.new('a').freeze
@@ -37,6 +45,7 @@ PBENCHES[:"allocate, instead of new,"] = {
   end
 }
 PBENCHES[:"absolute?"] = {
+  min: 80,
   new: lambda do |x|
     x.times do
       FasterPath.absolute?("/hello")
@@ -51,6 +60,7 @@ PBENCHES[:"absolute?"] = {
   end,
 }
 PBENCHES[:add_trailing_separator] = {
+  min: 50,
   new: lambda do |x|
     x.times do
       FasterPath.add_trailing_separator('/hello/world')
@@ -65,6 +75,7 @@ PBENCHES[:add_trailing_separator] = {
   end
 }
 PBENCHES[:basename] = {
+  min: 15,
   new: lambda do |x|
     x.times do
       FasterPath.basename("/hello/world")
@@ -87,6 +98,7 @@ PBENCHES[:basename] = {
   end
 }
 PBENCHES[:children] = {
+  min: 0,
   new: lambda do |x|
     (x/5).times do
       FasterPath.children(".")
@@ -111,6 +123,7 @@ PBENCHES[:children_compat] = {
  end
 }
 PBENCHES[:chop_basename] = {
+  min: 50,
   new: lambda do |x|
     x.times do
       FasterPath.chop_basename "/hello/world.txt"
@@ -129,6 +142,7 @@ PBENCHES[:chop_basename] = {
 PATHNAME_CA1 = Pathname.new('/../.././../a').freeze
 PATHNAME_CA2 = Pathname.new('a/b/../../../../c/../d').freeze
 PBENCHES[:cleanpath_aggressive] = {
+  min: 80,
   new: lambda do |x|
     x.times do
       Pathname.new(FasterPath.cleanpath_aggressive '/../.././../a')
@@ -143,6 +157,7 @@ PBENCHES[:cleanpath_aggressive] = {
   end
 }
 PBENCHES[:cleanpath_conservative] = {
+  min: 80,
   new: lambda do |x|
     x.times do
       Pathname.new(FasterPath.cleanpath_conservative '/../.././../a')
@@ -157,6 +172,7 @@ PBENCHES[:cleanpath_conservative] = {
   end
 }
 PBENCHES[:del_trailing_separator] = {
+  min: 70,
   new: lambda do |x|
     x.times do
       FasterPath.del_trailing_separator('/hello/world')
@@ -171,6 +187,7 @@ PBENCHES[:del_trailing_separator] = {
   end
 }
 PBENCHES[:"directory?"] = {
+  min: 0,
   new: lambda do |x|
     x.times do
       FasterPath.directory?("/hello")
@@ -185,6 +202,7 @@ PBENCHES[:"directory?"] = {
   end
 }
 PBENCHES[:dirname] = {
+  min: 30,
   new: lambda do |x|
     x.times do
       FasterPath.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
@@ -201,6 +219,7 @@ PBENCHES[:dirname] = {
   end
 }
 PBENCHES[:entries] = {
+  min: 0,
   new: lambda do |x|
     (x/5).times do
       FasterPath.entries("./")
@@ -229,6 +248,7 @@ PBENCHES[:entries_compat] = {
   end
 }
 PBENCHES[:extname] = {
+  min: 50,
   new: lambda do |x|
     x.times do
       FasterPath.extname('verylongfilename_verylongfilename.rb')
@@ -245,6 +265,7 @@ PBENCHES[:extname] = {
   end
 }
 PBENCHES[:"has_trailing_separator?"] = {
+  min: 75,
   new: lambda do |x|
     x.times do
       FasterPath.has_trailing_separator? '////a//aaa/a//a/aaa////'
@@ -259,6 +280,7 @@ PBENCHES[:"has_trailing_separator?"] = {
   end
 }
 PBENCHES[:join] = {
+  min: 70,
   new: lambda do |x|
     x.times do
       FasterPath.join('a', 'b')
@@ -275,6 +297,7 @@ PBENCHES[:join] = {
   end
 }
 PBENCHES[:plus] = {
+  min: 80,
   new: lambda do |x|
     x.times do
       FasterPath.plus('a', 'b')
@@ -291,6 +314,7 @@ PBENCHES[:plus] = {
   end
 }
 PBENCHES[:"relative?"] = {
+  min: 80,
   new: lambda do |x|
     x.times do
       FasterPath.relative?("/hello")
@@ -307,6 +331,7 @@ PBENCHES[:"relative?"] = {
 PATHNAME_AB = Pathname("/a/b")
 PATHNAME_ABCD = Pathname("/a/b/c/d")
 PBENCHES[:relative_path_from] = {
+  min: 80,
   new: lambda do |x|
     x.times do
       FasterPath.relative_path_from "/a/b/c/d", "/a/b"
@@ -320,4 +345,19 @@ PBENCHES[:relative_path_from] = {
     end
   end
 }
-Pbench.new(nil).run(PBENCHES)
+
+# Fails `rake pbench` when a method has lost its improvement over Ruby.
+class PbenchRegressionTest < Minitest::Test
+  WINDOWS = !File::ALT_SEPARATOR.nil?
+
+  def test_methods_keep_their_improvement_over_ruby
+    pbench = Pbench.new(nil)
+    regressions = pbench.regressions(pbench.run(PBENCHES), PBENCHES)
+    message = "Performance regressions:\n  " + regressions.join("\n  ")
+    # On Windows `join` is slower than Ruby's own implementation (see
+    # https://github.com/danielpclark/faster_path/issues/185), so the
+    # floors are reported there but not enforced until that is fixed.
+    skip message if WINDOWS && !regressions.empty?
+    assert_empty regressions, message
+  end
+end

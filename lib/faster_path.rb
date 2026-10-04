@@ -40,7 +40,9 @@ module FasterPath
   # The Ruby architecture bit width: 64bits or 32bits
   # @return [Integer]
   def self.ruby_arch_bits
-    1.size * 8
+    # The width of a pointer; `1.size` is the width of a C `long`, which is
+    # 4 bytes on 64-bit Windows.
+    [0].pack('J').bytesize * 8
   end
 
   # A very fast way to check if a string is blank
