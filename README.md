@@ -119,9 +119,9 @@ As mentioned earlier Sprockets, which handles assets, changed away from using `P
 
 ## Installation
 
-Ensure Rust is installed:
+Ensure Rust is installed, with `cargo` on your `PATH`:
 
-[Rust Downloads](https://www.rust-lang.org/downloads.html)
+[Install Rust](https://www.rust-lang.org/tools/install)
 
 ```
 curl -sSf https://sh.rustup.rs | sh
@@ -140,6 +140,12 @@ And then execute:
 Or install it yourself as:
 
     $ gem install faster_path
+
+Installing compiles the Rust extension for the Ruby doing the installing ("Building native
+extensions. This could take a while..."), which takes about a minute the first time while Cargo
+fetches and builds the dependencies. If Rust is missing, the install fails at that step with
+Cargo not being found; install Rust and run it again. Nothing is downloaded from GitHub: there are
+no prebuilt binaries.
 
 ## Visual Benchmarks
 
