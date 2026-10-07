@@ -171,6 +171,10 @@ pub fn pn_dirname(arguments: &[AnyObject]) -> RubyResult {
     }
     result = Cow::Owned(parent.into_owned());
   }
+  if result.is_empty() {
+    // `File.dirname("", 0)` is "." like `File.dirname("")`
+    result = Cow::Borrowed(b".");
+  }
   Ok(path.to_ruby(&result).into())
 }
 

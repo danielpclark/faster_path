@@ -22,10 +22,23 @@ class DirnameTest < Minitest::Test
     assert_equal(String, FasterPath.dirname('/home/jason', 0).class)
   end
 
+  # What File.dirname(path, level) returns on Ruby 3.3 for levels 0 to 4
+  LEVELS = {
+    '/home/jason/poot.txt' => ['/home/jason/poot.txt', '/home/jason', '/home', '/', '/'],
+    'a/b/c' => ['a/b/c', 'a/b', 'a', '.', '.'],
+    '/a' => ['/a', '/', '/', '/', '/'],
+    'a' => ['a', '.', '.', '.', '.'],
+    '' => ['.', '.', '.', '.', '.'],
+    '/' => ['/', '/', '/', '/', '/'],
+    './b/./' => ['./b/./', './b', '.', '.', '.'],
+    '/foo/../.' => ['/foo/../.', '/foo/..', '/foo', '/', '/'],
+    'a//b//c//' => ['a//b//c//', 'a//b', 'a', '.', '.']
+  }.freeze
+
   def test_level_agrees_with_file_dirname
-    ['/home/jason/poot.txt', 'a/b/c', '/a', 'a', '', '/', './b/./', '/foo/../.', 'a//b//c//'].each do |path|
-      0.upto(4) do |level|
-        assert_equal(File.dirname(path, level), FasterPath.dirname(path, level), "#{path.inspect}, #{level}")
+    LEVELS.each do |path, expected|
+      expected.each_with_index do |dirname, level|
+        assert_equal(dirname, FasterPath.dirname(path, level), "#{path.inspect}, #{level}")
       end
     end
   end
