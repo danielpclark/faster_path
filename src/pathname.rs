@@ -3,7 +3,7 @@ use std::ffi::OsStr;
 use std::fs;
 use std::io;
 
-use rutie::{AnyException, AnyObject, Array, Boolean, Class, NilClass, Object, RString};
+use rutie::{AnyException, AnyObject, Array, Boolean, Class, Integer, NilClass, Object, RString, Symbol};
 
 use crate::basename;
 use crate::chop_basename::{self, is_relative};
@@ -15,7 +15,7 @@ use crate::path_parsing::Rules;
 use crate::plus;
 use crate::relative_path_from::{self, RelativePathError};
 use crate::ruby::{
-  argument_error, check_max_arguments, error, new_pathname, path_like_to_string, pathname_class,
+  argument_error, check_max_arguments, error, inspect, new_pathname, path_like_to_string, pathname_class,
   truthy_argument, EncodingId, EncodingOf, PathArgument, PathString, RubyResult,
 };
 
@@ -152,11 +152,47 @@ pub fn pn_is_directory(arguments: &[AnyObject]) -> RubyResult {
   Ok(Boolean::new(is_directory).into())
 }
 
+// `File.dirname(path, level = 1)`: `level` is the number of trailing
+// components to remove (Ruby 3.1+).
 pub fn pn_dirname(arguments: &[AnyObject]) -> RubyResult {
-  check_max_arguments(arguments, 1)?;
+  check_max_arguments(arguments, 2)?;
   let argument = PathArgument::new(arguments, 0)?;
   let path = argument.path()?;
-  Ok(path.to_ruby(&dirname::dirname(RULES, path.bytes())).into())
+  let level = match arguments.get(1) {
+    Some(level) => level_argument(level)?,
+    None => 1,
+  };
+  let mut result: Cow<[u8]> = Cow::Borrowed(path.bytes());
+  for _ in 0..level {
+    let parent = dirname::dirname(RULES, &result);
+    if *parent == *result {
+      // The root ("/", "." or "C:/"), which is its own dirname
+      break;
+    }
+    result = Cow::Owned(parent.into_owned());
+  }
+  Ok(path.to_ruby(&result).into())
+}
+
+// The `level` argument of `File.dirname`, converted like Ruby's `NUM2INT`.
+fn level_argument(object: &AnyObject) -> Result<usize, AnyException> {
+  let integer = match object.try_convert_to::<Integer>() {
+    Ok(integer) => integer,
+    Err(_) => {
+      let responds = object.protect_send("respond_to?", &[Symbol::new("to_int").into()])?;
+      if !responds.value().is_true() {
+        let class_name = object.protect_send("class", &[]).ok().and_then(|class| inspect(&class).ok()).unwrap_or_default();
+        return Err(error(&Class::type_error(), &format!("no implicit conversion of {} into Integer", class_name)));
+      }
+      let converted = object.protect_send("to_int", &[])?;
+      converted.try_convert_to::<Integer>()?
+    }
+  };
+  let level = integer.to_i64();
+  if level < 0 {
+    return Err(argument_error(&format!("negative level: {}", level)));
+  }
+  Ok(level as usize)
 }
 
 // Returns an array of `String`s
@@ -315,7 +351,7 @@ fn system_call_error(err: &io::Error, path: &AnyObject, func: &str) -> AnyExcept
   #[cfg(unix)]
   {
     if let Some(errno) = err.raw_os_error() {
-      let arguments = [path.clone(), rutie::Integer::new(errno.into()).into(), RString::new_utf8(func).into()];
+      let arguments = [path.clone(), Integer::new(errno.into()).into(), RString::new_utf8(func).into()];
       if let Ok(exception) = Class::system_call_error().protect_send("new", &arguments) {
         if let Ok(exception) = exception.try_convert_to::<AnyException>() {
           return exception;

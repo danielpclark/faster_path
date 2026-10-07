@@ -20,10 +20,10 @@ module FasterPath
       end
 
       # @private :nodoc:
-      def self.dirname(pth)
+      def self.dirname(pth, level = 1)
         pth = pth.to_path if pth.respond_to? :to_path
         raise TypeError unless pth.is_a? String
-        FasterPath.dirname(pth)
+        FasterPath.dirname(pth, level)
       end
     end
   end
