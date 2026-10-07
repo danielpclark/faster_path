@@ -1,6 +1,6 @@
 require 'faster_path/version'
 require 'pathname'
-require 'thermite/config'
+require 'rutie'
 require 'fiddle'
 require 'fiddle/import'
 
@@ -13,16 +13,12 @@ require 'fiddle/import'
 # existing code ecosystem.  To do so you will need to
 # `require 'faster_path/optional/monkeypatches'` beforehand.
 module FasterPath
-  FFI_LIBRARY = begin
-    toplevel_dir = File.dirname(__dir__)
-    config = Thermite::Config.new(cargo_project_path: toplevel_dir,
-                                  ruby_project_path: toplevel_dir)
-    config.ruby_extension_path
-  end
-
-  Fiddle::Function.
-    new(Fiddle.dlopen(FFI_LIBRARY)['Init_faster_pathname'], [], Fiddle::TYPE_VOID).
-    call
+  # The Rust extension: in the project's target/release after `rake rutie:build`,
+  # or in lib/faster_path, where `gem install` puts it (see ext/Rakefile)
+  RUTIE = [Rutie.new(:faster_path), Rutie.new(:faster_path, lib_path: 'faster_path')].
+    find { |rutie| File.exist?(rutie.ffi_library(__dir__)) } || Rutie.new(:faster_path)
+  FFI_LIBRARY = RUTIE.ffi_library(__dir__)
+  RUTIE.init('Init_faster_pathname', __dir__)
 
   Public.class_eval do
     private_class_method :basename

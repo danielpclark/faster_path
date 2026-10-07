@@ -1,9 +1,14 @@
-require 'thermite/tasks'
-require_relative '../lib/faster_path/version'
+require 'fileutils'
+require_relative '../lib/faster_path/build_task'
 
-project_toplevel_dir = File.dirname(__dir__)
-Thermite::Tasks.new(cargo_project_path: project_toplevel_dir,
-                    ruby_project_path: project_toplevel_dir,
-                    version: FasterPath::VERSION)
+FasterPath::BuildTask.define
 
-task default: 'thermite:build'
+# Keeps the built library (in lib/faster_path, where FasterPath loads it from)
+# and removes the rest of Cargo's output from the installed gem.
+task install_library: 'rutie:build' do
+  FileUtils.mkdir_p(FasterPath::BuildTask::INSTALLED_LIBRARY_DIR)
+  FileUtils.cp(FasterPath::BuildTask.built_library, FasterPath::BuildTask::INSTALLED_LIBRARY_DIR)
+  Rake::Task['rutie:clean'].invoke
+end
+
+task default: :install_library

@@ -3,7 +3,6 @@
 [![CI](https://github.com/danielpclark/faster_path/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/danielpclark/faster_path/actions/workflows/ci.yml)
 [![Latest Tag](https://img.shields.io/github/tag/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/tags)
 [![Commits Since Last Release](https://img.shields.io/github/commits-since/danielpclark/faster_path/v0.3.10.svg)](https://github.com/danielpclark/faster_path/pulse)
-[![Binary Release](https://img.shields.io/github/release/danielpclark/faster_path.svg)](https://github.com/danielpclark/faster_path/releases)
 [![Inline docs](http://inch-ci.org/github/danielpclark/faster_path.svg?branch=master)](http://inch-ci.org/github/danielpclark/faster_path)
 [![Code Triagers Badge](https://www.codetriage.com/danielpclark/faster_path/badges/users.svg)](https://www.codetriage.com/danielpclark/faster_path)
 
@@ -115,13 +114,14 @@ As mentioned earlier Sprockets, which handles assets, changed away from using `P
 ## Requirements
 
 * Ruby 3.2, 3.3 or 3.4 (the Rust extension is built with [Rutie](https://github.com/danielpclark/rutie) 0.13, which supports these)
-* Rust 1.71 or later
+* Rust 1.71 or later: `gem install` builds the extension with Cargo (through the
+  [rutie](https://rubygems.org/gems/rutie) gem's Rake task) and keeps only the built library
 
 ## Installation
 
-Ensure Rust is installed:
+Ensure Rust is installed, with `cargo` on your `PATH`:
 
-[Rust Downloads](https://www.rust-lang.org/downloads.html)
+[Install Rust](https://www.rust-lang.org/tools/install)
 
 ```
 curl -sSf https://sh.rustup.rs | sh
@@ -140,6 +140,12 @@ And then execute:
 Or install it yourself as:
 
     $ gem install faster_path
+
+Installing compiles the Rust extension for the Ruby doing the installing ("Building native
+extensions. This could take a while..."), which takes about a minute the first time while Cargo
+fetches and builds the dependencies. If Rust is missing, the install fails at that step with
+Cargo not being found; install Rust and run it again. Nothing is downloaded from GitHub: there are
+no prebuilt binaries.
 
 ## Visual Benchmarks
 
@@ -286,7 +292,9 @@ Rust method like `!absolute?` _(not absolute)_ drops 39% of the performance alre
 Whenever feasible implement it in Rust.
 
 After checking out the repo, make sure you have Rust installed, then run `bundle`.
-Run `rake test` to run the tests, and `rake bench` for benchmarks.
+Run `rake test` to run the tests, and `rake bench` for benchmarks. Both build the extension
+first (`rake rutie:build`, into `target/release`, which is where `require 'faster_path'` loads it
+from in a checkout).
 
 ### Building and running tests
 
