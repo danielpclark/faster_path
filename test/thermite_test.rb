@@ -1,25 +1,30 @@
 require 'test_helper'
 require 'thermite/tasks'
 
+# What the Rakefiles rely on in thermite
 class ThermiteTest < Minitest::Test
   def setup
     project_toplevel_dir = File.dirname(__dir__)
     @thermite = Thermite::Tasks.new(cargo_project_path: project_toplevel_dir,
-                                    ruby_project_path: project_toplevel_dir)
+                                    ruby_project_path: project_toplevel_dir,
+                                    version: FasterPath::VERSION)
   end
 
-  def test_has_methods_needed_for_monkeypatch
-    assert Thermite::Config.public_method_defined?(:ruby_version), 'Thermite ruby_version not defined!'
-    assert Thermite::Tasks.public_method_defined?(:github_download_uri), 'Thermite github_download_uri not defined!'
+  def test_release_tarballs_are_named_after_the_gem_version
+    config = @thermite.config
 
-    assert_match(/ruby\d+\.\d+\.\d+/, Thermite::Config.new.ruby_version)
+    assert_equal FasterPath::VERSION, config.version
+    refute_equal config.crate_version, config.version
 
-    gh_uri = @thermite.github_download_uri('lol', '0.0.1')
+    tarball = config.tarball_filename(config.version)
 
-    assert_match(/faster_path/, gh_uri)
-    assert_match(/0\.0\.1/, gh_uri)
-    assert_match(/#{FasterPath::VERSION}/, gh_uri)
-    assert_match(/github/, gh_uri)
-    assert_match(/tar\.gz/, gh_uri)
+    assert_match(/\Afaster_path-#{Regexp.escape(FasterPath::VERSION)}-/, tarball)
+    # The Ruby's major and minor version only: the extension works on every patch release
+    assert_match(/-ruby\d\d-/, tarball)
+    assert_match(/\.tar\.gz\z/, tarball)
+  end
+
+  def test_build_lib_can_clean_the_cargo_target
+    assert_respond_to Thermite::Cargo.new(@thermite.config), :clean
   end
 end
