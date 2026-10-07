@@ -114,7 +114,7 @@ As mentioned earlier Sprockets, which handles assets, changed away from using `P
 
 ## Requirements
 
-* Ruby 2.5, 2.6 or 2.7 (the Rust extension is built with [Rutie](https://github.com/danielpclark/rutie) 0.10, which supports these)
+* Ruby 3.2, 3.3 or 3.4 (the Rust extension is built with [Rutie](https://github.com/danielpclark/rutie) 0.13, which supports these)
 * Rust 1.71 or later
 
 ## Installation

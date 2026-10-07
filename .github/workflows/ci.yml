@@ -23,9 +23,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Rutie 0.10, which the extension is built with, supports Ruby 2.5 to 2.7
+        # Rutie 0.13, which the extension is built with, supports Ruby 3.2 to 3.4
         os: [ubuntu-22.04, windows-latest]
-        ruby: ['2.5', '2.6', '2.7']
+        ruby: ['3.2', '3.3', '3.4']
         suite:
           - name: regression
             env: WITH_REGRESSION=true
@@ -35,7 +35,7 @@ jobs:
             env: ENCODING=true TEST_MONKEYPATCHES=true WITH_REGRESSION=true
         include:
           - os: macos-latest
-            ruby: '2.7'
+            ruby: '3.4'
             suite:
               name: regression
               env: WITH_REGRESSION=true
@@ -65,10 +65,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-22.04]
-        ruby: ['2.5', '2.6', '2.7']
+        ruby: ['3.2', '3.3', '3.4']
         include:
           - os: macos-latest
-            ruby: '2.7'
+            ruby: '3.4'
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
