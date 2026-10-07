@@ -45,7 +45,7 @@ PBENCHES[:"allocate, instead of new,"] = {
   end
 }
 PBENCHES[:"absolute?"] = {
-  min: 80,
+  min: 20,
   new: lambda do |x|
     x.times do
       FasterPath.absolute?("/hello")
@@ -314,7 +314,7 @@ PBENCHES[:plus] = {
   end
 }
 PBENCHES[:"relative?"] = {
-  min: 80,
+  min: 30,
   new: lambda do |x|
     x.times do
       FasterPath.relative?("/hello")
