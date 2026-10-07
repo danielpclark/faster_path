@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.files         = [
     'Cargo.lock', 'Cargo.toml', 'Gemfile', 'MIT-LICENSE.txt', 'README.md', 'Rakefile',
     'bin/console', 'bin/setup', 'ext/Rakefile', 'faster_path.gemspec', 'lib/faster_path.rb',
-    'lib/faster_path/version.rb',
+    'lib/faster_path/version.rb', 'lib/faster_path/build_task.rb',
     'lib/faster_path/optional/monkeypatches.rb', 'lib/faster_path/optional/refinements.rb'
   ]
   spec.files += Dir['src/**/*']
@@ -27,11 +27,9 @@ Gem::Specification.new do |spec|
   # Rutie 0.13, which the Rust extension is built with, supports Ruby 3.2 to 3.4
   spec.required_ruby_version = ['>= 3.2', '< 3.5']
 
-  spec.add_dependency 'bundler', '>= 1.12'
+  # The extension is built at install time with Rutie's Rake task and loaded with Rutie
   spec.add_dependency 'rake', '>= 12.3'
-  spec.add_dependency 'thermite', '~> 0.14'
-  # thermite reads GitHub release feeds with REXML, a bundled gem since Ruby 3.0
-  spec.add_dependency 'rexml', '~> 3.2'
+  spec.add_dependency 'rutie', '~> 0.0.5'
   spec.add_development_dependency 'read_source', '~> 0.2.6'
   spec.add_development_dependency 'minitest', '~> 5.11'
   spec.add_development_dependency 'minitest-reporters', '~> 1.1'

@@ -9,9 +9,6 @@ license = "MIT OR Apache-2.0"
 readme = "README.md"
 edition = "2021"
 
-[package.metadata.thermite]
-github_releases = true
-
 [lib]
 name = "faster_path"
 crate-type = ["cdylib"]

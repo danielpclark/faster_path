@@ -3,7 +3,6 @@ name: CI
 on:
   push:
     branches: [master]
-    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -52,31 +51,3 @@ jobs:
         run: bundle exec rake sysinfo
       - name: Test (cargo, minitest, rubocop, pbench, mspec)
         run: env ${{ matrix.suite.env }} bundle exec rake test
-
-  # Builds the precompiled extension tarballs that `gem install` downloads,
-  # and attaches them to the GitHub release of a version tag.
-  release:
-    name: Release tarball for Ruby ${{ matrix.ruby }} on ${{ matrix.os }}
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [test]
-    runs-on: ${{ matrix.os }}
-    permissions:
-      contents: write
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
-        ruby: ['3.2', '3.3', '3.4']
-        include:
-          - os: macos-latest
-            ruby: '3.4'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
-      - run: bundle exec rake thermite:tarball
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: faster_path-*.tar.gz
