@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.files         = [
     'Cargo.lock', 'Cargo.toml', 'Gemfile', 'MIT-LICENSE.txt', 'README.md', 'Rakefile',
     'bin/console', 'bin/setup', 'ext/Rakefile', 'faster_path.gemspec', 'lib/faster_path.rb',
-    'lib/faster_path/version.rb', 'lib/faster_path/thermite_initialize.rb',
+    'lib/faster_path/version.rb',
     'lib/faster_path/optional/monkeypatches.rb', 'lib/faster_path/optional/refinements.rb'
   ]
   spec.files += Dir['src/**/*']
@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'bundler', '>= 1.12'
   spec.add_dependency 'rake', '>= 12.3'
-  spec.add_dependency 'thermite', '0.13.0'
+  spec.add_dependency 'thermite', '~> 0.14'
   # thermite reads GitHub release feeds with REXML, a bundled gem since Ruby 3.0
   spec.add_dependency 'rexml', '~> 3.2'
   spec.add_development_dependency 'read_source', '~> 0.2.6'

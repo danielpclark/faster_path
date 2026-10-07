@@ -1,7 +1,7 @@
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 require 'thermite/tasks'
-require 'faster_path/thermite_initialize'
+require 'faster_path/version'
 
 desc 'System Details'
 task :sysinfo do
@@ -22,7 +22,8 @@ task :sysinfo do
   puts "RAKE\n   #{Rake::VERSION}"
 end
 
-thermite = Thermite::Tasks.new
+# The gem's version names the release tarballs, not the crate's
+thermite = Thermite::Tasks.new(version: FasterPath::VERSION)
 
 desc "Generate Contriburs.md Manifest"
 task :contrib do
@@ -33,7 +34,7 @@ end
 
 desc 'Build + clean up Rust extension'
 task build_lib: 'thermite:build' do
-  thermite.run_cargo 'clean'
+  Thermite::Cargo.new(thermite.config).clean
 end
 
 desc 'Code Quality Check'
