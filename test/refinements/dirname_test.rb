@@ -4,8 +4,8 @@ require "faster_path/optional/refinements"
 
 class RefinedFile
   using FasterPath::RefineFile
-  def dirname(name)
-    File.dirname(name)
+  def dirname(name, *level)
+    File.dirname(name, *level)
   end
 end
 
@@ -44,5 +44,12 @@ class RefinementsDirnameTest < Minitest::Test
     assert_equal("/foo", @refined_file.dirname("/foo/./"))
     assert_equal("/foo/..", @refined_file.dirname("/foo/../."))
     assert_equal("foo", @refined_file.dirname("foo/../"))
+  end
+
+  def test_it_takes_a_level
+    assert_equal('/home', @refined_file.dirname('/home/jason/poot.txt', 2))
+    assert_equal('/home/jason', @refined_file.dirname('/home/jason', 0))
+    assert_equal('/', @refined_file.dirname('/home/jason', 10))
+    assert_raises(ArgumentError) { @refined_file.dirname('/home/jason', -1) }
   end
 end

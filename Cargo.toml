@@ -17,5 +17,5 @@ name = "faster_path"
 crate-type = ["cdylib"]
 
 [dependencies]
-rutie = "0.10.2"
+rutie = "0.13.1"
 memchr = "2"

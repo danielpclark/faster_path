@@ -22,31 +22,29 @@ class Pbench # < Minitest::Benchmark
     [10_000 * amplitude] * 5
   end
 
+  # The improvement of `new_impl` over `baseline`, in percent.
+  #
+  # The two run alternately, round by round, so that whatever else the
+  # machine is doing affects both alike, and each is measured by its best
+  # round: the slower rounds only show the interruptions, not the code.
   def performance(baseline, new_impl)
     range = self.class.bench_range
 
     times_a = []
-    range.each do |x|
-      GC.start
-      t0 = Minitest.clock_time
-      baseline.call(x)
-      t = Minitest.clock_time - t0
-      times_a << t
-    end
-
-    # This seems to stabalize the results a bit
-    sleep 0.02; GC.start
-
     times_b = []
     range.each do |x|
-      GC.start
-      t0 = Minitest.clock_time
-      new_impl.call(x)
-      t = Minitest.clock_time - t0
-      times_b << t
+      times_a << time(baseline, x)
+      times_b << time(new_impl, x)
     end
 
-    increase(average(times_a), average(times_b)).round(1)
+    increase(times_a.min, times_b.min).round(1)
+  end
+
+  def time(impl, x)
+    GC.start
+    t0 = Minitest.clock_time
+    impl.call(x)
+    Minitest.clock_time - t0
   end
 
   # run(hash)

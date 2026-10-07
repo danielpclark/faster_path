@@ -11,6 +11,54 @@ class DirnameTest < Minitest::Test
     assert_equal('/foo', FasterPath.dirname('/foo/foo'))
   end
 
+  def test_it_removes_level_trailing_components
+    assert_equal('/home', FasterPath.dirname('/home/jason/poot.txt', 2))
+    assert_equal('/home/jason', FasterPath.dirname('/home/jason', 0))
+    assert_equal('/', FasterPath.dirname('/home/jason', 2))
+    assert_equal('/', FasterPath.dirname('/home/jason', 10))
+    assert_equal('.', FasterPath.dirname('a/b', 2))
+    assert_equal('.', FasterPath.dirname('a/b', 10))
+    assert_equal('a', FasterPath.dirname('a//b//c//', 2))
+    assert_equal(String, FasterPath.dirname('/home/jason', 0).class)
+  end
+
+  # What File.dirname(path, level) returns on Ruby 3.3 for levels 0 to 4
+  LEVELS = {
+    '/home/jason/poot.txt' => ['/home/jason/poot.txt', '/home/jason', '/home', '/', '/'],
+    'a/b/c' => ['a/b/c', 'a/b', 'a', '.', '.'],
+    '/a' => ['/a', '/', '/', '/', '/'],
+    'a' => ['a', '.', '.', '.', '.'],
+    '' => ['.', '.', '.', '.', '.'],
+    '/' => ['/', '/', '/', '/', '/'],
+    './b/./' => ['./b/./', './b', '.', '.', '.'],
+    '/foo/../.' => ['/foo/../.', '/foo/..', '/foo', '/', '/'],
+    'a//b//c//' => ['a//b//c//', 'a//b', 'a', '.', '.']
+  }.freeze
+
+  def test_level_agrees_with_file_dirname
+    LEVELS.each do |path, expected|
+      expected.each_with_index do |dirname, level|
+        assert_equal(dirname, FasterPath.dirname(path, level), "#{path.inspect}, #{level}")
+      end
+    end
+  end
+
+  def test_level_is_converted_with_to_int
+    level = Object.new
+    def level.to_int
+      2
+    end
+    assert_equal('/home', FasterPath.dirname('/home/jason/poot.txt', level))
+  end
+
+  def test_level_must_be_a_non_negative_integer
+    error = assert_raises(ArgumentError) { FasterPath.dirname('/home/jason', -1) }
+    assert_equal('negative level: -1', error.message)
+    error = assert_raises(TypeError) { FasterPath.dirname('/home/jason', '1') }
+    assert_equal('no implicit conversion of String into Integer', error.message)
+    assert_raises(ArgumentError) { FasterPath.dirname('/home/jason', 1, 2) }
+  end
+
   def test_it_returns_a_string
     assert_kind_of(String, FasterPath.dirname("foo"))
   end

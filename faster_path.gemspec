@@ -24,17 +24,20 @@ Gem::Specification.new do |spec|
   spec.extensions    = ['ext/Rakefile']
   spec.require_paths = ['lib']
 
-  # Rutie 0.10, which the Rust extension is built with, supports Ruby 2.5 to 2.7
-  spec.required_ruby_version = ['>= 2.5', '< 3.0']
+  # Rutie 0.13, which the Rust extension is built with, supports Ruby 3.2 to 3.4
+  spec.required_ruby_version = ['>= 3.2', '< 3.5']
 
   spec.add_dependency 'bundler', '>= 1.12'
   spec.add_dependency 'rake', '>= 12.3'
   spec.add_dependency 'thermite', '0.13.0'
+  # thermite reads GitHub release feeds with REXML, a bundled gem since Ruby 3.0
+  spec.add_dependency 'rexml', '~> 3.2'
   spec.add_development_dependency 'read_source', '~> 0.2.6'
   spec.add_development_dependency 'minitest', '~> 5.11'
   spec.add_development_dependency 'minitest-reporters', '~> 1.1'
   spec.add_development_dependency 'color_pound_spec_reporter', '~> 0.0.9'
-  spec.add_development_dependency 'rubocop', '0.53'
+  spec.add_development_dependency 'rubocop', '~> 1.80'
+  spec.add_development_dependency 'rubocop-performance', '~> 1.20'
   spec.add_development_dependency 'stop_watch', '~> 1.0'
   if !ENV['CI'] && ENV['GRAPH']
     spec.add_development_dependency 'gruff', '~> 0.7.0'

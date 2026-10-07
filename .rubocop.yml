@@ -1,4 +1,10 @@
+plugins:
+  - rubocop-performance
+
 AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: disable
+  SuggestExtensions: false
   Include:
     - 'Gemfile'
     - 'Rakefile'
@@ -88,7 +94,7 @@ Layout/EndAlignment:
   Description: 'Align ends correctly.'
   Enabled: true
 
-Lint/EndInMethod:
+Style/EndBlock:
   Description: 'END blocks should not be placed inside method definitions.'
   Enabled: true
 
@@ -105,7 +111,7 @@ Lint/FormatParameterMismatch:
   Description: 'The number of parameters to format/sprint must match the fields.'
   Enabled: true
 
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Description: "Don't suppress exception."
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#dont-hide-exceptions'
   Enabled: true
@@ -154,7 +160,7 @@ Lint/ShadowingOuterLocalVariable:
                  for block arguments or block local variables.
   Enabled: true
 
-Lint/StringConversionInInterpolation:
+Lint/RedundantStringCoercion:
   Description: 'Checks for Object#to_s usage in string interpolation.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-to-s'
   Enabled: true
@@ -186,7 +192,7 @@ Lint/UselessAssignment:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#underscore-unused-vars'
   Enabled: true
 
-Lint/UselessComparison:
+Lint/BinaryOperatorWithIdenticalOperands:
   Description: 'Checks for comparison of something with itself.'
   Enabled: true
 
@@ -229,7 +235,7 @@ Metrics/CyclomaticComplexity:
                  of test cases needed to validate a method.
   Enabled: true
 
-Metrics/LineLength:
+Layout/LineLength:
   Description: 'Limit lines to 80 characters.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#80-character-limits'
   Enabled: false
@@ -290,7 +296,7 @@ Performance/ReverseEach:
   Reference: 'https://github.com/JuanitoFatas/fast-ruby#enumerablereverseeach-vs-enumerablereverse_each-code'
   Enabled: true
 
-Performance/Sample:
+Style/Sample:
   Description: >-
                   Use `sample` instead of `shuffle.first`,
                   `shuffle.last`, and `shuffle[Fixnum]`.
@@ -333,7 +339,7 @@ Performance/EndWith:
 Performance/FixedSize:
   Enabled: true
 
-Performance/LstripRstrip:
+Style/Strip:
   Enabled: true
 
 Performance/RangeInclude:
@@ -348,7 +354,7 @@ Performance/RedundantMatch:
 Performance/RedundantMerge:
   Enabled: true
 
-Performance/RedundantSortBy:
+Style/RedundantSortBy:
   Enabled: true
 
 Performance/RegexpMatch:
@@ -359,58 +365,6 @@ Performance/StartWith:
 
 Performance/TimesMap:
   Enabled: true
-
-##################### Rails ##################################
-
-Rails/ActionFilter:
-  Description: 'Enforces consistent use of action filter methods.'
-  Enabled: false
-
-Rails/Date:
-  Description: >-
-                  Checks the correct usage of date aware methods,
-                  such as Date.today, Date.current etc.
-  Enabled: false
-
-Rails/Delegate:
-  Description: 'Prefer delegate method for delegations.'
-  Enabled: false
-
-Rails/FindBy:
-  Description: 'Prefer find_by over where.first.'
-  Enabled: false
-
-Rails/FindEach:
-  Description: 'Prefer all.find_each over all.find.'
-  Enabled: false
-
-Rails/HasAndBelongsToMany:
-  Description: 'Prefer has_many :through to has_and_belongs_to_many.'
-  Enabled: false
-
-Rails/Output:
-  Description: 'Checks for calls to puts, print, etc.'
-  Enabled: false
-
-Rails/ReadWriteAttribute:
-  Description: >-
-                 Checks for read_attribute(:attr) and
-                 write_attribute(:attr, val).
-  Enabled: false
-
-Rails/ScopeArgs:
-  Description: 'Checks the arguments of ActiveRecord scopes.'
-  Enabled: false
-
-Rails/TimeZone:
-  Description: 'Checks the correct usage of time zone aware methods.'
-  StyleGuide: 'https://github.com/bbatsov/rails-style-guide#time'
-  Reference: 'http://danilenko.org/2012/7/6/rails_timezones'
-  Enabled: false
-
-Rails/Validation:
-  Description: 'Use validates :attribute, hash of validations.'
-  Enabled: false
 
 ################## Style #################################
 
@@ -428,20 +382,20 @@ Style/Alias:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#alias-method'
   Enabled: false
 
-Layout/AlignArray:
+Layout/ArrayAlignment:
   Description: >-
                  Align the elements of an array literal if they span more than
                  one line.
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#align-multiline-arrays'
   Enabled: true
 
-Layout/AlignHash:
+Layout/HashAlignment:
   Description: >-
                  Align the elements of a hash literal if they span more than
                  one line.
   Enabled: true
 
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   Description: >-
                  Align the parameters of a method call if they span more
                  than one line. WRONG!  Only indent 2 (don't use this).
@@ -499,10 +453,6 @@ Style/BlockDelimiters:
                 Prefer {...} over do...end for single-line blocks.
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#single-line-blocks'
   Enabled: true
-
-Style/BracesAroundHashParameters:
-  Description: 'Enforce braces style around hash parameters.'
-  Enabled: false
 
 Style/CaseEquality:
   Description: 'Avoid explicit use of the case equality operator(===).'
@@ -640,11 +590,6 @@ Style/EmptyLiteral:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#literal-array-hash'
   Enabled: false
 
-Style/EndBlock:
-  Description: 'Avoid the use of END blocks.'
-  StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-END-blocks'
-  Enabled: true
-
 Layout/EndOfLine:
   Description: 'Use Unix-style line endings.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#crlf'
@@ -673,7 +618,7 @@ Layout/FirstParameterIndentation:
   Description: 'Checks the indentation of the first parameter in a method call.'
   Enabled: false
 
-Style/FlipFlop:
+Lint/FlipFlop:
   Description: 'Checks for flip flops'
   StyleGuide: 'https://blog.newrelic.com/2015/02/24/weird-ruby-part-3-fun-flip-flop-phenom/'
   Enabled: true
@@ -727,13 +672,13 @@ Layout/IndentationWidth:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#spaces-indentation'
   Enabled: true
 
-Layout/IndentArray:
+Layout/FirstArrayElementIndentation:
   Description: >-
                  Checks the indentation of the first element in an array
                  literal.
   Enabled: false
 
-Layout/IndentHash:
+Layout/FirstHashElementIndentation:
   Description: 'Checks the indentation of the first key in a hash literal.'
   Enabled: false
 
@@ -905,7 +850,7 @@ Style/PerlBackrefs:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-perl-regexp-last-matchers'
   Enabled: true
 
-Naming/PredicateName:
+Naming/PredicatePrefix:
   Description: 'Check the names of predicate methods.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#bool-methods-qmark'
   Enabled: false
@@ -1111,12 +1056,12 @@ Style/SymbolProc:
   Description: 'Use symbols as procs instead of blocks when possible.'
   Enabled: false
 
-Layout/Tab:
+Layout/IndentationStyle:
   Description: 'No hard tabs.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#spaces-indentation'
   Enabled: true
 
-Layout/TrailingBlankLines:
+Layout/TrailingEmptyLines:
   Description: 'Checks trailing blank lines and final newline.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#newline-eof'
   Enabled: true
@@ -1153,11 +1098,11 @@ Style/UnlessElse:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-else-with-unless'
   Enabled: true
 
-Style/UnneededCapitalW:
+Style/RedundantCapitalW:
   Description: 'Checks for %W when interpolation is not needed.'
   Enabled: true
 
-Style/UnneededPercentQ:
+Style/RedundantPercentQ:
   Description: 'Checks for %q/%Q when single quotes or double quotes would do.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#percent-q'
   Enabled: true
