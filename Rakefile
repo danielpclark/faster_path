@@ -92,10 +92,8 @@ Rake::TestTask.new(bench: :build_lib) do |t|
   t.pattern = 'test/**/*_benchmark.rb'
 end
 
+# LONG_RUN=<1..30> multiplies the calls per round, see test/pbench/pbench.rb
 Rake::TestTask.new(pbench: :build_lib) do |t|
-  if ARGV.last == '--long-run'
-    ENV['LONG_RUN'] = '10'
-  end
   t.libs = %w[lib test test/pbench]
   t.pattern = 'test/pbench/pbench_suite.rb'
 end
