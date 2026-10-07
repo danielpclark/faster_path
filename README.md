@@ -159,25 +159,25 @@ require "faster_path"
 
 Current methods implemented:
 
-|FasterPath Rust Implementation|Ruby Implementation|Time Shaved Off (Ruby 2.7)|Time Shaved Off (Ruby 2.5)|
+|FasterPath Rust Implementation|Ruby Implementation|Time Shaved Off (Ruby 3.4)|Time Shaved Off (Ruby 3.2)|
 |---|---|:---:|:---:|
-| `FasterPath.absolute?` | `Pathname#absolute?` | 95.7% | 96.7% |
-| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 85.4% | 83.0% |
-| `FasterPath.basename` | `File.basename` | 42.4% | 39.1% |
-| `FasterPath.children` | `Pathname#children` | 54.7% | 47.8% |
-| `FasterPath.chop_basename` | `Pathname#chop_basename` | 70.4% | 75.1% |
-| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 90.3% | 90.6% |
-| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 89.6% | 91.6% |
-| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 85.3% | 87.6% |
-| `FasterPath.directory?` | `Pathname#directory?` | 34.3% | 37.5% |
-| `FasterPath.dirname` | `File.dirname` | 56.8% | 54.7% |
-| `FasterPath.entries` | `Pathname#entries` | 38.0% | 33.9% |
-| `FasterPath.extname` | `File.extname` | 74.0% | 73.1% |
-| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 88.5% | 89.1% |
-| `FasterPath.join` | `Pathname#join` | 88.1% | 90.3% |
-| `FasterPath.plus` | `Pathname#plus` | 91.7% | 93.4% |
-| `FasterPath.relative?` | `Pathname#relative?` | 92.8% | 95.2% |
-| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 92.5% | 93.6% |
+| `FasterPath.absolute?` | `Pathname#absolute?` | 55.1% | 41.7% |
+| `FasterPath.add_trailing_separator` | `Pathname#add_trailing_separator` | 87.7% | 86.2% |
+| `FasterPath.basename` | `File.basename` | 28.0% | 28.1% |
+| `FasterPath.children` | `Pathname#children` | 64.8% | 58.0% |
+| `FasterPath.chop_basename` | `Pathname#chop_basename` | 73.2% | 72.9% |
+| `FasterPath.cleanpath_aggressive` | `Pathname#cleanpath_aggressive` | 92.7% | 92.5% |
+| `FasterPath.cleanpath_conservative` | `Pathname#cleanpath_conservative` | 91.9% | 92.1% |
+| `FasterPath.del_trailing_separator` | `Pathname#del_trailing_separator` | 89.4% | 87.9% |
+| `FasterPath.directory?` | `Pathname#directory?` | 40.3% | 41.0% |
+| `FasterPath.dirname` | `File.dirname` | 43.5% | 43.6% |
+| `FasterPath.entries` | `Pathname#entries` | 57.8% | 46.7% |
+| `FasterPath.extname` | `File.extname` | 69.5% | 68.3% |
+| `FasterPath.has_trailing_separator?` | `Pathname#has_trailing_separator` | 93.6% | 91.7% |
+| `FasterPath.join` | `Pathname#join` | 89.0% | 88.3% |
+| `FasterPath.plus` | `Pathname#plus` | 95.4% | 94.2% |
+| `FasterPath.relative?` | `Pathname#relative?` | 66.2% | 61.4% |
+| `FasterPath.relative_path_from` | `Pathname#relative_path_from` | 95.0% | 94.7% |
 
 See [Benchmarks](#benchmarks) for how these are measured.
 
@@ -205,10 +205,10 @@ FasterPath.sledgehammer_everything!
 
 These will **not** be included by default in monkey-patches.  To try them with monkeypatching use the environment flag of `WITH_REGRESSION`.  These methods are here to be improved upon.
 
-|FasterPath Implementation|Ruby Implementation|Time Shaved Off (Ruby 2.7)|Time Shaved Off (Ruby 2.5)|
+|FasterPath Implementation|Ruby Implementation|Time Shaved Off (Ruby 3.4)|Time Shaved Off (Ruby 3.2)|
 |---|---|:---:|:---:|
-| `FasterPath.entries_compat` | `Pathname.entries` | 16.8% | 9.2% |
-| `FasterPath.children_compat` | `Pathname.children` | 32.1% | 26.6% |
+| `FasterPath.entries_compat` | `Pathname.entries` | 32.2% | 18.1% |
+| `FasterPath.children_compat` | `Pathname.children` | 44.9% | 35.6% |
 
 It's been my observation (and some others) that the Rust implementation of the C code for `File` has similar results but
 performance seems to vary based on CPU cache on possibly 64bit/32bit system environments.  These are not included by default when the monkey patch method `FasterPath.sledgehammer_everything!` is executed.

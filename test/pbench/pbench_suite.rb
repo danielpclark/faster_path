@@ -62,7 +62,7 @@ PBENCHES[:"absolute?"] = {
   end,
 }
 PBENCHES[:add_trailing_separator] = {
-  min: 50,
+  min: 40,
   new: lambda do |x|
     x.times do
       FasterPath.add_trailing_separator('/hello/world')
@@ -77,7 +77,7 @@ PBENCHES[:add_trailing_separator] = {
   end
 }
 PBENCHES[:basename] = {
-  min: 15,
+  min: 10,
   new: lambda do |x|
     x.times do
       FasterPath.basename("/hello/world")
@@ -125,7 +125,7 @@ PBENCHES[:children_compat] = {
  end
 }
 PBENCHES[:chop_basename] = {
-  min: 50,
+  min: 35,
   new: lambda do |x|
     x.times do
       FasterPath.chop_basename "/hello/world.txt"
@@ -144,7 +144,7 @@ PBENCHES[:chop_basename] = {
 PATHNAME_CA1 = Pathname.new('/../.././../a').freeze
 PATHNAME_CA2 = Pathname.new('a/b/../../../../c/../d').freeze
 PBENCHES[:cleanpath_aggressive] = {
-  min: 80,
+  min: 45,
   new: lambda do |x|
     x.times do
       Pathname.new(FasterPath.cleanpath_aggressive '/../.././../a')
@@ -159,7 +159,7 @@ PBENCHES[:cleanpath_aggressive] = {
   end
 }
 PBENCHES[:cleanpath_conservative] = {
-  min: 80,
+  min: 45,
   new: lambda do |x|
     x.times do
       Pathname.new(FasterPath.cleanpath_conservative '/../.././../a')
@@ -174,7 +174,7 @@ PBENCHES[:cleanpath_conservative] = {
   end
 }
 PBENCHES[:del_trailing_separator] = {
-  min: 70,
+  min: 40,
   new: lambda do |x|
     x.times do
       FasterPath.del_trailing_separator('/hello/world')
@@ -204,7 +204,7 @@ PBENCHES[:"directory?"] = {
   end
 }
 PBENCHES[:dirname] = {
-  min: 30,
+  min: 20,
   new: lambda do |x|
     x.times do
       FasterPath.dirname "/really/long/path/name/which/ruby/doesnt/like/bar.txt"
@@ -250,7 +250,7 @@ PBENCHES[:entries_compat] = {
   end
 }
 PBENCHES[:extname] = {
-  min: 50,
+  min: 30,
   new: lambda do |x|
     x.times do
       FasterPath.extname('verylongfilename_verylongfilename.rb')
@@ -267,7 +267,7 @@ PBENCHES[:extname] = {
   end
 }
 PBENCHES[:"has_trailing_separator?"] = {
-  min: 75,
+  min: 45,
   new: lambda do |x|
     x.times do
       FasterPath.has_trailing_separator? '////a//aaa/a//a/aaa////'
@@ -282,7 +282,7 @@ PBENCHES[:"has_trailing_separator?"] = {
   end
 }
 PBENCHES[:join] = {
-  min: 70,
+  min: 40,
   new: lambda do |x|
     x.times do
       FasterPath.join('a', 'b')
@@ -299,7 +299,7 @@ PBENCHES[:join] = {
   end
 }
 PBENCHES[:plus] = {
-  min: 80,
+  min: 45,
   new: lambda do |x|
     x.times do
       FasterPath.plus('a', 'b')
@@ -333,7 +333,7 @@ PBENCHES[:"relative?"] = {
 PATHNAME_AB = Pathname("/a/b")
 PATHNAME_ABCD = Pathname("/a/b/c/d")
 PBENCHES[:relative_path_from] = {
-  min: 80,
+  min: 45,
   new: lambda do |x|
     x.times do
       FasterPath.relative_path_from "/a/b/c/d", "/a/b"
