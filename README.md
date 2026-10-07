@@ -216,10 +216,15 @@ performance seems to vary based on CPU cache on possibly 64bit/32bit system envi
 ## Benchmarks
 
 The "Time Shaved Off" figures come from the project's Pinch-bench (`rake pbench`, in
-`test/pbench`): each method runs against Ruby's own implementation, and the result is how much
-less time FasterPath took. They are the median of 3 runs of `LONG_RUN=10 rake pbench` (500,000
-calls of each method, 5 times) on Linux x86_64 with Ruby 2.7.8 and 2.5.7, built with Rust 1.97.
-Expect a few points of difference from run to run.
+`test/pbench`): each method runs against Ruby's own implementation, alternating with it round by
+round, and the result is how much less time FasterPath's best round took than Ruby's best round.
+They are the median of 3 runs of `LONG_RUN=10 rake pbench` (500,000 calls of each method, 5
+rounds) on Linux x86_64 with Ruby 3.4.6 and 3.2.9, built with Rust 1.97. Expect a few points of
+difference from run to run.
+
+The figures are smaller than they were on Ruby 2 for the cheapest methods, `absolute?` and
+`relative?` above all: Ruby 3's own `Pathname#absolute?` is a single regexp match, where Ruby 2's
+walked the path with `chop_basename`, so there is less left to shave off.
 
 `rake pbench` is also the performance regression test: each method has a floor in
 `test/pbench/pbench_suite.rb` (about half of the improvement in the table above) and the task
@@ -230,8 +235,10 @@ enforced.
 
 ### Before and after the Rutie 0.10 upgrade
 
-Measured the same way, alternating runs of the code before the upgrade (built with Rutie 0.6)
-and after it. Higher is better; the change is in percentage points.
+The last figures on Ruby 2, from the Rutie 0.10 upgrade (faster_path 0.4.0): Ruby 2.7.8 and
+2.5.7, alternating runs of the code before the upgrade (built with Rutie 0.6) and after it, with
+the benchmark then measuring the average of 5 rounds run one implementation after the other.
+Higher is better; the change is in percentage points.
 
 |Method|Ruby 2.7 before|Ruby 2.7 after|Change|Ruby 2.5 before|Ruby 2.5 after|Change|
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
