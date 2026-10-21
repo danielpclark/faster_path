@@ -114,12 +114,16 @@ As mentioned earlier Sprockets, which handles assets, changed away from using `P
 ## Requirements
 
 * Ruby 3.2, 3.3 or 3.4 (the Rust extension is built with [Rutie](https://github.com/danielpclark/rutie) 0.13, which supports these)
-* Rust 1.71 or later: `gem install` builds the extension with Cargo (through the
+* Rust 1.71 or later, unless a prebuilt extension exists for your platform (see
+  [Installation](#installation)): `gem install` builds the extension with Cargo (through the
   [rutie](https://rubygems.org/gems/rutie) gem's Rake task) and keeps only the built library
 
 ## Installation
 
-Ensure Rust is installed, with `cargo` on your `PATH`:
+Each [release](https://github.com/danielpclark/faster_path/releases) carries a prebuilt
+extension for Ruby 3.4 on Linux x86_64, macOS (arm64 and x86_64) and Windows x64. On those,
+`gem install` needs no Rust. Everywhere else (another Ruby version, OS or CPU), ensure Rust is
+installed, with `cargo` on your `PATH`:
 
 [Install Rust](https://www.rust-lang.org/tools/install)
 
@@ -130,7 +134,7 @@ curl -sSf https://sh.rustup.rs | sh
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'faster_path', '~> 0.5.0'
+gem 'faster_path', '~> 0.5.1'
 ```
 
 And then execute:
@@ -143,9 +147,11 @@ Or install it yourself as:
 
 Installing compiles the Rust extension for the Ruby doing the installing ("Building native
 extensions. This could take a while..."), which takes about a minute the first time while Cargo
-fetches and builds the dependencies. If Rust is missing, the install fails at that step with
-Cargo not being found; install Rust and run it again. Nothing is downloaded from GitHub: there are
-no prebuilt binaries.
+fetches and builds the dependencies. When Cargo is not found, the install downloads the release's
+prebuilt extension for your platform instead (`faster_path-<version>-ruby<XY>-<os>-<cpu>.tar.gz`,
+checked against its SHA-256 file) and fails with a message naming that file if there is none.
+`FASTER_PATH_PREBUILT_URL` points the download at another directory holding the same files, for
+mirrors or machines without access to GitHub.
 
 ## Visual Benchmarks
 

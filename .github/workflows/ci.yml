@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [master]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -51,3 +52,57 @@ jobs:
         run: bundle exec rake sysinfo
       - name: Test (cargo, minitest, rubocop, pbench, mspec)
         run: env ${{ matrix.suite.env }} bundle exec rake test
+
+  # The prebuilt extension that `gem install` downloads when Cargo is missing:
+  # one Ruby per OS (see lib/faster_path/prebuilt.rb). Runs for a version tag
+  # and on request, to check the builds before tagging.
+  prebuilt:
+    name: Prebuilt extension (${{ matrix.os }})
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    needs: [test]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-latest, macos-15-intel, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+      - run: bundle exec rake prebuilt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prebuilt-${{ matrix.os }}
+          path: pkg/faster_path-*
+
+  # Attaches the gem and the prebuilt extensions to the GitHub release of a version tag.
+  release:
+    name: GitHub release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [prebuilt]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+      - run: gem build faster_path.gemspec
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: prebuilt-*
+          merge-multiple: true
+          path: pkg
+      - run: ls -l pkg *.gem
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            faster_path-*.gem
+            pkg/faster_path-*

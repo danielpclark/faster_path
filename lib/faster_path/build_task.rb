@@ -28,5 +28,15 @@ module FasterPath
     def self.built_library
       Rutie.new(:faster_path).ffi_library(File.join(PROJECT_DIR, 'lib'))
     end
+
+    # Whether Cargo can be run: named by CARGO, or on the PATH
+    def self.cargo?
+      return true if ENV['CARGO']
+
+      exts = RbConfig::CONFIG['EXEEXT'].empty? ? [''] : ['', RbConfig::CONFIG['EXEEXT']]
+      ENV.fetch('PATH', '').split(File::PATH_SEPARATOR).any? do |dir|
+        exts.any? { |ext| File.executable?(File.join(dir, "cargo#{ext}")) }
+      end
+    end
   end
 end

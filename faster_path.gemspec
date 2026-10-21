@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.files         = [
     'Cargo.lock', 'Cargo.toml', 'Gemfile', 'MIT-LICENSE.txt', 'README.md', 'Rakefile',
     'bin/console', 'bin/setup', 'ext/Rakefile', 'faster_path.gemspec', 'lib/faster_path.rb',
-    'lib/faster_path/version.rb', 'lib/faster_path/build_task.rb',
+    'lib/faster_path/version.rb', 'lib/faster_path/build_task.rb', 'lib/faster_path/prebuilt.rb',
     'lib/faster_path/optional/monkeypatches.rb', 'lib/faster_path/optional/refinements.rb'
   ]
   spec.files += Dir['src/**/*']
