@@ -34,6 +34,13 @@ end
 desc 'Build the Rust extension'
 task build_lib: 'rutie:build'
 
+desc 'Package the built extension as the prebuilt release asset for this platform, in pkg/'
+task prebuilt: 'rutie:build' do
+  require 'faster_path/prebuilt'
+  FileUtils.mkdir_p('pkg')
+  puts FasterPath::Prebuilt.package(FasterPath::BuildTask.built_library, 'pkg')
+end
+
 desc 'Code Quality Check'
 task :lint do
   puts

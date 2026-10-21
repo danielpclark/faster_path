@@ -1,14 +1,40 @@
 require 'fileutils'
 require_relative '../lib/faster_path/build_task'
+require_relative '../lib/faster_path/prebuilt'
 
 FasterPath::BuildTask.define
 
-# Keeps the built library (in lib/faster_path, where FasterPath loads it from)
-# and removes the rest of Cargo's output from the installed gem.
+# Builds the extension, keeps the built library (in lib/faster_path, where
+# FasterPath loads it from) and removes the rest of Cargo's output from the
+# installed gem.
 task install_library: 'rutie:build' do
   FileUtils.mkdir_p(FasterPath::BuildTask::INSTALLED_LIBRARY_DIR)
   FileUtils.cp(FasterPath::BuildTask.built_library, FasterPath::BuildTask::INSTALLED_LIBRARY_DIR)
   Rake::Task['rutie:clean'].invoke
 end
 
-task default: :install_library
+NO_PREBUILT = <<~MESSAGE
+  ****
+  Rust's Cargo was not found, and this release of faster_path has no prebuilt
+  extension for this platform (%s).
+  Install Rust (https://www.rust-lang.org/tools/install) and run the install
+  again, or set FASTER_PATH_PREBUILT_URL to a directory holding the asset.
+  ****
+MESSAGE
+
+# Installs the prebuilt library from this version's GitHub release instead.
+task :install_prebuilt do
+  library = FasterPath::Prebuilt.install(FasterPath::BuildTask::PROJECT_DIR)
+  raise format(NO_PREBUILT, FasterPath::Prebuilt.asset_name) unless library
+
+  puts "Installed the prebuilt extension #{File.basename(library)}"
+end
+
+task :default do
+  if FasterPath::BuildTask.cargo?
+    Rake::Task[:install_library].invoke
+  else
+    puts 'Cargo was not found; downloading the prebuilt extension for this platform instead'
+    Rake::Task[:install_prebuilt].invoke
+  end
+end
